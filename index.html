@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MADZ Attendance Site</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header> 
+    <div style="margin: 0 auto;">
+        <button id="home_button" class="tab-button" onclick="openTab('home')">Home</button>
+        <button id="faq_button" class="tab-button" onclick="openTab('faq')">FAQ</button>
+        <button id="about_button" class="tab-button" onclick="openTab('about')">About</button>
+        <button id="request_button" class="tab-button" onclick="openTab('request')">Request</button>
+        <button id="sign_in_button" class="tab-button" onclick="openTab('sign_in')">Sign In</button>
+    </div>
+</header>
+
+<img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz_logo">  <!-- added by zaynin -->
+  
+<main>
+    <section id="home" class="tab-content">
+
+      <!-- <img src="/images/madz_attendance-2.jpg" width="315" height="121"> -->
+      <h2>Welcome to MADZ Attendance</h2>
+      <h3>This is a senior capstone project created by Mark, Anthony, David and Zaynin.</h3>
+      <h3>Established in 2024.</h3>
+      <h3> Our Pledge: </h3>
+      <p> MADZ Attendance aims to provide a fast and efficient solution to lengthy attendance-taking procedures in Kutztown University classrooms. MADZ Attendance will allow for a system in which students can swipe/tap their student IDs to instantly mark themselves as present in a classroom, while professors can view their class’s real-time attendance and previous class’s attendance records.
+      </p>
+      <button id="myButton">Click me!</button>
+      <p id="message"></p>
+    </section>
+
+
+
+  
+    <section id="faq" class="tab-content">
+    <h2>FAQ</h2>
+     <div class="questions-container">
+        <div class="question">
+            <button>
+                <span>Who can use this site?</span>
+                <i class="fas fa-chevron-down d-arrow"></i>
+            </button>
+            <p> Students, faculty, and administrators will have access to this site. However, only faculty and administrators will have login permissions.</p>
+        </div>
+
+        <div class="question">
+            <button>
+                <span> I am a student, and I forgot my ID. How can I make sure my attendance is accounted for? </span>
+                <i class="fas fa-chevron-down d-arrow"></i>
+            </button>
+               <p>Students have multiple ways of marking their attendance:
+               1. Students may tell their professor at the start of class, and the professor will manually mark their attendance.
+               2. Students may submit an Attendance Submission Request. This is a request for students who forgot to swipe, or don't have their ID, will be able to submit. The professor will have the chance to accept or decline this request.
+               Note: The student will only be able to request attendance verification on the day of submission. This encourages attendance and accountability, as well as provides a solution to students via a mobile device or PC.</p>
+
+        </div>
+
+        <div class="question">
+            <button>
+                <span>Question 3</span>
+                <i class="fas fa-chevron-down d-arrow"></i>
+            </button>
+            <p> Will fill in later. </p>
+        </div>
+
+        <div class="question">
+            <button>
+                <span>Question 4</span>
+                <i class="fas fa-chevron-down d-arrow"></i>
+            </button>
+            <p>Will fill in later. </p>
+        </div>
+    </div>
+</section>
+
+
+      
+
+    <section id="about" class="tab-content">
+        <h2>Who Are We?</h2>
+        <p> We are all seniors at Kutztown University of Pennsylvania. We all bring unique experiences and input to this project. </p>
+      <p> MADZ is an acronym of all of our first names. Mark, Anthony, David and Zaynin. </p>
+      <h4> Mark - an Information Technology Major </h4>
+      <p> Mark is helping implement the database and UI. </p>
+      <p> Mark likes to watch football and play games with friends. </p>
+      <h4> Anthony - A Computer Science Major </h4>
+      <p> Anthony is helping implement the website, with his main focus being the front end.  </p>
+      <p> A fun fact about Anthony is that he has a twin brother. </p>
+      <h4> David - A Computer Science Major </h4>
+      <p> David is working on hardware-database interactions for the backend of the website. </p>
+      <p> David rides motorcycles and enjoys annual cross country roadtrips. </p>
+      <h4> Zaynin - A Computer Science Major</h4>
+      <p> Zaynin is working on configuring hardware and UI design for the classroom display. </p>
+      <p> Zaynin can type 150 words per minute. </p>
+    </section>
+
+
+
+  <style>
+    .form-container {
+    height: auto;
+}
+    form {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        font-size: 18px;
+        padding: 20px 10px;
+    }
+    label {
+        margin-bottom: 10px;
+    }
+    input[type="text"] {
+        width: calc(100% - 10px);
+        padding: 3px;
+        font-size: 16px;
+    }
+    input[type="submit"] {
+        grid-column: span 2;
+        padding: 10px 20px;
+        font-size: 18px;
+    }
+    .required::after {
+        content: "*";
+        color: red;
+        margin-left: 5px;
+    }
+    #professor_note {
+        width: calc(100% - 10px); /* Adjust the width as needed */
+        height: 100px; /* Set the height of the textarea */
+        padding: 5px;
+        font-size: 16px;
+    }
+
+   .input-wrapper {
+      position: relative;
+      display: inline-block;
+    }
+
+    .clear-button {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+}
+
+/* Optional: Style the "X" icon */
+.clear-button:hover {
+    color: red;
+}
+
+</style>
+<section id="sign_in" class="tab-content">
+  <body>
+    <h2>Enter Login or Register</h2>
+
+<div class="login-container">
+<form id="loginform">
+    <div class="input-container">
+      <input type="email_text" id="entered_email" name="entered_Email">
+      <label for="email_text">Email</label>
+    </div>
+
+    <div class="input-container">
+      <input type="pass_text" id="entered_pass" name="entered_password">
+      <label for="pass_text">Password</label>
+    </div>
+    
+    <!-- <input type="submit_login" value="login_submission"> -->
+</form>
+</div>
+  </body>
+</section>
+    
+</style>
+<section id="request" class="tab-content">
+  <body>
+    <h2>Enter An Attendance Verification Request</h2>
+    <p>Students can submit an attendance verification request only on the day they were absent. </p>
+    <p><small><small>Note: <span style="color: red;">Red asterisks (*) indicate required fields.</span></small></small></p>
+
+<div class="form-container">
+<form id="attendanceform">
+    <label for="student_firstname">Student First Name:<span class="required"></span></label>
+    <input type="text" id="student_firstname" name="student_Firstname" required>
+
+    <label for="student_lastname">Student Last Name:<span class="required"></span></label>
+    <input type="text" id="student_lastname" name="student_Lastname" required>
+
+  
+        <label for="dept_code">Department Code:<span class="required"></span></label>
+    <div class="input-wrapper">
+    <input type="text" id="dept_code" name="department_code" list="departments"  required placeholder="Select a Department Code">
+    <button id="clear_dept_button" class="clear-button"><i class="far fa-times-circle"></i></button>
+    </div>  
+    <datalist id="departments">
+        <!-- Add department options here -->
+      <option value="CPSC"> (CPSC) Computer Science</option>
+      <option value="ARTH">(ARTH) Art History</option>
+      <option value="POLI">(POLI) Political Science</option>
+      <option value="CHEM">(CHEM) Chemistry</option>
+      <option value="BIOL">(BIOL) Biology</option>
+      <option value="ANTH">(ANTH) Anthropology</option>
+      <option value="CRJU">(CRJU) Criminal Justice</option>
+      <option value="GEOL">(GEOL) Geology</option>
+      <option value="ACCT">(ACCT) Accounting</option>
+      <option value="ANIA">(ANIA) Animated Arts</option>
+      <option value="ART">(ART) Art</option>
+      <option value="BUSN">(BUSN) Business</option>
+    </datalist>
+    
+            <!-- Add more options as needed -->
+<!--
+        <label for="class_section">Class Section:<span class="required"></span></label>
+        <select id="class_section" name="class_section" required>
+            <option value="">Select Class Section</option>
+            <option value="CPSC">CPSC 135 010</option>
+            <option value="CPSC">CPSC 135 020</option>
+            <option value="CPSC">CPSC 136 010</option>
+            <!-- Add more options as needed -->
+    <!--    </select> -->
+
+<label for="class_section">Class Section:<span class="required"></span></label>
+<div class="input-wrapper">
+<input type="text" id="class_section" name="class_section" list="class_sections" required placeholder="Select Class Section">
+<button id="clear_class_button" class="clear-button"><i class="far fa-times-circle"></i></button>
+</div>
+<datalist id="class_sections">
+    <!-- Class sections will be dynamically populated based on the selected department code -->
+</datalist>
+  
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Get references to the department code and class section elements
+    const deptCodeInput = document.getElementById("dept_code");
+    const classSectionInput = document.getElementById("class_section");
+    const classSectionDatalist = document.getElementById("class_sections");
+    const clearDeptButton = document.getElementById("clear_dept_button");
+    const clearClassButton = document.getElementById("clear_class_button");
+
+    // Function to clear the selected department code
+    clearDeptButton.addEventListener("click", function() {
+        deptCodeInput.value = "";
+        classSectionInput.value = "";
+        classSectionDatalist.innerHTML = ''; 
+    });
+
+    // Function to clear the selected class section
+    clearClassButton.addEventListener("click", function() {
+        classSectionInput.value = "";
+    });
+    const classSections = {
+        "CPSC": ["CPSC 135 010", "CPSC 135 020", "CPSC 136 010"],
+        "ARTH": ["ARTH 124 010", "ARTH 25 19H", "ARTH 309 010"],
+        "POLI": ["POLI 10 010", "POLI 140 020", "POLI 181 010"],
+        "CHEM": ["CHEM 100 015", "CHEM 204 012", "CHEM 230 011"],
+        "BIOL": ["BIOL 10 012", "BIOL 104 013", "BIOL 104 012"],
+        "ANTH": ["ANTH 10 030", "ANTH 105 020", "ANTH 213 010"],
+        "CRJU": ["CRJU 10 010", "CRJU 101 020", "CRJU 182 010"],
+        "GEOL": ["GEOL 1 810", "GEOL 100 011", "GEOL 110 012"],
+        "ACCT": ["ACCT 121 020", "ACCT 122 010", "ACCT 305 010"],
+        "ANIA": ["ANIA 141 030", "ANIA 171 020", "ANIA 231 610"],
+        "ART": ["ART 141 011", "ART 161 610", "ART 31 010"],
+        "BUSN": ["BUSN 131 030", "BUSN 275 810", "BUSN 130 010"]
+        
+    };
+    // Function to update the department code based on the selected class section
+
+
+    // Function to update the class section options based on the selected department
+    function updateClassSections() {
+        const selectedDept = deptCodeInput.value.toUpperCase(); // Convert input to uppercase
+        console.log("Selected department:", selectedDept);
+        
+        // Clear existing options
+        classSectionDatalist.innerHTML = '';
+
+        if (deptCodeInput.value === '') {
+        return;
+        }
+        // Add options for the selected department
+        if (classSections[selectedDept]) {
+            classSections[selectedDept].forEach(section => {
+                const option = document.createElement("option");
+                option.value = section;
+                classSectionDatalist.appendChild(option);
+            });
+        }
+    }
+
+    // Event listener to update class sections when department code changes
+    deptCodeInput.addEventListener("input", updateClassSections);
+
+    // Trigger initial update of class sections
+    updateClassSections();
+});
+
+</script>
+
+    <label for="professor_fName">Professor Email:<span class="required"></span></label>
+    <input type="email" id="professor_email" name="professor_FirstName" required>
+
+    <label for="professor_note">Note To Professor:</label>
+    <textarea id="professor_note" name="professor_note"></textarea>
+
+    <input type="submit" value="Submit">
+</form>
+</div>
+    <div id="submissionInfo"></div>
+  
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
+<script src="script.js"></script>
+
+<script>
+  document.getElementById('attendanceform').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent default form submission
+    console.log('Form submission triggered!'); // Debug message
+
+    const email = document.getElementById('professor_email').value;
+
+    // Email validation using regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Status: Error - Invalid email format</p>
+        <p>Email: ${email}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return; // Stop the submission if email is invalid
+    }
+      // Check if the email exists in the users database table
+    const { data: usersData, error: usersError } = await supabasePublicClient
+      .from('users') // The users table where you are storing faculty emails
+      .select('facemail')
+      .eq('facemail', email); // Check if the submitted email matches any email in the users table
+
+    if (usersError) {
+      console.log('Supabase Error:', usersError); // Debug message
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Status: Error - ${usersError.message}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return;
+    }
+
+    // If no matching email is found in the users table
+    if (usersData.length === 0) {
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${new Date().toLocaleString()}</p>
+        <p>Status: Fail - No matching email found in the users database</p>
+        <p>Email: ${email}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return; // Stop the submission process
+    }
+    // Collect form data
+    const formData = {
+      studentfirstname: document.getElementById('student_firstname').value,
+      studentlastname: document.getElementById('student_lastname').value,
+      deptcode: document.getElementById('dept_code').value,
+      coursecode: document.getElementById('class_section').value,
+      facemail: document.getElementById('professor_email').value,
+      note: document.getElementById('professor_note').value,
+      insertdate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+      inserttime: new Date().toLocaleTimeString() // HH:MM:SS
+    };
+
+       console.log('Form Data:', formData); // Debug message
+
+    // Insert data into Supabase
+    const { data, error } = await supabasePublicClient
+      .from('temptable') // Your table name in Supabase
+      .insert([formData]);
+
+    const submissionTime = new Date().toLocaleString(); // Capture the submission time
+
+    if (error) {
+      console.log('Supabase Error:', error); // Debug message
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${submissionTime}</p>
+        <p>Status: Error - ${error.message}</p>
+        <p>Email: ${formData.facemail}</p>
+        document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      `;
+    } else {
+      console.log('Data successfully inserted:', data); // Debug message
+      document.getElementById('attendanceform').reset(); // Clear the form
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${submissionTime}</p>
+        <p>Status: Success</p>
+        <p>Email: ${formData.facemail}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'green';
+    }
+  });
+</script>
+
+  </body>
+   
+</section>
+
+</main>
+
+<footer>
+    <p><small>&copy; 2024 MADZ Attendance</small></p>
+</footer>
+  
+
+
+<script>
+// Function to show the home tab content on page load
+function showHomeTab() {
+  // Hide all tab contents
+  var tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(function(tabContent) {
+    tabContent.style.display = 'none';
+  });
+
+  // Always default to the home tab
+  document.getElementById('home').style.display = 'block';
+
+  window.history.pushState({}, '', '?tab=home');
+}
+
+// Call the function to show the home tab content on page load
+window.onload = showHomeTab;
+
+// Define the openTab function
+function openTab(tabName) {
+  var tabContents = document.querySelectorAll('.tab-content');
+  tabContents.forEach(function(tabContent) {
+    tabContent.style.display = 'none';
+  });
+
+  document.getElementById(tabName).style.display = 'block';
+
+  // Update URL based on tabName
+  window.history.pushState({}, '', '?tab=' + tabName);
+}
+</script>
+
+
+
+</body>
+</html>
