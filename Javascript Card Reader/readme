@@ -1,1 +1,5 @@
-Hello
+This is a very barebones setup that allows the user to swipe their card and have their ID and Name put back on the command line. There is no functionality beyond just swiping and seeing what the ID says.
+
+Since this will be moved into a mostly online setup, there is no need to establish local databases and logfiles since everything can be handled on the server's end. 
+
+This is basically what the professor will be using aside from a function checking if that name is in the database, but that will be added with future versions of the project.
