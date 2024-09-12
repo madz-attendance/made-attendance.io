@@ -1,269 +1,228 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 30px; /* Moved from outside any block */
-}
+const supabasePublicClient = supabase.createClient('https://agldqgjpcqqmqynizbcs.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnbGRxZ2pwY3FxbXF5bml6YmNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NDA5OTgsImV4cCI6MjA0MDUxNjk5OH0.qIUhU-16YQzrIY_SnRxWDG3l5RzKj9s8ns3XaoQAEFo')
 
-header {
-  background-color: #2A4C6B; /* Darker blue color for header */
-  color: #fff; /* Text color for better readability */
-  padding: 10px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+//const supabasePublicClient = supabase.createClient('https://agldqgjpcqqmqynizbcs.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnbGRxZ2pwY3FxbXF5bml6YmNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NDA5OTgsImV4cCI6MjA0MDUxNjk5OH0.qIUhU-16YQzrIY_SnRxWDG3l5RzKj9s8ns3XaoQAEFo')
 
-.header-center {
-  margin: 0 auto;
-}
+// When the button is clicked
+document.getElementById('myButton').addEventListener('click', async function() {
+// Set message to "Button clicked"
+    document.getElementById('message').textContent = 'Button clicked!';
+    
+// Query the "test" table from the database
+    const { data, error } = await supabasePublicClient
+        .from('test')
+        .select()
 
-main {
-  padding: 20px;
-  margin: 0 auto; /* Center the main content horizontally */
-  max-width: 800px; /* Adjust the max-width as needed */
-}
+// Output the data that you queried so long as there was not an error
+// (This will actually set the message to the query data)
+    if (error) {
+        document.getElementById('message').textContent = `Error: ${error.message}`;
+    } else {
+        document.getElementById('message').textContent = JSON.stringify(data);
+    }
 
-main > h2, 
-main > h3 {
-  text-align: center;
-  margin: 0; /* Remove default margins */
-}
+// ===================
+// Insert data into the database's "test" table
+const { error2 } = await supabasePublicClient
+.from('test')
+.insert({id: 9, name: "Rupert", age: 51})
+// If you are copy-pasting this to test, keep in mind that inserting data w/ an id that already exists in the table
+// will be a "conflict" and not work. This is intended to make sure that the primary key, id, stays unique
 
-.tab-button {
-  background-color: #f0f0f0; /* Lighter grey color for tab buttons */
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-right: 10px;
-
-  /* Added by zaynin */
-  background-color: transparent;           /* Transparent background */
-  font-family: 'Corbel', sans-serif;       /* Corbel Font */
-  font-weight: bold;                       /* Bold font */
-  font-size: 22px;
-  color: #CCCCCC;                            /* Font color */
-  
-}
-
-/* Active tab button style */
-.tab-button.active {
-  background-color: #ccc; /* Slightly darker grey for active tab button */
-}
-
-/* Style for the tab content */
-.tab-content {
-  display: none;
-  padding: 20px;
-  background-color: #f0f0f0; /* Lighter grey color for tab content */
-}
-
-/* Show the active tab content */
-.tab-content.active {
-  display: block;
-}
-
-footer {
-  background-color: #2A4C6B; /* Darker blue color for footer */
-  color: #fff; /* Text color for better readability */
-  text-align: center;
-  padding: 2px 0;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  font-size: 14px;
-
-  /* Added by Zaynin */
-  font-family: 'Calibri', sans-serif;       /* Calibri Font */
-  font-weight: bold;                       /* Bold font */
-  font-size: 16px;
-  color: white;       
-}
-
-form {
-  display: flex;
-  align-items: center;
-}
-
-
-/*Added by Anthony in class*/
-.center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-  width: 50%;
-}
-
-
-/* Added by Zaynin in class */
-.madz_logo
-{
-  position: absolute;
-  z-index: 100;
-  top: 4px;
-  left: 5px;
-  width: 150px;
-  height: 58px;
-  cursor: pointer; /* Set to pointer cursor to tell user that this is clickable */
-  
-}
+});
 
 /*
-.faq-question {
-    background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
-    font-size: 22px !important; 
-    cursor: pointer;
-    font-weight: bold;
-    text-align: left;
+// Function to initialize Supabase and update data
+function initializeSupabase() {
+    // Create a single supabase client for interacting with your database
+    const supabase = window.supabase.createClient('https://agldqgjpcqqmqynizbcs.supabase.co/', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFnbGRxZ2pwY3FxbXF5bml6YmNzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjQ5NDA5OTgsImV4cCI6MjA0MDUxNjk5OH0.qIUhU-16YQzrIY_SnRxWDG3l5RzKj9s8ns3XaoQAEFo');
+
+    async function updateData() {
+        const { data, error } = await supabase
+            .from('test')
+            .update({ column1: 'Yoo' })
+            .eq('id', 1); // Update row where id = 1
+
+        if (error) {
+            console.error(error);
+        } else {
+            console.log('Data Updated:', data);
+        }
+    }
+
+    updateData();
 }
 
-.faq-item {
-  margin-bottom: 20px; 
-}
-.faq-answer {
-    display: none;
-}
-
-.faq-item.active .faq-answer {
-    display: block;
-}
-
-.faq-item.active .arrow {
-    transform: rotate(180deg);
-}
+// Ensure Supabase script is loaded before running Supabase related code
+const supabaseScript = document.createElement('script');
+supabaseScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/supabase.min.js';
+supabaseScript.onload = initializeSupabase;
+document.head.appendChild(supabaseScript);
 */
+// Handle DOM content and tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.question button');
 
-.questions-container{
-    max-width: 800px;
-    max-height: 1000px;
-    margin: 0 auto;
-}
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            const faq = button.nextElementSibling;
+            const icon = button.querySelector('.d-arrow');
 
-.question {
-  border-bottom: 1px solid #fff;
-  text-align:left;
-  /* Remove background-color property to make it transparent */
-}
+            faq.classList.toggle('show');
+            icon.classList.toggle('rotate');
+        });
+    });
 
-.question button {
-  width: 100%;
-  background-color: #f0f0f0;
-  display: flex;
-  justify-content: flex-start; /* Align text to the left */
-  align-items: center;
-  padding: 20px 15px;
-  border: none;
-  outline: none;
-  font-size: 22px;
-  color: #000;
-  font-weight: 700;
-  cursor: pointer;
-}
+    // Function to show the home tab content on page load
+    function showHomeTab() {
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function(tabContent) {
+            tabContent.style.display = 'none';
+        });
 
-.question button .d-arrow {
-  margin-left: auto; /* Align the arrow logo to the right */
-}
+        document.getElementById('home').style.display = 'block';
+    }
 
-.question button span {
-  display: block; /* Ensure spans behave as block-level elements */
-  text-align: left; /* Left align the text */
-}
+    window.onload = showHomeTab;
 
-.question p {
-  font-size: 18px;
-  max-height: 0;
-  opacity: 0;
-  line-height: 1.5;
-  overflow: hidden;
-  transition: all 0.6s ease;
-}
+    // Define the openTab function
+    function openTab(tabName) {
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function(tabContent) {
+            tabContent.style.display = 'none';
+        });
 
-/*
-.question p span {
-  display: block; 
-  margin-bottom: 10px; /* Add some spacing between list items 
-}
-*/
-.d-arrow {
-  transition: transform 0.5s ease-in;
-  color: #000; /* Change arrow color to black */
-}
+        document.getElementById(tabName).style.display = 'block';
 
-/* Add this class when click */
-.question p.show {
-  max-height: 200px;
-  opacity: 1;
-  padding: 0px 15px 30px 15px;
-}
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function(tabButton) {
+            tabButton.classList.remove('active');
+        });
 
-.question button .d-arrow.rotate {
-  transform: rotate(180deg);
-}
+        var clickedButton = document.querySelector('[onclick="openTab(\'' + tabName + '\')"]');
+        if (clickedButton) {
+            clickedButton.classList.add('active');
+        }
+    }
 
+    // Clicking on MADZ logo will go to home page
+    var madzLogoButton = document.getElementById("madz_logo");
+    madzLogoButton.addEventListener("click", function() {
+        window.location.href = "index.html";
+    });
 
-.input-wrapper {
-    position: relative;
-}
+    // Buttons highlighting logic
+    var home_button = document.getElementById("home_button");
+    var faq_button = document.getElementById("faq_button");
+    var about_button = document.getElementById("about_button");
+    var request_button = document.getElementById("request_button");
+    var sign_in_button = document.getElementById("sign_in_button");
+    var currentTab = "home";
 
-input[type="text"] {
-    padding-right: 25px; /* Adjust as needed to make space for the icon */
-}
+    function resetButtonColors() {
+        home_button.style.filter = "brightness(100%)";
+        faq_button.style.filter = "brightness(100%)";
+        about_button.style.filter = "brightness(100%)";
+        request_button.style.filter = "brightness(100%)";
+        sign_in_button.style.filter = "brightness(100%)";
+    }
 
-.clear-icon {
-    position: absolute;
-    top: 50%;
-    right: 1px;
-    transform: translateY(-50%);
-    cursor: pointer;
-    display: none;
-}
+    home_button.style.filter = "brightness(150%)";
 
-/* Optional: Style the "X" icon */
-.clear-icon:hover {
-    color: red;
-}
+    home_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "home") {
+            currentTab = "home";
+            home_button.style.filter = "brightness(150%)";
+        }
+    });
 
-/* CSS Aspects for Sign In */
-    /* Added by David */
+    home_button.addEventListener("mouseover", function() {
+        if (currentTab != "home") {
+            home_button.style.filter = "brightness(150%)";
+        }
+    });
 
-/* Center form on the page */
-.login-container {
-  max-width: 320px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-}
+    home_button.addEventListener("mouseout", function() {
+        if (currentTab != "home") {
+            home_button.style.filter = "brightness(100%)";
+        }
+    });
 
-/* Input containers: stack labels and inputs vertically */
-.input-container {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 20px; /* Space between each label-input pair */
-}
+    faq_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "faq") {
+            currentTab = "faq";
+            faq_button.style.filter = "brightness(150%)";
+        }
+    });
 
-/* Inputs style */
-input[type="email_text"], input[type="pass_text"] {
-  width: 100%; /* Ensure the input takes full width */
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 5px; /* Space between label and input */
-  box-sizing: border-box; /* Ensure padding is included in width */
-}
+    faq_button.addEventListener("mouseover", function() {
+        if (currentTab != "faq") {
+            faq_button.style.filter = "brightness(150%)";
+        }
+    });
 
-/* Labels style */
-label {
-  font-size: 16px;
-  margin-bottom: 5px; /* Space below label */
-}
+    faq_button.addEventListener("mouseout", function() {
+        if (currentTab != "faq") {
+            faq_button.style.filter = "brightness(100%)";
+        }
+    });
 
-/* Input focus styling */
-input:focus {
-  border-color: #333;
-  outline: none;
-}
+    about_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "about") {
+            currentTab = "about";
+            about_button.style.filter = "brightness(150%)";
+        }
+    });
+
+    about_button.addEventListener("mouseover", function() {
+        if (currentTab != "about") {
+            about_button.style.filter = "brightness(150%)";
+        }
+    });
+
+    about_button.addEventListener("mouseout", function() {
+        if (currentTab != "about") {
+            about_button.style.filter = "brightness(100%)";
+        }
+    });
+
+    request_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "request") {
+            currentTab = "request";
+            request_button.style.filter = "brightness(150%)";
+        }
+    });
+
+    request_button.addEventListener("mouseover", function() {
+        if (currentTab != "request") {
+            request_button.style.filter = "brightness(150%)";
+        }
+    });
+
+    request_button.addEventListener("mouseout", function() {
+        if (currentTab != "request") {
+            request_button.style.filter = "brightness(100%)";
+        }
+    });
+    
+    sign_in_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "sign_in") {
+            currentTab = "sign_in";
+            sign_in_button.style.filter = "brightness(150%)";
+        }
+    });
+    sign_in_button.addEventListener("mouseover", function(){
+        if (currentTab != "sign_in") {
+            sign_in_button.style.filter = "brightness(150%)";
+        }
+    });
+    sign_in_button.addEventListener("mouseout", function(){
+        if (currentTab != "sign_in") {
+            sign_in_button.style.filter = "brightness(100%)";
+        }
+    });
+});
