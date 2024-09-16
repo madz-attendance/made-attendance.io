@@ -275,7 +275,10 @@ input:focus {
 /* Submit button style */
 button[type="login"] {
   padding: 10px;
+   /* Added by Anthony 
   background-color: #333;
+   */
+  background-color: #2A4C6B; 
   color: #fff;
   border: none;
   border-radius: 4px;
