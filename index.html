@@ -205,12 +205,12 @@
       <form id="creation_form">
         <div class="input-container">
           <label for="email_text">Email</label>
-          <input type="email_text" id="entered_email" name="entered_Email">
+          <input type="email_text" id="email" name="email">
         </div>
 
         <div>
           <label for="pass_text">Password</label>
-          <input type="pass_text" id="entered_pass" name="entered_password">
+          <input type="pass_text" id="password" name="password">
         </div>
           <script>
             const { data, error } = await supabase.auth.signUp({
