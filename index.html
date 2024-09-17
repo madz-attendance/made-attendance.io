@@ -158,7 +158,20 @@
 .clear-button:hover {
     color: red;
 }
-
+<!--Marks code starts here-->
+    <script>
+      const { data, error } = await supabase.auth.signInWithPassword({
+         email: 'example@email.com',
+         password: 'example-password',
+      });
+      if (error){
+        console.error("Error: Invalid credentials");
+      }
+      else {
+        window.location.href = "inAccount.html"; //this links them to the signed in page
+      }
+    </script>
+        
 </style>
 <section id="sign_in" class="tab-content">
   <body>
