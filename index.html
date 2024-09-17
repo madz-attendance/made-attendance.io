@@ -15,8 +15,6 @@
         <button id="about_button" class="tab-button" onclick="openTab('about')">About</button>
         <button id="request_button" class="tab-button" onclick="openTab('request')">Request</button>
         <button id="sign_in_button" class="tab-button" onclick="openTab('sign_in')">Sign In</button>
-        <button id="create_account_button" class="tab-button" onclick="openTab('create_account')">Create Account</button>
-
     </div>
 </header>
 
@@ -126,6 +124,7 @@
         grid-column: span 2;
         padding: 10px 20px;
         background-color: #2A4C6B; 
+        color: #fff;
         font-size: 18px;
     }
     .required::after {
@@ -135,7 +134,7 @@
     }
     #professor_note {
         width: calc(100% - 10px); /* Adjust the width as needed */
-        height: 100px; /* Set the height of the text area */
+        height: 100px; /* Set the height of the textarea */
         padding: 5px;
         font-size: 16px;
     }
@@ -161,6 +160,29 @@
 }
 
 </style>
+<section id="sign_in" class="tab-content">
+  <body>
+    <h2>Enter Login</h2>
+
+<div class="login-container">
+<form id="loginform">
+    <div class="input-container">
+      <input type="email_text" id="entered_email" name="entered_Email">
+      <label for="email_text">Email</label>
+    </div>
+
+    <div class="input-container">
+      <input type="pass_text" id="entered_pass" name="entered_password">
+      <label for="pass_text">Password</label>
+    </div>
+
+    <button type="login">Sign In</button>
+</form>
+</div>
+  </body>
+</section>
+    
+</style>
 <section id="request" class="tab-content">
   <body>
     <h2>Enter An Attendance Verification Request</h2>
@@ -180,7 +202,7 @@
     <div class="input-wrapper">
     <input type="text" id="dept_code" name="department_code" list="departments"  required placeholder="Select a Department Code">
     <button id="clear_dept_button" class="clear-button"><i class="far fa-times-circle"></i></button>
-    </div>
+    </div>  
     <datalist id="departments">
         <!-- Add department options here -->
       <option value="CPSC"> (CPSC) Computer Science</option>
@@ -230,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function() {
     clearDeptButton.addEventListener("click", function() {
         deptCodeInput.value = "";
         classSectionInput.value = "";
-        classSectionDatalist.innerHTML = '';
+        classSectionDatalist.innerHTML = ''; 
     });
 
     // Function to clear the selected class section
@@ -296,70 +318,6 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
     <div id="submissionInfo"></div>
   
-</style>
-<section id="sign_in" class="tab-content">
-  <body>
-    <h2>Enter Login</h2>
-
-<div class="login-container">
-<form id="loginform">
-    <div class="input-container">
-      <input type="email_text" id="entered_email" name="entered_Email">
-      <label for="email_text">Email</label>
-    </div>
-
-    <div class="input-container">
-      <input type="pass_text" id="entered_pass" name="entered_password">
-      <label for="pass_text">Password</label>
-    </div>
-
-    <button type="login">Sign In</button>
-
-    <!--Marks code starts here-->
-    <script>
-      const { data, error } = await supabase.auth.signInWithPassword({
-         email: 'example@email.com',
-         password: 'example-password',
-      });
-      if (error){
-        console.error("Error: Invalid credentials");
-      }
-      else {
-        window.location.href = "inAccount.html"; //this links them to the signed in page
-      }
-    </script>
-</form>
-</form>
-</div>
-<section id="create_account" class="tab-content">
-  <body>
-    <h1>Create Account</h1>
-    
-    <div class="create-container">
-      <form id="creation_form">
-        <div class="input-container">
-          <label for="email_text">Email</label>
-          <input type="email_text" id="entered_email" name="entered_Email">
-        </div>
-  
-        <div>
-          <label for="pass_text">Password</label>
-          <input type="pass_text" id="entered_pass" name="entered_password">
-        </div>
-          <script>
-            const { data, error } = await supabase.auth.signUp({
-              email: 'example@email.com',
-              password: 'example-password',
-            });
-        </script>
-      </div>
-    </form>
-  </div>
-</section>
-
-    <!--Marks code ends here-->
-    
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
 <script src="script.js"></script>
 
