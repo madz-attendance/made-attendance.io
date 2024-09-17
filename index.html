@@ -161,69 +161,6 @@
 }
 
 </style>
-<section id="sign_in" class="tab-content">
-  <body>
-    <h2>Enter Login</h2>
-
-<div class="login-container">
-<form id="loginform">
-    <div class="input-container">
-      <input type="email_text" id="entered_email" name="entered_Email">
-      <label for="email_text">Email</label>
-    </div>
-
-    <div class="input-container">
-      <input type="pass_text" id="entered_pass" name="entered_password">
-      <label for="pass_text">Password</label>
-    </div>
-
-    <button type="login">Sign In</button>
-
-    <!--Marks code starts here-->
-    <script>
-      const { data, error } = await supabase.auth.signInWithPassword({
-         email: 'example@email.com',
-         password: 'example-password',
-      });
-      if (error){
-        console.error("Error: Invalid credentials");
-      }
-      else {
-        window.location.href = "inAccount.html"; //this links them to the signed in page
-      }
-    </script>
-</form>
-</form>
-</div>
-<section id="create_account" class="tab-content">
-  <body>
-    <h1>Create Account</h1>
-    
-    <div class="create-container">
-      <form id="creation_form">
-        <div class="input-container">
-          <label for="email_text">Email</label>
-          <input type="email_text" id="entered_email" name="entered_Email">
-        </div>
-  
-        <div>
-          <label for="pass_text">Password</label>
-          <input type="pass_text" id="entered_pass" name="entered_password">
-        </div>
-          <script>
-            const { data, error } = await supabase.auth.signUp({
-              email: 'example@email.com',
-              password: 'example-password',
-            });
-        </script>
-      </div>
-    </form>
-  </div>
-</section>
-
-    <!--Marks code ends here-->
-    
-</style>
 <section id="request" class="tab-content">
   <body>
     <h2>Enter An Attendance Verification Request</h2>
@@ -359,6 +296,70 @@ document.addEventListener("DOMContentLoaded", function() {
 </div>
     <div id="submissionInfo"></div>
   
+</style>
+<section id="sign_in" class="tab-content">
+  <body>
+    <h2>Enter Login</h2>
+
+<div class="login-container">
+<form id="loginform">
+    <div class="input-container">
+      <input type="email_text" id="entered_email" name="entered_Email">
+      <label for="email_text">Email</label>
+    </div>
+
+    <div class="input-container">
+      <input type="pass_text" id="entered_pass" name="entered_password">
+      <label for="pass_text">Password</label>
+    </div>
+
+    <button type="login">Sign In</button>
+
+    <!--Marks code starts here-->
+    <script>
+      const { data, error } = await supabase.auth.signInWithPassword({
+         email: 'example@email.com',
+         password: 'example-password',
+      });
+      if (error){
+        console.error("Error: Invalid credentials");
+      }
+      else {
+        window.location.href = "inAccount.html"; //this links them to the signed in page
+      }
+    </script>
+</form>
+</form>
+</div>
+<section id="create_account" class="tab-content">
+  <body>
+    <h1>Create Account</h1>
+    
+    <div class="create-container">
+      <form id="creation_form">
+        <div class="input-container">
+          <label for="email_text">Email</label>
+          <input type="email_text" id="entered_email" name="entered_Email">
+        </div>
+  
+        <div>
+          <label for="pass_text">Password</label>
+          <input type="pass_text" id="entered_pass" name="entered_password">
+        </div>
+          <script>
+            const { data, error } = await supabase.auth.signUp({
+              email: 'example@email.com',
+              password: 'example-password',
+            });
+        </script>
+      </div>
+    </form>
+  </div>
+</section>
+
+    <!--Marks code ends here-->
+    
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
 <script src="script.js"></script>
 
