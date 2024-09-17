@@ -160,72 +160,82 @@
 .clear-button:hover {
     color: red;
 }
-<!--Marks code starts here-->
-    <script>
-      const { data, error } = await supabase.auth.signInWithPassword({
-         email: 'example@email.com',
-         password: 'example-password',
-      });
-      if (error){
-        console.error("Error: Invalid credentials");
-      }
-      else {
-        window.location.href = "inAccount.html"; //this links them to the signed in page
-      }
-    </script>
-        
-</style>
-<section id="sign_in" class="tab-content">
-  <body>
+ <section id="sign_in" class="tab-content">
     <h2>Enter Login</h2>
-
-<div class="login-container">
-<form id="loginform">
-    <div class="input-container">
-      <input type="email_text" id="entered_email" name="entered_Email">
-      <label for="email_text">Email</label>
+    <div class="login-container">
+      <form id="loginform">
+        <div class="input-container">
+          <input type="email" id="entered_email" name="entered_Email" required>
+          <label for="entered_email">Email</label>
+        </div>
+        <div class="input-container">
+          <input type="password" id="entered_pass" name="entered_password" required>
+          <label for="entered_pass">Password</label>
+        </div>
+        <input type="button" value="Sign In" onclick="signIn()">
+      </form>
+      <div id="signinMessage"></div>
     </div>
+  </section>
 
-    <div class="input-container">
-      <input type="pass_text" id="entered_pass" name="entered_password">
-      <label for="pass_text">Password</label>
-    </div>
-
-    <input type="submit" value="Submit">
-</form>
-</div>
-  </body>
-</section>
-
+  <!-- Create Account Section -->
   <section id="create_account" class="tab-content">
-  <body>
-    <h1>Create Account</h1>
-
+    <h2>Create Account</h2>
     <div class="create-container">
       <form id="creation_form">
         <div class="input-container">
-          <label for="email_text">Email</label>
-          <input type="email_text" id="email" name="email">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
         </div>
-
-        <div>
-          <label for="pass_text">Password</label>
-          <input type="pass_text" id="password" name="password">
+        <div class="input-container">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required>
         </div>
-          <script>
-            const { data, error } = await supabase.auth.signUp({
-              email: 'example@email.com',
-              password: 'example-password',
-            });
-        </script>
-      </div>
-    <input type="submit" value="Sign Up">
-    </form>
-  </div>
-</section>
-  
-    
+        <input type="button" value="Create Account" onclick="createAccount()">
+      </form>
+      <div id="signupMessage"></div>
+    </div>
+  </section>
 </style>
+
+<script>
+  async function signIn() {
+      const email = document.getElementById('entered_email').value;
+      const password = document.getElementById('entered_pass').value;
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      } else {
+        document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
+        // Redirect to the signed-in page
+        window.location.href = "inAccount.html";
+      }
+    }
+
+    // Create Account function
+    async function createAccount() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password
+      });
+
+      if (error) {
+        document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+      } else {
+        document.getElementById('signupMessage').innerHTML = `<p style="color: green;">Account created successfully!</p>`;
+        // You can add more logic here, like auto-login or redirecting
+      }
+    }
+</script>
+  
 <section id="request" class="tab-content">
   <body>
     <h2>Enter An Attendance Verification Request</h2>
