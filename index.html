@@ -183,29 +183,37 @@
     }
 
     // Create Account function
-const { data: authData, error: authError } = await supabase.auth.signUp({
-  email: 'user@example.com',
-  password: 'password123',
-});
+async function createUser() {
+  try {
+    // Sign up the user (handle authentication)
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: 'user@example.com',
+      password: 'password123',
+    });
 
-if (authError) {
-  console.error('Error creating user:', authError.message);
-} else {
-  console.log('User created:', authData);
+    if (authError) {
+      console.error('Error creating user:', authError.message);
+    } else {
+      console.log('User created:', authData);
 
-  // Insert additional data into the 'users' table
-  const { data: userData, error: insertError } = await supabase
-    .from('users')
-    .insert([
-      { email: authData.user.email, other_column: 'other_data' }
-    ]);
+      // Insert additional data into the 'users' table
+      const { data: userData, error: insertError } = await supabase
+        .from('users')
+        .insert([{ email: authData.user.email, other_column: 'other_data' }]);
 
-  if (insertError) {
-    console.error('Error inserting into users table:', insertError.message);
-  } else {
-    console.log('User data inserted:', userData);
+      if (insertError) {
+        console.error('Error inserting into users table:', insertError.message);
+      } else {
+        console.log('User data inserted:', userData);
+      }
+    }
+  } catch (error) {
+    console.error('Unexpected error:', error);
   }
 }
+
+// Call the async function
+createUser();
 
 </script>
 
