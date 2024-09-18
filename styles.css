@@ -227,6 +227,68 @@ input[type="text"] {
     color: red;
 }
 
+/* CSS Aspects for Request */
+
+.form-container {
+  height: auto;
+  }
+  form {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      font-size: 18px;
+      padding: 20px 10px;
+  }
+  label {
+      margin-bottom: 10px;
+  }
+  input[type="text"] {
+      width: calc(100% - 10px);
+      padding: 3px;
+      font-size: 16px;
+  }
+  input[type="submit"] {
+      grid-column: span 2;
+      padding: 10px 20px;
+      background-color: #2A4C6B; 
+      color: #fff;
+      font-size: 18px;
+  }
+  input[type="submit"]:hover { /*Added by David */
+    background-color: #555; /* Change color on hover */
+  }
+  .required::after {
+      content: "*";
+      color: red;
+      margin-left: 5px;
+  }
+  #professor_note {
+      width: calc(100% - 10px); /* Adjust the width as needed */
+      height: 100px; /* Set the height of the textarea */
+      padding: 5px;
+      font-size: 16px;
+  }
+
+ .input-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .clear-button {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+/* Optional: Style the "X" icon */
+.clear-button:hover {
+  color: red;
+}
+
 /* CSS Aspects for Sign In */
     /* Added by David */
       /* 9/11/2024 */
@@ -271,14 +333,16 @@ input:focus {
 
     /* Added by David */
       /* 9/13/2024 */
+   /* Updated 9/18/2024 */
 
 /* Submit button style */
-button[type="login"] {
-  padding: 10px;
+input[type="button"] {
+  padding: 15px;
    /* Added by Anthony 
   background-color: #333;
    */
   background-color: #2A4C6B; 
+  text-align: center;
   color: #fff;
   border: none;
   border-radius: 4px;
@@ -288,7 +352,6 @@ button[type="login"] {
   width: 100%;
 }
 
-button[type="login"]:hover {
+input[type="button"]:hover {
   background-color: #555; /* Change color on hover */
 }
-
