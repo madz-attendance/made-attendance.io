@@ -183,22 +183,30 @@
     }
 
     // Create Account function
-    async function createAccount() {
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
+const { data: authData, error: authError } = await supabase.auth.signUp({
+  email: 'user@example.com',
+  password: 'password123',
+});
 
-      const { data, error } = await supabase.auth.signUp({
-        email: email,
-        password: password
-      });
+if (authError) {
+  console.error('Error creating user:', authError.message);
+} else {
+  console.log('User created:', authData);
 
-      if (error) {
-        document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-      } else {
-        document.getElementById('signupMessage').innerHTML = `<p style="color: green;">Account created successfully!</p>`;
-        // You can add more logic here, like auto-login or redirecting
-      }
-    }
+  // Insert additional data into the 'users' table
+  const { data: userData, error: insertError } = await supabase
+    .from('users')
+    .insert([
+      { email: authData.user.email, other_column: 'other_data' }
+    ]);
+
+  if (insertError) {
+    console.error('Error inserting into users table:', insertError.message);
+  } else {
+    console.log('User data inserted:', userData);
+  }
+}
+
 </script>
 
  <section id="sign_in" class="tab-content">
