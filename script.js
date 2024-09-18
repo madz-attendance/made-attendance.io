@@ -31,8 +31,6 @@ const { error2 } = await supabasePublicClient
 });
 */
 
-
-
 /*
 // Function to initialize Supabase and update page data
 function initializeSupabase() {
@@ -119,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var about_button = document.getElementById("about_button");
     var request_button = document.getElementById("request_button");
     var sign_in_button = document.getElementById("sign_in_button");
+    var create_account_button = document.getElementById("create_account_button");
     var currentTab = "home";
 
     function resetButtonColors() {
@@ -127,6 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         about_button.style.filter = "brightness(100%)";
         request_button.style.filter = "brightness(100%)";
         sign_in_button.style.filter = "brightness(100%)";
+        create_account_button.style.filter = "brightness(100%)";
     }
 
     home_button.style.filter = "brightness(150%)";
@@ -138,13 +138,11 @@ document.addEventListener('DOMContentLoaded', function() {
             home_button.style.filter = "brightness(150%)";
         }
     });
-
     home_button.addEventListener("mouseover", function() {
         if (currentTab != "home") {
             home_button.style.filter = "brightness(150%)";
         }
     });
-
     home_button.addEventListener("mouseout", function() {
         if (currentTab != "home") {
             home_button.style.filter = "brightness(100%)";
@@ -158,13 +156,11 @@ document.addEventListener('DOMContentLoaded', function() {
             faq_button.style.filter = "brightness(150%)";
         }
     });
-
     faq_button.addEventListener("mouseover", function() {
         if (currentTab != "faq") {
             faq_button.style.filter = "brightness(150%)";
         }
     });
-
     faq_button.addEventListener("mouseout", function() {
         if (currentTab != "faq") {
             faq_button.style.filter = "brightness(100%)";
@@ -178,13 +174,11 @@ document.addEventListener('DOMContentLoaded', function() {
             about_button.style.filter = "brightness(150%)";
         }
     });
-
     about_button.addEventListener("mouseover", function() {
         if (currentTab != "about") {
             about_button.style.filter = "brightness(150%)";
         }
     });
-
     about_button.addEventListener("mouseout", function() {
         if (currentTab != "about") {
             about_button.style.filter = "brightness(100%)";
@@ -198,13 +192,11 @@ document.addEventListener('DOMContentLoaded', function() {
             request_button.style.filter = "brightness(150%)";
         }
     });
-
     request_button.addEventListener("mouseover", function() {
         if (currentTab != "request") {
             request_button.style.filter = "brightness(150%)";
         }
     });
-
     request_button.addEventListener("mouseout", function() {
         if (currentTab != "request") {
             request_button.style.filter = "brightness(100%)";
@@ -228,4 +220,238 @@ document.addEventListener('DOMContentLoaded', function() {
             sign_in_button.style.filter = "brightness(100%)";
         }
     });
+
+    create_account_button.addEventListener("click", function(){
+        resetButtonColors();
+        if (currentTab != "create_account") {
+            currentTab = "create_account";
+            create_account_button.style.filter = "brightness(150%)";
+        }
+    });
+    create_account_button.addEventListener("mouseover", function(){
+        if (currentTab != "create_account") {
+            create_account_button.style.filter = "brightness(150%)";
+        }
+    });
+    create_account_button.addEventListener("mouseout", function(){
+        if (currentTab != "create_account") {
+            create_account_button.style.filter = "brightness(100%)";
+        }
+    });
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Get references to the department code and class section elements
+    const deptCodeInput = document.getElementById("dept_code");
+    const classSectionInput = document.getElementById("class_section");
+    const classSectionDatalist = document.getElementById("class_sections");
+    const clearDeptButton = document.getElementById("clear_dept_button");
+    const clearClassButton = document.getElementById("clear_class_button");
+
+    // Function to clear the selected department code
+    clearDeptButton.addEventListener("click", function() {
+        deptCodeInput.value = "";
+        classSectionInput.value = "";
+        classSectionDatalist.innerHTML = ''; 
+    });
+
+    // Function to clear the selected class section
+    clearClassButton.addEventListener("click", function() {
+        classSectionInput.value = "";
+    });
+    const classSections = {
+        "CPSC": ["CPSC 135 010", "CPSC 135 020", "CPSC 136 010"],
+        "ARTH": ["ARTH 124 010", "ARTH 25 19H", "ARTH 309 010"],
+        "POLI": ["POLI 10 010", "POLI 140 020", "POLI 181 010"],
+        "CHEM": ["CHEM 100 015", "CHEM 204 012", "CHEM 230 011"],
+        "BIOL": ["BIOL 10 012", "BIOL 104 013", "BIOL 104 012"],
+        "ANTH": ["ANTH 10 030", "ANTH 105 020", "ANTH 213 010"],
+        "CRJU": ["CRJU 10 010", "CRJU 101 020", "CRJU 182 010"],
+        "GEOL": ["GEOL 1 810", "GEOL 100 011", "GEOL 110 012"],
+        "ACCT": ["ACCT 121 020", "ACCT 122 010", "ACCT 305 010"],
+        "ANIA": ["ANIA 141 030", "ANIA 171 020", "ANIA 231 610"],
+        "ART": ["ART 141 011", "ART 161 610", "ART 31 010"],
+        "BUSN": ["BUSN 131 030", "BUSN 275 810", "BUSN 130 010"]
+        
+    };
+    // Function to update the department code based on the selected class section
+
+
+    // Function to update the class section options based on the selected department
+    function updateClassSections() {
+        const selectedDept = deptCodeInput.value.toUpperCase(); // Convert input to uppercase
+        console.log("Selected department:", selectedDept);
+        
+        // Clear existing options
+        classSectionDatalist.innerHTML = '';
+
+        if (deptCodeInput.value === '') {
+        return;
+        }
+        // Add options for the selected department
+        if (classSections[selectedDept]) {
+            classSections[selectedDept].forEach(section => {
+                const option = document.createElement("option");
+                option.value = section;
+                classSectionDatalist.appendChild(option);
+            });
+        }
+    }
+
+    // Event listener to update class sections when department code changes
+    deptCodeInput.addEventListener("input", updateClassSections);
+
+    // Trigger initial update of class sections
+    updateClassSections();
+});
+
+document.getElementById('attendanceform').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent default form submission
+    console.log('Form submission triggered!'); // Debug message
+
+    const email = document.getElementById('professor_email').value;
+
+    // Email validation using regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Status: Error - Invalid email format</p>
+        <p>Email: ${email}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return; // Stop the submission if email is invalid
+    }
+      // Check if the email exists in the users database table
+    const { data: usersData, error: usersError } = await supabasePublicClient
+      .from('users') // The users table where you are storing faculty emails
+      .select('facemail')
+      .eq('facemail', email); // Check if the submitted email matches any email in the users table
+
+    if (usersError) {
+      console.log('Supabase Error:', usersError); // Debug message
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Status: Error - ${usersError.message}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return;
+    }
+
+    // If no matching email is found in the users table
+    if (usersData.length === 0) {
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${new Date().toLocaleString()}</p>
+        <p>Status: Fail - No matching email found in the users database</p>
+        <p>Email: ${email}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      return; // Stop the submission process
+    }
+    // Collect form data
+    const formData = {
+      studentfirstname: document.getElementById('student_firstname').value,
+      studentlastname: document.getElementById('student_lastname').value,
+      deptcode: document.getElementById('dept_code').value,
+      coursecode: document.getElementById('class_section').value,
+      facemail: document.getElementById('professor_email').value,
+      note: document.getElementById('professor_note').value,
+      insertdate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+      inserttime: new Date().toLocaleTimeString() // HH:MM:SS
+    };
+
+       console.log('Form Data:', formData); // Debug message
+
+    // Insert data into Supabase
+    const { data, error } = await supabasePublicClient
+      .from('temptable') // Your table name in Supabase
+      .insert([formData]);
+
+    const submissionTime = new Date().toLocaleString(); // Capture the submission time
+
+    if (error) {
+      console.log('Supabase Error:', error); // Debug message
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${submissionTime}</p>
+        <p>Status: Error - ${error.message}</p>
+        <p>Email: ${formData.facemail}</p>
+        document.getElementById('submissionInfo').style.backgroundColor = 'red';
+      `;
+    } else {
+      console.log('Data successfully inserted:', data); // Debug message
+      document.getElementById('attendanceform').reset(); // Clear the form
+      document.getElementById('submissionInfo').innerHTML = `
+        <p>Submission Time: ${submissionTime}</p>
+        <p>Status: Success</p>
+        <p>Email: ${formData.facemail}</p>
+      `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'green';
+    }
+  });
+
+async function signIn() {
+    const email = document.getElementById('entered_email').value;
+    const password = document.getElementById('entered_pass').value;
+  
+    const { data, error } = await supabasePublicClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+  
+    if (error) {
+      document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    } else {
+      document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
+      window.location.href = "inAccount.html";
+    }
+  }
+  
+// Create Account function
+async function createUser() {
+try {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    // Sign up the user
+    const { data, error } = await supabasePublicClient.auth.signUp({
+    email: email,
+    password: password,
+    });
+
+    if (error) {
+    document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    } else {
+    document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully!</p>`;
+    }
+} catch (error) {
+    console.error('Unexpected error:', error);
+}
+}
+
+// Function to show the home tab content on page load
+function showHomeTab() {
+    // Hide all tab contents
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    // Always default to the home tab
+    document.getElementById('home').style.display = 'block';
+  
+    window.history.pushState({}, '', '?tab=home');
+  }
+  
+  // Call the function to show the home tab content on page load
+  window.onload = showHomeTab;
+  
+  // Define the openTab function
+  function openTab(tabName) {
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    document.getElementById(tabName).style.display = 'block';
+  
+    // Update URL based on tabName
+    window.history.pushState({}, '', '?tab=' + tabName);
+  }
