@@ -186,27 +186,20 @@
     // Create Account function
 async function createUser() {
   try {
-    // Sign up the user (handle authentication)
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email: 'user@example.com',
-      password: 'password123',
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    // Sign up the user
+    const { data, error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
     });
 
-    if (authError) {
-      console.error('Error creating user:', authError.message);
+    if (error) {
+      document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     } else {
-      console.log('User created:', authData);
-
-      // Insert additional data into the 'users' table
-      const { data: userData, error: insertError } = await supabase
-        .from('users')
-        .insert([{ email: authData.user.email, other_column: 'other_data' }]);
-
-      if (insertError) {
-        console.error('Error inserting into users table:', insertError.message);
-      } else {
-        console.log('User data inserted:', userData);
-      }
+      document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully!</p>`;
+      console.log('User created:', data);
     }
   } catch (error) {
     console.error('Unexpected error:', error);
