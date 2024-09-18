@@ -164,24 +164,23 @@
 </style>
   
 <script>
-  async function signIn() {
-      const email = document.getElementById('entered_email').value;
-      const password = document.getElementById('entered_pass').value;
+async function signIn() {
+  const email = document.getElementById('entered_email').value;
+  const password = document.getElementById('entered_pass').value;
 
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
-      if (error) {
-        document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-      } else {
-        document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
-        // Redirect to the signed-in page
-        console.log("This would successfully log someone in"); 
-        window.location.href = "inAccount.html";
-      }
-    }
+  if (error) {
+    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+  } else {
+    document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
+    window.location.href = "inAccount.html";
+  }
+}
+
 
     // Create Account function
 async function createUser() {
@@ -199,15 +198,11 @@ async function createUser() {
       document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     } else {
       document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully!</p>`;
-      console.log('User created:', data);
     }
   } catch (error) {
     console.error('Unexpected error:', error);
   }
 }
-
-// Call the async function
-//createUser();
 
 </script>
 
