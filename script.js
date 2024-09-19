@@ -387,6 +387,15 @@ document.getElementById('attendanceform').addEventListener('submit', async funct
     }
   });
 
+async function resetPasswordSignInScreen() {
+    // Gather the user's email
+    // Ensure email is in database
+    // Either:
+        // Go into database and reset password for user, email a temp password
+        // Send a request to professor's admin account, admin make temp password, admin email new password
+    // Have user enter new password when logged in
+}
+
 async function signIn() {
     const email = document.getElementById('entered_email').value;
     const password = document.getElementById('entered_pass').value;
