@@ -425,8 +425,12 @@ async function forgotPassword() {
   }
 
   try {
-    // Check if the user exists
-    const { data, error: userError } = await supabasePublicClient.auth.api.getUserByEmail(email);
+    // Check if the user exists in the database
+    const { data, error: userError } = await supabasePublicClient
+      .from('users') // Replace with your actual table name
+      .select('id') // or any field you want to check
+      .eq('email', email)
+      .single();
 
     // Handle error in getting user data
     if (userError) {
@@ -435,7 +439,7 @@ async function forgotPassword() {
     }
 
     // If user does not exist, inform the user
-    if (!data.user) {
+    if (!data) {
       document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">No user found with this email address.</p>`;
       return;
     }
@@ -456,6 +460,7 @@ async function forgotPassword() {
     document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${err.message}</p>`;
   }
 }
+
 
 
 
