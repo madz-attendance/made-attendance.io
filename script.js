@@ -425,6 +425,20 @@ async function forgotPassword() {
   }
 
   try {
+    // Get the current session
+    const { data: { user }, error: sessionError } = await supabasePublicClient.auth.getUser();
+
+    if (sessionError) {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error fetching session: ${sessionError.message}</p>`;
+      return;
+    }
+
+    // Check if the user is authenticated and the email matches
+    if (!user || user.email !== email) {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">You must be an authenticated user to reset the password for this email.</p>`;
+      return;
+    }
+
     // Send a password reset email via Supabase
     const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
