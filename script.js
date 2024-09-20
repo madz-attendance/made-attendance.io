@@ -457,11 +457,11 @@ async function createUser() {
     try {
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
-        const lastName = document.getElementById('faclastname').value;  // Get the last name input
+        const faclastname = document.getElementById('faclastname').value;  // Get the last name input
         
         // Sign up the user
         const { data, error } = await supabasePublicClient.auth.signUp({
-            email: email,
+            facemail: email,
             password: password,
         });
 
@@ -474,7 +474,7 @@ async function createUser() {
             const { data: userInsertData, error: userInsertError } = await supabasePublicClient
                 .from('users')  // Assuming your table is called 'users'
                 .insert([
-                    { email: facemail, last_name: faclastname }  // Insert email and last name
+                    { facemail: email, faclastname: faclastname }  // Insert email and last name
                 ]);
 
             if (userInsertError) {
