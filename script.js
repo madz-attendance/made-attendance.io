@@ -414,8 +414,8 @@ async function signIn() {
     }
   }
 
+// Forgot Password Function
 async function forgotPassword() {
-  // Get the email entered by the user in the email input field
   const email = document.getElementById('entered_email').value;
 
   // Check if the email field is not empty
@@ -425,7 +425,22 @@ async function forgotPassword() {
   }
 
   try {
-    // Send a password reset email via Supabase
+    // Check if the user exists
+    const { data, error: userError } = await supabasePublicClient.auth.api.getUserByEmail(email);
+
+    // Handle error in getting user data
+    if (userError) {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${userError.message}</p>`;
+      return;
+    }
+
+    // If user does not exist, inform the user
+    if (!data.user) {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">No user found with this email address.</p>`;
+      return;
+    }
+
+    // Send the password reset email
     const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
     });
