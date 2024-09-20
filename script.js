@@ -304,8 +304,8 @@ document.addEventListener("DOMContentLoaded", function() {
     // Trigger initial update of class sections
     updateClassSections();
 });
-
-document.getElementById('attendanceform').addEventListener('submit', async function(event) {
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('attendanceform').addEventListener('submit', async function(event) 
     event.preventDefault(); // Prevent default form submission
     console.log('Form submission triggered!'); // Debug message
 
