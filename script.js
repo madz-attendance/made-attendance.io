@@ -471,7 +471,7 @@ async function createUser() {
             document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully! Verification email sent.</p>`;
 
         const { data, error } = await supabasePublicClient
-            .from('accts')
+            .from('users')
             .insert([
                 { 
                     facemail: facemail, 
