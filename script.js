@@ -455,13 +455,13 @@ async function forgotPassword() {
 
 async function createUser() {
     try {
-        const email = document.getElementById('email').value;
+        const facemail = document.getElementById('facemail').value;
         const password = document.getElementById('password').value;
         const faclastname = document.getElementById('faclastname').value;  // Get the last name input
         
         // Sign up the user
         const { data, error } = await supabasePublicClient.auth.signUp({
-            facemail: email,
+            facemail: facemail,
             password: password,
         });
 
@@ -474,7 +474,7 @@ async function createUser() {
             const { data: userInsertData, error: userInsertError } = await supabasePublicClient
                 .from('users')  // Assuming your table is called 'users'
                 .insert([
-                    { facemail: email, faclastname: faclastname }  // Insert email and last name
+                    { facemail: facemail, faclastname: faclastname }  // Insert email and last name
                 ]);
 
             if (userInsertError) {
