@@ -425,30 +425,21 @@ async function forgotPassword() {
   }
 
   try {
-    // Get the current session
-    const { data: { user }, error: sessionError } = await supabasePublicClient.auth.getUser();
-
-    if (sessionError) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error fetching session: ${sessionError.message}</p>`;
-      return;
-    }
-
-    // Check if the user is authenticated and the email matches
-    if (!user || user.email !== email) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">You must be an authenticated user to reset the password for this email.</p>`;
-      return;
-    }
-
-    // Send a password reset email via Supabase
+    // Attempt to send a password reset email
     const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
     });
 
-    // Display success or error message based on the response
+    // If there's an error, check if it's related to no user found
     if (error) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${error.message}</p>`;
+      if (error.message.includes("no user") || error.message.includes("not found")) {
+        document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">This email is not associated with any account.</p>`;
+      } else {
+        document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${error.message}</p>`;
+      }
     } else {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message success">Password reset email sent successfully! Please check your inbox.</p>`;
+      // If no error, inform the user
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message success">If an account with that email exists, a password reset email has been sent.</p>`;
     }
   } catch (err) {
     // Catch any unexpected errors
