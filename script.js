@@ -387,6 +387,7 @@ document.getElementById('attendanceform').addEventListener('submit', async funct
     }
   });
 
+
 async function resetPasswordSignInScreen() {
     // Gather the user's email
     // Ensure email is in database
@@ -412,7 +413,37 @@ async function signIn() {
       window.location.href = "inAccount.html";
     }
   }
-  
+
+async function forgotPassword() {
+  // Get the email entered by the user in the email input field
+  const email = document.getElementById('entered_email').value;
+
+  // Check if the email field is not empty
+  if (!email) {
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Please enter your email to reset your password.</p>`;
+    return;
+  }
+
+  try {
+    // Send a password reset email via Supabase
+    const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
+    });
+
+    // Display success or error message based on the response
+    if (error) {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${error.message}</p>`;
+    } else {
+      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message success">Password reset email sent successfully! Please check your inbox.</p>`;
+    }
+  } catch (err) {
+    // Catch any unexpected errors
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${err.message}</p>`;
+  }
+}
+
+
+
 // Create Account function
 async function createUser() {
 try {
