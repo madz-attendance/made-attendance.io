@@ -470,12 +470,15 @@ async function createUser() {
         } else {
             document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully! Verification email sent.</p>`;
 
-            // Insert user details into the 'users' table after successful sign-up
-            const { data: userInsertData, error: userInsertError } = await supabasePublicClient
-                .from('users')  // Assuming your table is called 'users'
-                .insert([
-                    { facemail: facemail, faclastname: faclastname }  // Insert email and last name
-                ]);
+        const { data, error } = await supabasePublicClient
+            .from('accts')
+            .insert([
+                { 
+                    facemail: facemail, 
+                    facrank: 'Professor',  // Set the default rank here
+                    faclastname: faclastname 
+                }
+            ]);
 
             if (userInsertError) {
                 console.error('Error inserting user data:', userInsertError);
