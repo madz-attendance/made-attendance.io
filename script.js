@@ -420,7 +420,7 @@ async function forgotPassword() {
   const email = document.getElementById('entered_email').value;
 
   // Check if user exists
-  const { data: user, error: userError } = await supabasePublicClient.auth.getUserByEmail(email);
+  const { data: user, error: userError } = await supabasePublicClient.auth.admin.getUserByEmail(email);
 
   if (userError) {
     document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${userError.message}</p>`;
