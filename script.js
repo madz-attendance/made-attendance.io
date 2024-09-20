@@ -415,51 +415,35 @@ async function signIn() {
   }
 
 // Forgot Password Function
+// Forgot Password Function
 async function forgotPassword() {
   const email = document.getElementById('entered_email').value;
 
-  // Check if the email field is not empty
-  if (!email) {
-    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Please enter your email to reset your password.</p>`;
+  // Check if user exists
+  const { data: user, error: userError } = await supabasePublicClient.auth.api.getUserByEmail(email);
+
+  if (userError) {
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${userError.message}</p>`;
     return;
   }
 
-  try {
-    // Check if the user exists in the database
-    const { data, error: userError } = await supabasePublicClient
-      .from('users') // Replace with your actual table name
-      .select('id') // or any field you want to check
-      .eq('email', email)
-      .single();
+  if (!user) {
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">No user found with this email.</p>`;
+    return;
+  }
 
-    // Handle error in getting user data
-    if (userError) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${userError.message}</p>`;
-      return;
-    }
+  // Proceed to send reset password email
+  const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
+  });
 
-    // If user does not exist, inform the user
-    if (!data) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">No user found with this email address.</p>`;
-      return;
-    }
-
-    // Send the password reset email
-    const { error } = await supabasePublicClient.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/reset_password.html' // Customize the redirect URL as needed
-    });
-
-    // Display success or error message based on the response
-    if (error) {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${error.message}</p>`;
-    } else {
-      document.getElementById('forgotMessage').innerHTML = `<p class="modal-message success">Password reset email sent successfully! Please check your inbox.</p>`;
-    }
-  } catch (err) {
-    // Catch any unexpected errors
-    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${err.message}</p>`;
+  if (error) {
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message error">Error: ${error.message}</p>`;
+  } else {
+    document.getElementById('forgotMessage').innerHTML = `<p class="modal-message success">Password reset email sent successfully!</p>`;
   }
 }
+
 
 
 
