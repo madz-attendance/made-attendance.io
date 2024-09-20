@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", function() {
     updateClassSections();
 });
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('attendanceform').addEventListener('submit', async function(event) 
+  document.getElementById('attendanceform').addEventListener('submit', async function(event) {
     event.preventDefault(); // Prevent default form submission
     console.log('Form submission triggered!'); // Debug message
 
@@ -321,7 +321,8 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('submissionInfo').style.backgroundColor = 'red';
       return; // Stop the submission if email is invalid
     }
-      // Check if the email exists in the users database table
+
+    // Check if the email exists in the users database table
     const { data: usersData, error: usersError } = await supabasePublicClient
       .from('users') // The users table where you are storing faculty emails
       .select('facemail')
@@ -346,6 +347,7 @@ document.addEventListener('DOMContentLoaded', function() {
       document.getElementById('submissionInfo').style.backgroundColor = 'red';
       return; // Stop the submission process
     }
+
     // Collect form data
     const formData = {
       studentfirstname: document.getElementById('student_firstname').value,
@@ -358,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
       inserttime: new Date().toLocaleTimeString() // HH:MM:SS
     };
 
-       console.log('Form Data:', formData); // Debug message
+    console.log('Form Data:', formData); // Debug message
 
     // Insert data into Supabase
     const { data, error } = await supabasePublicClient
@@ -373,8 +375,8 @@ document.addEventListener('DOMContentLoaded', function() {
         <p>Submission Time: ${submissionTime}</p>
         <p>Status: Error - ${error.message}</p>
         <p>Email: ${formData.facemail}</p>
-        document.getElementById('submissionInfo').style.backgroundColor = 'red';
       `;
+      document.getElementById('submissionInfo').style.backgroundColor = 'red'; // <-- Moved this outside the template string
     } else {
       console.log('Data successfully inserted:', data); // Debug message
       document.getElementById('attendanceform').reset(); // Clear the form
@@ -385,7 +387,9 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
       document.getElementById('submissionInfo').style.backgroundColor = 'green';
     }
-  });
+  }); // <-- Correctly closed the callback here
+});
+
 
 
 async function resetPasswordSignInScreen() {
