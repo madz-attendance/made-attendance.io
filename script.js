@@ -453,27 +453,41 @@ async function forgotPassword() {
 
 
 
-// Create Account function
 async function createUser() {
-try {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+    try {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const lastName = document.getElementById('faclastname').value;  // Get the last name input
+        
+        // Sign up the user
+        const { data, error } = await supabasePublicClient.auth.signUp({
+            email: email,
+            password: password,
+        });
 
-    // Sign up the user
-    const { data, error } = await supabasePublicClient.auth.signUp({
-    email: email,
-    password: password,
-    });
+        if (error) {
+            document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        } else {
+            document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully! Verification email sent.</p>`;
 
-    if (error) {
-    document.getElementById('signupMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-    } else {
-    document.getElementById('signupMessage').innerHTML = `<p style="color: green;">User created successfully!</p>`;
+            // Insert user details into the 'users' table after successful sign-up
+            const { data: userInsertData, error: userInsertError } = await supabasePublicClient
+                .from('users')  // Assuming your table is called 'users'
+                .insert([
+                    { email: facemail, last_name: faclastname }  // Insert email and last name
+                ]);
+
+            if (userInsertError) {
+                console.error('Error inserting user data:', userInsertError);
+            } else {
+                console.log('User added to local database:', userInsertData);
+            }
+        }
+    } catch (error) {
+        console.error('Unexpected error:', error);
     }
-} catch (error) {
-    console.error('Unexpected error:', error);
 }
-}
+
 
 // Function to show the home tab content on page load
 function showHomeTab() {
