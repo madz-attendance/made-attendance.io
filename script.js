@@ -461,7 +461,7 @@ async function createUser() {
         
         // Sign up the user
         const { data, error } = await supabasePublicClient.auth.signUp({
-            facemail: facemail,
+            email: facemail,
             password: password,
         });
 
