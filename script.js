@@ -402,21 +402,45 @@ async function resetPasswordSignInScreen() {
 }
 
 async function signIn() {
-    const email = document.getElementById('entered_email').value;
-    const password = document.getElementById('entered_pass').value;
-  
-    const { data, error } = await supabasePublicClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-  
-    if (error) {
-      document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-    } else {
-      document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
-      window.location.href = "inProfessorAccount.html";
-    }
+  const email = document.getElementById('entered_email').value;
+  const password = document.getElementById('entered_pass').value;
+
+  // Sign in the user with email and password
+  const { data: authData, error: authError } = await supabasePublicClient.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
+
+  // Handle authentication errors
+  if (authError) {
+    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${authError.message}</p>`;
+    return;
   }
+
+  // Fetch user data from your 'users' table using the signed-in email
+  const { data: userData, error: userError } = await supabasePublicClient
+    .from('users')
+    .select('facrank')
+    .eq('email', email)
+    .single();
+
+  // Handle user fetch errors
+  if (userError || !userData) {
+    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error fetching user data: ${userError.message}</p>`;
+    return;
+  }
+
+  // Check the facrank of the user and redirect accordingly
+  const facrank = userData.facrank;
+  if (facrank === 'admin') {
+    window.location.href = "inAdminAccount.html";
+  } else if (facrank === 'professor') {
+    window.location.href = "inProfessorAccount.html";
+  } else {
+    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: Unrecognized facrank.</p>`;
+  }
+}
+
 
 async function forgotPassword() {
   // Get the email entered by the user in the email input field
