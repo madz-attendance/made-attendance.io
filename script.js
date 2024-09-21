@@ -421,7 +421,7 @@ async function signIn() {
   const { data: userData, error: userError } = await supabasePublicClient
     .from('users')
     .select('facrank')
-    .eq('email', email)
+    .eq('facemail', email)
     .single();
 
   // Handle user fetch errors
