@@ -71,7 +71,7 @@
                 const userInfo = data[0]; // First user in the returned array
                 document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
                 document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
-                document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank},${userInfo.faclastname}`;
+                document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank} ${userInfo.faclastname}`;
             } else {
                 document.getElementById('welcomeMessage').innerText = 'User data not found';
             }
