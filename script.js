@@ -436,6 +436,8 @@ async function signIn() {
     window.location.href = "inAdminAccount.html";
   } else if (facrank === 'Professor') {
     window.location.href = "inProfessorAccount.html";
+  } else if (facrank === 'Chair') {
+    window.location.href = "inChairAccount.html";
   } else {
     document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: Unrecognized facrank.</p>`;
   }
