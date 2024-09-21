@@ -4,33 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Account</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f4f4f4;
+    <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+    <script>
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            document.getElementById(tabName + '-button').classList.add('active');
         }
-        .account-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+        function signOut() {
+            // Add sign-out logic here (e.g., redirect, clear session)
+            alert('You have signed out.');
+            window.location.href = 'sign-in.html'; // Redirect to sign-in page
         }
-        h2 {
-            color: #333;
-        }
-        .user-info {
-            margin-top: 15px;
-        }
-    </style>
+    </script>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
-<script src="script.js"></script>
 <body>
-<div class="account-container">
+
+    <!-- Header Section -->
+    <header>
+        <img src="logo.png" alt="Logo" class="madz_logo"> <!-- Example logo -->
+        <div class="header-center">
+            <h1>Welcome</h1>
+        </div>
+        <input type="button" value="Sign Out" onclick="signOut()">
+    </header>
+
+    <!-- Main Section -->
+    <main>
+        <div>
+            <button class="tab-button active" id="welcome-tab-button" onclick="showTab('welcome')">Welcome</button>
+            <button class="tab-button" id="classes-tab-button" onclick="showTab('classes')">Classes</button>
+        </div>
+
+        <!-- Welcome Tab Content -->
+        <div id="welcome" class="tab-content active">
+           <div class="account-container">
     <h2 id="welcomeMessage">Welcome,</h2>
     <div class="user-info">
         <p><strong>Rank:</strong> <span id="facRank"></span></p>
@@ -84,6 +96,41 @@
     // Call the function to fetch professor data when the page loads
     fetchProfessorData();
 </script>
+        </div>
+
+        <!-- Classes Tab Content -->
+        <div id="classes" class="tab-content">
+            <h2>Your Classes</h2>
+            <p>List of your current classes will be displayed here.</p>
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>MADZ Attendance&copy; </p>
+    </footer>
+
+</body>
+</html>
+    <style>
+        .account-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .user-info {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
+<script src="script.js"></script>
+<body>
+
 
 
 </body>
