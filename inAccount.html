@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .account-container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+        }
+        .user-info {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="account-container">
+        <h2 id="welcomeMessage">Welcome,</h2>
+        <div class="user-info">
+            <p><strong>Rank:</strong> <span id="userRank"></span></p>
+            <p><strong>Last Name:</strong> <span id="userLastName"></span></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Fetch the user data after signing in
+        async function fetchUserData() {
+            const { data: { user }, error } = await supabasePublicClient.auth.getUser();
+
+            if (error) {
+                document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
+            } else {
+                // Assuming 'rank' and 'last_name' are custom fields in the user's metadata or profile
+                const facrank = users.user_metadata.facrank || 'N/A';
+                const faclastname = users.user_metadata.faclastname || 'N/A';
+              
+                // Display the user's rank and last name
+                document.getElementById('welcomeMessage').innerText = `Welcome, ${facrank} ${faclastname}`;
+                document.getElementById('facrank').innerText = facrank;
+                document.getElementById('faclastname').innerText = faclastname;
+            }
+        }
+
+        // Call the function to fetch user data when the page loads
+        fetchUserData();
+    </script>
+
+</body>
+</html>
+
+
+
+<!-- async function signIn() {
+    const email = document.getElementById('entered_email').value;
+    const password = document.getElementById('entered_pass').value;
+  
+    const { data, error } = await supabasePublicClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
+  
+    if (error) {
+      document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    } else {
+      document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
+      window.location.href = "inAccount.html";
+    }
+  }
+  --> 
+
+  
