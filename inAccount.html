@@ -29,51 +29,61 @@
 </head>
 <script src="script.js"></script>
 <body>
-
-    <div class="account-container">
-        <h2 id="welcomeMessage">Welcome,</h2>
-        <div class="user-info">
-            <p><strong>Rank:</strong> <span id="facRank"></span></p>
-            <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
-        </div>
+<div class="account-container">
+    <h2 id="welcomeMessage">Welcome,</h2>
+    <div class="user-info">
+        <p><strong>Rank:</strong> <span id="facRank"></span></p>
+        <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
     </div>
+</div>
 
-    <script>
-        // Fetch the user data after signing in
-        async function fetchProfessorData() {
-            const { data: { user }, error } = await supabasePublicClient.auth.getUser();
+<script>
+    // Fetch the user data after signing in
+    async function fetchProfessorData() {
+        // Get the logged-in user's details
+        const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
 
-            if (error) {
-                document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
-                return;
-            }
-
-            const email = user.email;
-
-            try {
-                // Query your database to find the professor details based on email
-                const { data, error: dbError } = await supabasePublicClient
-                    .from('users')
-                    .select('facrank, faclastname')
-                    .eq('facEmail', email)  // Match the professor's email to the logged-in user email
-                    .single();  // Ensure you're getting only one result
-
-                if (dbError || !data) {
-                    document.getElementById('welcomeMessage').innerText = 'No matching professor found.';
-                } else {
-                    // Display the professor's rank and last name
-                    document.getElementById('welcomeMessage').innerText = `Welcome, ${data.facRank} ${data.facLastName}`;
-                    document.getElementById('facRank').innerText = data.facRank;
-                    document.getElementById('facLastName').innerText = data.facLastName;
-                }
-            } catch (err) {
-                document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
-            }
+        if (authError) {
+            document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
+            return;
         }
 
-        // Call the function to fetch professor data when the page loads
-        fetchProfessorData();
-    </script>
+        const email = user?.user?.email;  // Access user email
+
+        if (!email) {
+            document.getElementById('welcomeMessage').innerText = 'No user email found';
+            return;
+        }
+
+        try {
+            // Fetch rank and last name from the database using the email
+            const { data, error: dbError } = await supabasePublicClient
+                .from('users')
+                .select('facrank, faclastname')
+                .eq('facemail', email);
+
+            if (dbError) {
+                throw dbError;
+            }
+
+            if (data && data.length > 0) {
+                const userInfo = data[0]; // First user in the returned array
+                document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
+                document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
+                document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.faclastname}`;
+            } else {
+                document.getElementById('welcomeMessage').innerText = 'User data not found';
+            }
+
+        } catch (err) {
+            document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
+        }
+    }
+
+    // Call the function to fetch professor data when the page loads
+    fetchProfessorData();
+</script>
+
 
 </body>
 </html>
