@@ -414,7 +414,7 @@ async function signIn() {
       document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
     } else {
       document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
-      window.location.href = "inAccount.html";
+      window.location.href = "inProfessorAccount.html";
     }
   }
 
