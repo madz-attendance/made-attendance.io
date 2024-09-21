@@ -32,56 +32,48 @@
     <div class="account-container">
         <h2 id="welcomeMessage">Welcome,</h2>
         <div class="user-info">
-            <p><strong>Rank:</strong> <span id="userRank"></span></p>
-            <p><strong>Last Name:</strong> <span id="userLastName"></span></p>
+            <p><strong>Rank:</strong> <span id="facRank"></span></p>
+            <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
         // Fetch the user data after signing in
-        async function fetchUserData() {
+        async function fetchProfessorData() {
             const { data: { user }, error } = await supabasePublicClient.auth.getUser();
 
             if (error) {
                 document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
-            } else {
-                // Assuming 'rank' and 'last_name' are custom fields in the user's metadata or profile
-                const facrank = users.user_metadata.facrank || 'N/A';
-                const faclastname = users.user_metadata.faclastname || 'N/A';
-              
-                // Display the user's rank and last name
-                document.getElementById('welcomeMessage').innerText = `Welcome, ${facrank} ${faclastname}`;
-                document.getElementById('facrank').innerText = facrank;
-                document.getElementById('faclastname').innerText = faclastname;
+                return;
+            }
+
+            const email = user.email;
+
+            try {
+                // Query your database to find the professor details based on email
+                const { data, error: dbError } = await supabasePublicClient
+                    .from('users')
+                    .select('facrank, faclastname')
+                    .eq('facEmail', email)  // Match the professor's email to the logged-in user email
+                    .single();  // Ensure you're getting only one result
+
+                if (dbError || !data) {
+                    document.getElementById('welcomeMessage').innerText = 'No matching professor found.';
+                } else {
+                    // Display the professor's rank and last name
+                    document.getElementById('welcomeMessage').innerText = `Welcome, ${data.facRank} ${data.facLastName}`;
+                    document.getElementById('facRank').innerText = data.facRank;
+                    document.getElementById('facLastName').innerText = data.facLastName;
+                }
+            } catch (err) {
+                document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
             }
         }
 
-        // Call the function to fetch user data when the page loads
-        fetchUserData();
+        // Call the function to fetch professor data when the page loads
+        fetchProfessorData();
     </script>
 
 </body>
 </html>
-
-
-
-<!-- async function signIn() {
-    const email = document.getElementById('entered_email').value;
-    const password = document.getElementById('entered_pass').value;
-  
-    const { data, error } = await supabasePublicClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
-  
-    if (error) {
-      document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-    } else {
-      document.getElementById('signinMessage').innerHTML = `<p style="color: green;">Success! Redirecting...</p>`;
-      window.location.href = "inAccount.html";
-    }
-  }
-  --> 
-
-  
