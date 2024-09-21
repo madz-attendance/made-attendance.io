@@ -47,6 +47,11 @@
     </main>
 
     <script>
+            // Clicking on MADZ logo will go to home page
+    var madzLogoButton = document.getElementById("madz_logo");
+    madzLogoButton.addEventListener("click", function() {
+        window.location.href = "inAccount.html";
+    });
         // Tab functionality to toggle between Welcome and Classes sections
         function openTab(tabName) {
             // Hide all tab content
