@@ -417,7 +417,7 @@ async function signIn() {
     return;
   }
 
-  // Fetch user data from your 'users' table using the signed-in email
+  // Fetch user data from your 'users' table using the signed-in email and facemail column
   const { data: userData, error: userError } = await supabasePublicClient
     .from('users')
     .select('facrank')
@@ -426,7 +426,7 @@ async function signIn() {
 
   // Handle user fetch errors
   if (userError || !userData) {
-    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error fetching user data: ${userError.message}</p>`;
+    document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error fetching user data: ${userError ? userError.message : 'User not found.'}</p>`;
     return;
   }
 
