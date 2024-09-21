@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Account</title>
     <link rel="stylesheet" href="styles.css"> <!-- Link to your CSS file -->
+
+    <!-- Supabase Script -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
+    <script src="script.js"></script>
     <script>
+        // Function to handle tab switching
         function showTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
             const buttons = document.querySelectorAll('.tab-button');
@@ -15,11 +20,56 @@
             document.getElementById(tabName + '-button').classList.add('active');
         }
 
+        // Sign-out logic
         function signOut() {
-            // Add sign-out logic here (e.g., redirect, clear session)
             alert('You have signed out.');
             window.location.href = 'sign-in.html'; // Redirect to sign-in page
         }
+
+        // Fetch the professor data after signing in
+        async function fetchProfessorData() {
+            // Get the logged-in user's details
+            const { data: { user }, error: authError } = await supabasePublicClient.auth.getUser();
+
+            if (authError) {
+                document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
+                return;
+            }
+
+            const email = user?.email;  // Access user email
+
+            if (!email) {
+                document.getElementById('welcomeMessage').innerText = 'No user email found';
+                return;
+            }
+
+            try {
+                // Fetch rank and last name from the database using the email
+                const { data, error: dbError } = await supabasePublicClient
+                    .from('users')
+                    .select('facrank, faclastname')
+                    .eq('facemail', email);
+
+                if (dbError) {
+                    throw dbError;
+                }
+
+                if (data && data.length > 0) {
+                    const userInfo = data[0]; // First user in the returned array
+                    document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
+                    document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
+                    document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank} ${userInfo.faclastname}`;
+                } else {
+                    document.getElementById('welcomeMessage').innerText = 'User data not found';
+                }
+
+            } catch (err) {
+                document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
+            }
+        }
+
+        // Call the function to fetch professor data when the page loads
+        window.onload = fetchProfessorData;
     </script>
 </head>
 <body>
@@ -43,59 +93,12 @@
         <!-- Welcome Tab Content -->
         <div id="welcome" class="tab-content active">
            <div class="account-container">
-    <h2 id="welcomeMessage">Welcome,</h2>
-    <div class="user-info">
-        <p><strong>Rank:</strong> <span id="facRank"></span></p>
-        <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
-    </div>
-</div>
-
-<script>
-    // Fetch the user data after signing in
-    async function fetchProfessorData() {
-        // Get the logged-in user's details
-        const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
-
-        if (authError) {
-            document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
-            return;
-        }
-
-        const email = user?.user?.email;  // Access user email
-
-        if (!email) {
-            document.getElementById('welcomeMessage').innerText = 'No user email found';
-            return;
-        }
-
-        try {
-            // Fetch rank and last name from the database using the email
-            const { data, error: dbError } = await supabasePublicClient
-                .from('users')
-                .select('facrank, faclastname')
-                .eq('facemail', email);
-
-            if (dbError) {
-                throw dbError;
-            }
-
-            if (data && data.length > 0) {
-                const userInfo = data[0]; // First user in the returned array
-                document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
-                document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
-                document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank} ${userInfo.faclastname}`;
-            } else {
-                document.getElementById('welcomeMessage').innerText = 'User data not found';
-            }
-
-        } catch (err) {
-            document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
-        }
-    }
-
-    // Call the function to fetch professor data when the page loads
-    fetchProfessorData();
-</script>
+                <h2 id="welcomeMessage">Welcome,</h2>
+                <div class="user-info">
+                    <p><strong>Rank:</strong> <span id="facRank"></span></p>
+                    <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
+                </div>
+            </div>
         </div>
 
         <!-- Classes Tab Content -->
@@ -107,31 +110,89 @@
 
     <!-- Footer Section -->
     <footer>
-        <p>MADZ Attendance&copy; </p>
+        <p>MADZ Attendance&copy;</p>
     </footer>
 
 </body>
 </html>
-    <style>
-        .account-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        h2 {
-            color: #333;
-        }
-        .user-info {
-            margin-top: 15px;
-        }
-    </style>
-</head>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
-<script src="script.js"></script>
-<body>
 
+<!-- CSS Styles (styles.css) -->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        margin-bottom: 30px;
+    }
 
+    header {
+        background-color: #2A4C6B;
+        color: #fff;
+        padding: 10px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-</body>
-</html>
+    .header-center {
+        margin: 0 auto;
+    }
+
+    main {
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 800px;
+    }
+
+    .tab-button {
+        background-color: #f0f0f0;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+        font-weight: bold;
+        font-size: 22px;
+        color: #CCCCCC;
+    }
+
+    .tab-button.active {
+        background-color: #ccc;
+    }
+
+    .tab-content {
+        display: none;
+        padding: 20px;
+        background-color: #f0f0f0;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    footer {
+        background-color: #2A4C6B;
+        color: #fff;
+        text-align: center;
+        padding: 2px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        font-size: 14px;
+    }
+
+    .account-container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        color: #333;
+    }
+
+    .user-info {
+        margin-top: 15px;
+    }
+</style>
