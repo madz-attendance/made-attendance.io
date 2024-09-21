@@ -432,9 +432,9 @@ async function signIn() {
 
   // Check the facrank of the user and redirect accordingly
   const facrank = userData.facrank;
-  if (facrank === 'admin') {
+  if (facrank === 'Admin') {
     window.location.href = "inAdminAccount.html";
-  } else if (facrank === 'professor') {
+  } else if (facrank === 'Professor') {
     window.location.href = "inProfessorAccount.html";
   } else {
     document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: Unrecognized facrank.</p>`;
