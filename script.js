@@ -333,6 +333,7 @@ async function signIn() {
   // Handle authentication errors
   if (authError) {
     document.getElementById('signinMessage').innerHTML = `<p style="color: red;">Error: ${authError.message}</p>`;
+      document.getElementById('entered_pass').value = '';
     return;
   }
 
