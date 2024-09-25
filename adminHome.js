@@ -24,44 +24,6 @@
             event.target.classList.add('active');
         }
 
-async function fetchAllClasses() {
-  const { data, error } = await supabasePublicClient
-    .from('courses')
-    .select('*'); // Selects all fields from the table
-
-  if (error) {
-    console.error('Error fetching courses:', error);
-  } else {
-    console.log('Courses:', data);
-    return data;
-  }
-}
-
-async function renderCourses() {
-  const courses = await fetchAllClasses();
-  const container = document.querySelector('#classesTab .account-container');
-
-  if (courses && courses.length > 0) {
-    let html = '<ul>';
-    courses.forEach(course => {
-      html += `<li>${course.courseid},${course.coursename},${course.coursesec},${course.coursesem}</li>`; // Assuming "name" is a column in the "courses" table
-    });
-    html += '</ul>';
-
-    container.innerHTML += html;
-  } else {
-    container.innerHTML += '<p>No courses available.</p>';
-  }
-}
-
-// Call the render function when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-  // Check if the "Classes" tab is currently visible
-  const classesTab = document.querySelector('#classesTab');
-  if (classesTab) {
-    renderCourses();
-  }
-});
 
 
 var create_account_button = document.getElementById("create_account_button");
@@ -147,6 +109,48 @@ async function createUser() {
                 document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
             }
         }
+
+
+async function fetchAllClasses() {
+  const { data, error } = await supabasePublicClient
+    .from('courses')
+    .select('*'); // Selects all fields from the table
+
+  if (error) {
+    console.error('Error fetching courses:', error);
+  } else {
+    console.log('Courses:', data);
+    return data;
+  }
+}
+
+async function renderCourses() {
+  const courses = await fetchAllClasses();
+  const container = document.querySelector('#classesTab .account-container');
+
+  if (courses && courses.length > 0) {
+    let html = '<ul>';
+    courses.forEach(course => {
+      html += `<li>${course.courseid},${course.coursename},${course.coursesec},${course.coursesem}</li>`; // Assuming "name" is a column in the "courses" table
+    });
+    html += '</ul>';
+
+    container.innerHTML += html;
+  } else {
+    container.innerHTML += '<p>No courses available.</p>';
+  }
+}
+
+// Call the render function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if the "Classes" tab is currently visible
+  const classesTab = document.querySelector('#classesTab');
+  if (classesTab) {
+    renderCourses();
+  }
+});
+
+
 
         // Log out functionality
         async function logOut() {
