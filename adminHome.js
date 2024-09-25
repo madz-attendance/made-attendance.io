@@ -44,7 +44,7 @@ async function renderCourses() {
   if (courses && courses.length > 0) {
     let html = '<ul>';
     courses.forEach(course => {
-      html += `<li>${course.name}</li>`; // Assuming "name" is a column in the "courses" table
+      html += `<li>${course.courseid},${course.coursename},${course.coursesec},${course.coursesem}</li>`; // Assuming "name" is a column in the "courses" table
     });
     html += '</ul>';
 
