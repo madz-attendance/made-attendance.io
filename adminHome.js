@@ -24,6 +24,41 @@
             event.target.classList.add('active');
         }
 
+async function fetchAllClasses() {
+  const { data, error } = await supabasePublicClient
+    .from('courses')
+    .select('*'); // Selects all fields from the table
+
+  if (error) {
+    console.error('Error fetching courses:', error);
+  } else {
+    console.log('Courses:', data);
+    return data;
+  }
+}
+
+async function renderCourses() {
+  const courses = await fetchAllClasses();
+  const container = document.querySelector('.account-container');
+
+  if (courses && courses.length > 0) {
+    let html = '<ul>';
+    courses.forEach(course => {
+      html += `<li>${course.name}</li>`; // Assuming "name" is a column in the "courses" table
+    });
+    html += '</ul>';
+
+    container.innerHTML += html;
+  } else {
+    container.innerHTML += '<p>No courses available.</p>';
+  }
+}
+
+// Call the render function when the page loads
+document.addEventListener('DOMContentLoaded', renderCourses);
+
+
+
 var create_account_button = document.getElementById("create_account_button");
 
 async function createUser() {
