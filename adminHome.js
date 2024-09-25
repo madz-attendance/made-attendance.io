@@ -39,7 +39,7 @@ async function fetchAllClasses() {
 
 async function renderCourses() {
   const courses = await fetchAllClasses();
-  const container = document.querySelector('.account-container');
+  const container = document.querySelector('#classesTab .account-container');
 
   if (courses && courses.length > 0) {
     let html = '<ul>';
@@ -55,8 +55,13 @@ async function renderCourses() {
 }
 
 // Call the render function when the page loads
-document.addEventListener('DOMContentLoaded', renderCourses);
-
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if the "Classes" tab is currently visible
+  const classesTab = document.querySelector('#classesTab');
+  if (classesTab) {
+    renderCourses();
+  }
+});
 
 
 var create_account_button = document.getElementById("create_account_button");
