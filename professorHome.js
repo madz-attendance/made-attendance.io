@@ -163,59 +163,7 @@ async function fetchCourses(email)
 	{
 		const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
 		                                       // Variables MUST be named the same as in database for some reason
-			
-		// If the faculty is an Admin
-		if (facrank == "Admin") //CORRECT, commented out for testing
-		//if (facrank == "Professor") // WRONG, used for testing
-		{
-			const { data, error } = await supabasePublicClient
-			.from("courses")
-			.select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-			.order('coursecode', { ascending: true }) // Order by course code ascending
-			.order('coursenum', { ascending: true }) // Order by course number ascending
-			.order('coursesec', { ascending: false }) // Order by course section ascending
-			.order('coursesem', { ascending: true }) // Order by course semester ascending
-			.order('faclastname', { ascending: true }); // Order by faclastname ascending
-			
-			//print("ADMIN COURSES: ", data);
-			
-			// For each course that this admin has access to (all the courses), add it to the courses dropdown menu
-			data.forEach(course => 
-			{
-				// Extract all the variables from this course
-				const coursecode = course.coursecode;
-				const coursename = course.coursename;
-				const coursesem = course.coursesem;
-				const facemail = course.facemail;
-				const coursesec = course.coursesec;
-				const days = course.days;
-				const start = course.start;
-				const finish = course.finish;
-				const building = course.building;
-				const room = course.room;
-				const coursenum = course.coursenum;
-				const faclastname = course.faclastname;
-				
-				// Create an entry into the courses dropdown menu
-				courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
-
-				// Add the course entry into the courses dropdown menu
-				//courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
-				newOption = document.createElement("option"); // Create a new option for the dropdown menu
-				newOption.value = courseEntry;
-				newOption.text = courseEntry;
-				courses_dropdown.appendChild(newOption);
-			
-			});
-			
-			return data; // Return the courses that this admin has. To be used when updating the courses displayed by selecting a semester
-		}
-			
 		
-		else
-		{
-			// Chairs/Professors can see only their own courses
-			// Select all of the courses (and all of their fields) from this professor
 			const { data, error } = await supabasePublicClient
 			.from("courses")
 			.select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
@@ -255,7 +203,6 @@ async function fetchCourses(email)
 			return data; // Return the courses that this professor has. To be used when updating the courses displayed by selecting a semester
 		}
 											   
-	}
 }
 
 
@@ -467,53 +414,64 @@ function attachDepartmentDropdownListener(professor_courses)
 // make every department an option. If any other role (prof/chair), query the "users" table, find the faculty's dept,
 // and then only display that dept as an option. In this last case, remove the "Any" option, since the prof/chair only
 // is part of one department. This will make it auto-select their department, which is convenient.
-async function fetchDepartments(email)
-{
-	console.log("In fetchDepartments, email: ", email);
-	// Get this faculty's role and dept by querying the "users" table
-	const { data, error } = await supabasePublicClient
-		.from('users')
-		.select("facrank, deptcode")
-		.eq('facemail', email);
-	
-	if (error)
-	{ console.error("Error fetching facrank in fetchDepartments()", error); }
-	else
-	{
-		const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
-		                                       // Variables MUST be named the same as in database for some reason
-											   
-		// If the facrank is ADMIN
-		if (facrank == "Admin") // CORRECT
-		//if (facrank == "Professor") //WRONG, REMOVE, using for testing
-		{
-			// Query the "departments" table and make every single department an option in department_dropdown
-			const { data, error } = await supabasePublicClient
-				.from('departments')
-				.select("deptcode");
-				
-				data.forEach(dept =>
-				{
-					deptName = dept.deptcode;
-					deptOption = document.createElement("option");
-					deptOption.value = deptName;
-					deptOption.text = deptName;
-					department_dropdown.appendChild(deptOption);
-				});
-		}
-		// If the facrank is NOT an admin
-		else
-		{
-			// Add factdept as the only option to the dropdown menu. Remove the "Any" option as well
-			department_dropdown.remove(0);	// Remove the "any" option
-			deptOption = document.createElement("option"); // Create the dept option for the dropdown menu
-			deptOption.value = deptcode;
-			deptOption.text = deptcode;
-			department_dropdown.appendChild(deptOption);	// Add it to the dropdown menu
-		
-		}
-	}
+// Attach departments to the input datalist instead of a select dropdown
+async function fetchDepartments(email) {
+    console.log("In fetchDepartments, email: ", email);
+
+    // Get the user's role and department from the "users" table
+    const { data, error } = await supabasePublicClient
+        .from('users')
+        .select("facrank, deptcode")
+        .eq('facemail', email);
+    
+    if (error) {
+        console.error("Error fetching facrank in fetchDepartments()", error);
+    } else {
+        const { facrank, deptcode } = data[0]; // Store faculty rank and department
+        
+        const departmentDatalist = document.getElementById('departments'); // datalist instead of dropdown
+        
+        // If user is an Admin, populate the list with all departments
+        if (facrank === "Admin") {
+            const { data, error } = await supabasePublicClient
+                .from('departments')
+                .select("deptcode");
+            
+            if (!error) {
+                data.forEach(dept => {
+                    const deptOption = document.createElement("option");
+                    deptOption.value = dept.deptcode;
+                    departmentDatalist.appendChild(deptOption);
+                });
+            }
+        } else { // For non-admin, show only the user's department
+            const deptOption = document.createElement("option");
+            deptOption.value = deptcode;
+            departmentDatalist.appendChild(deptOption);
+            
+            // Auto-select the department for non-admins
+            document.getElementById('dept_code').value = deptcode;
+        }
+    }
 }
+
+// Clear button functionality
+document.getElementById('clear_dept_button').addEventListener('click', function() {
+    const deptInput = document.getElementById('dept_code');
+    deptInput.value = ""; // Clear the input
+    deptInput.focus(); // Bring focus back to the input
+    this.style.display = 'none'; // Hide the button
+});
+
+// Show the clear button when there's input
+document.getElementById('dept_code').addEventListener('input', function() {
+    const clearButton = document.getElementById('clear_dept_button');
+    if (this.value) {
+        clearButton.style.display = 'inline-block';
+    } else {
+        clearButton.style.display = 'none';
+    }
+});
 
 
 // Zaynin Sept 26 2024 (END)
