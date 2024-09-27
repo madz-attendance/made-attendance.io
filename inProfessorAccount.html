@@ -53,13 +53,36 @@
 				Impacts the course dropdown menu (below) options based on what department
 				is selected.
 				-->
-				<div>
-					<label for="department_dropdown">Select a Department:</label>
-					<select id="department_dropdown" name="options">
-					<option value="any">Any</option> <!-- The Any option -->
-					</select>
+		    		<style>
+					.input-wrapper {
+    						position: relative;
+    						display: inline-block;
+					}
+
+					.clear-button {
+    						position: absolute;
+    						right: 10px;
+    						top: 50%;
+    						transform: translateY(-50%);
+    						background: transparent;
+    						border: none;
+    						cursor: pointer;
+    						font-size: 16px;
+    						display: none; /* Initially hidden */
+					}
+
+					.input-wrapper input:focus + .clear-button {
+    						display: inline-block; /* Show button when input is focused */
+					}
+
+				</style>
+				<label for="dept_code">Department Code:<span class="required"></span></label>
+				<div class="input-wrapper">
+    				<input type="text" id="dept_code" name="department_code" list="departments" required placeholder="Select a Department Code">
+    				<button id="clear_dept_button" class="clear-button"><i class="far fa-times-circle"></i></button>
 				</div>
-				
+				<datalist id="departments"></datalist>
+
 				<!--
 				Create a Dropdown Menu for the Semesters:
 				Checks all of the professor's courses and displays a drop-down menu for them
