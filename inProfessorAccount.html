@@ -18,10 +18,37 @@
             <button class="tab-button active" onclick="openTab('welcomeTab')">Welcome</button>
             <button class="tab-button" onclick="openTab('classesTab')">Classes</button>
         </div>
+                </div>
+	    <button class="tab-button" onclick="openTab('accountTab')">
+		<span class="material-symbols-outlined">
+		account_circle
+	    	</span>
+	    </button>
+	  <button class="tab-button" onclick="openTab('notificationTab')">   
+		<span class="material-symbols-outlined">
+		notifications
+		</span>
+	    
         <!-- Log out button aligned to the right -->
-        <div class="log-out-container">
-            <button class="tab-button log-out-button" onclick="logOut()">Log Out</button>
-        </div>
+	<div class="log-out-container">
+    <button class="tab-button log-out-button" onclick="logOut()">
+        <span class="material-symbols-outlined">
+            logout
+        </span>
+    </button>
+</div>
+
+<!-- The style for Material Symbols -->
+<style>
+    .material-symbols-outlined {
+        font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+    }
+</style>
+
     </header>
     <img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz_logo"> 
     <!-- Main Content Area -->
