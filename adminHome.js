@@ -711,95 +711,29 @@ async function fetchDepartments(email)
 
 
 // Styling for tabbing added by Anthony: 
-// Buttons for welcome, classes, create account, and log out
-var welcome_button = document.querySelector("button[onclick=\"openTab('welcomeTab')\"]");
-var classes_button = document.querySelector("button[onclick=\"openTab('classesTab')\"]");
-var create_account_button = document.getElementById("create_account_button");
-var log_out_button = document.querySelector(".log-out-button");
+// Generic function to handle tab switching
+function switchTab<T extends HTMLElement>(activeButton: T, activeTab: string) {
+    const buttons = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
 
-var currentTab = "welcomeTab"; // Default current tab
+    // Reset all buttons and tab content
+    buttons.forEach(button => button.classList.remove('active'));
+    contents.forEach(content => content.classList.remove('active'));
 
-function resetButtonColors() {
-    welcome_button.style.filter = "brightness(100%)";
-    classes_button.style.filter = "brightness(100%)";
-    create_account_button.style.filter = "brightness(100%)";
-    log_out_button.style.filter = "brightness(100%)";
+    // Set active button and corresponding tab content
+    activeButton.classList.add('active');
+    document.getElementById(activeTab)?.classList.add('active');
 }
 
-// Welcome tab logic
-welcome_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "welcomeTab") {
-        currentTab = "welcomeTab";
-        welcome_button.style.filter = "brightness(150%)";
-    }
-});
-welcome_button.addEventListener("mouseover", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(150%)";
-    }
-});
-welcome_button.addEventListener("mouseout", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(100%)";
-    }
+// Event listeners for the buttons
+document.querySelectorAll('.tab-button').forEach(button => {
+    button.addEventListener('click', function() {
+        const tabName = this.getAttribute('onclick')?.replace("openTab('", "").replace("')", ""); // Extract tab name
+        if (tabName) {
+            switchTab(this, tabName); // Call the generic function
+        }
+    });
 });
 
-// Classes tab logic
-classes_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "classesTab") {
-        currentTab = "classesTab";
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseover", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseout", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Create Account tab logic
-create_account_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "create_account") {
-        currentTab = "create_account";
-        create_account_button.style.filter = "brightness(150%)";
-    }
-});
-create_account_button.addEventListener("mouseover", function() {
-    if (currentTab != "create_account") {
-        create_account_button.style.filter = "brightness(150%)";
-    }
-});
-create_account_button.addEventListener("mouseout", function() {
-    if (currentTab != "create_account") {
-        create_account_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Log Out button logic
-log_out_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "log_out") {
-        currentTab = "log_out";
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseover", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseout", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(100%)";
-    }
-});
 
 
