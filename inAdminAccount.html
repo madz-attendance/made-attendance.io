@@ -19,15 +19,17 @@
             <button class="tab-button active" onclick="openTab('welcomeTab')">Welcome</button>
             <button class="tab-button" onclick="openTab('classesTab')">Classes</button>
             <button id="create_account_button" class="tab-button" onclick="openTab('create_account')">Create Account</button>
-
-	<span class="material-symbols-outlined">
-		account_circle
-	</span>
 		
         </div>
-	<span class="material-symbols-outlined">
+	    <button class="tab-button" onclick="openTab('accountTab')">
+		<span class="material-symbols-outlined">
+		account_circle
+	    	</span>
+	    </button>
+	  <button class="tab-button" onclick="openTab('notificationTab')">   
+		<span class="material-symbols-outlined">
 		notifications
-	</span>
+		</span>
 	    
         <!-- Log out button aligned to the right -->
 	<div class="log-out-container">
@@ -150,7 +152,24 @@
       <div id="signupMessage"></div>
     </div>
   </section>
+	
+	 <div id="accountTab" class="tab-content">
+            <div class="account-container">
+		    <h2> View your Account Information: </h2>
+            </div>
+        </div>
+	
 
+	 <div id="notificationTab"  class="tab-content">
+            <div class="account-container">
+		    <h2>View Your Notifications:  </h2>
+                </div>
+        </div>
+     
+	
+	
+
+		    
     <footer>
     <p><small>&copy; 2024 MADZ Attendance</small></p>
     </footer>
