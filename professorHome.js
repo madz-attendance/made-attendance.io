@@ -567,3 +567,123 @@ async function renderCourses(email) {
   
 }
 */
+
+
+// Styling for tabbing added by Anthony: 
+// Buttons for welcome, classes, create account, account, notifications, and log out
+var welcome_button = document.querySelector("button[onclick=\"openTab('welcomeTab')\"]");
+var classes_button = document.querySelector("button[onclick=\"openTab('classesTab')\"]");
+var create_account_button = document.getElementById("create_account_button");
+var account_button = document.querySelector("button[onclick=\"openTab('accountTab')\"]");
+var notification_button = document.querySelector("button[onclick=\"openTab('notificationTab')\"]");
+var log_out_button = document.querySelector(".log-out-button");
+
+var currentTab = "welcomeTab"; // Default current tab
+
+function resetButtonColors() {
+    welcome_button.style.filter = "brightness(100%)";
+    classes_button.style.filter = "brightness(100%)";
+    account_button.style.filter = "brightness(100%)";
+    notification_button.style.filter = "brightness(100%)";
+    log_out_button.style.filter = "brightness(100%)";
+}
+
+// Welcome tab logic
+welcome_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "welcomeTab") {
+        currentTab = "welcomeTab";
+        welcome_button.style.filter = "brightness(150%)";
+    }
+});
+welcome_button.addEventListener("mouseover", function() {
+    if (currentTab != "welcomeTab") {
+        welcome_button.style.filter = "brightness(150%)";
+    }
+});
+welcome_button.addEventListener("mouseout", function() {
+    if (currentTab != "welcomeTab") {
+        welcome_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Classes tab logic
+classes_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "classesTab") {
+        currentTab = "classesTab";
+        classes_button.style.filter = "brightness(150%)";
+    }
+});
+classes_button.addEventListener("mouseover", function() {
+    if (currentTab != "classesTab") {
+        classes_button.style.filter = "brightness(150%)";
+    }
+});
+classes_button.addEventListener("mouseout", function() {
+    if (currentTab != "classesTab") {
+        classes_button.style.filter = "brightness(100%)";
+    }
+});
+
+
+
+// Account tab logic
+account_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "accountTab") {
+        currentTab = "accountTab";
+        account_button.style.filter = "brightness(150%)";
+    }
+});
+account_button.addEventListener("mouseover", function() {
+    if (currentTab != "accountTab") {
+        account_button.style.filter = "brightness(150%)";
+    }
+});
+account_button.addEventListener("mouseout", function() {
+    if (currentTab != "accountTab") {
+        account_button.style.filter = "brightness(100%)";
+    }
+});
+
+
+// Account tab logic
+notification_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "notificationTab") {
+        currentTab = "notificationTab";
+        notification_button.style.filter = "brightness(150%)";
+    }
+});
+notification_button.addEventListener("mouseover", function() {
+    if (currentTab != "notificationTab") {
+        notification_button.style.filter = "brightness(150%)";
+    }
+});
+notification_button.addEventListener("mouseout", function() {
+    if (currentTab != "notificationTab") {
+        notification_button.style.filter = "brightness(100%)";
+    }
+});
+
+
+
+// Log Out button logic
+log_out_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "log_out") {
+        currentTab = "log_out";
+        log_out_button.style.filter = "brightness(150%)";
+    }
+});
+log_out_button.addEventListener("mouseover", function() {
+    if (currentTab != "log_out") {
+        log_out_button.style.filter = "brightness(150%)";
+    }
+});
+log_out_button.addEventListener("mouseout", function() {
+    if (currentTab != "log_out") {
+        log_out_button.style.filter = "brightness(100%)";
+    }
+});
