@@ -60,7 +60,7 @@ madzLogoButton.addEventListener("click", function() {
     // Always default to the home tab
     document.getElementById('welcomeTab').style.display = 'block';
   
-    window.history.pushState({}, '', '?tab=home');
+    window.history.pushState({}, '', '?tab=welcomeTab');
 }
   
   // Call the function to show the home tab content on page load
