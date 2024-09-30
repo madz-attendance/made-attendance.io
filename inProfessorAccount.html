@@ -16,21 +16,21 @@
     <!-- Header section with navigation tabs and log out button -->
     <header>
         <div class="header-center">
-            <button class="tab-button active" onclick="openTab('welcomeTab')">Welcome</button>
-            <button class="tab-button" onclick="openTab('classesTab')">Classes</button>
+       	    <button id="welcome_button" class="tab-button" onclick="openTab('welcomeTab')">Welcome</button>
+	    <button id="classes_button" class="tab-button" onclick="openTab('classesTab')">Classes</button>
         </div>
                 </div>
-	    <button class="tab-button" onclick="openTab('helpTab')">
+	    <button id="help_button" class="tab-button" onclick="openTab('helpTab')">
 		<span class="material-symbols-outlined">
 		help
 	    	</span>
 	    </button>
-	    <button class="tab-button" onclick="openTab('accountTab')">
+	    <button id="account_button" class="tab-button" onclick="openTab('accountTab')">
 		<span class="material-symbols-outlined">
 		account_circle
 	    	</span>
 	    </button>
-	  <button class="tab-button" onclick="openTab('notificationTab')">   
+	  <button id="notification_button" class="tab-button" onclick="openTab('notificationTab')">   
 		<span class="material-symbols-outlined">
 		notifications
 		</span>
@@ -60,7 +60,7 @@
     <!-- Main Content Area -->
     <main>
         <!-- Welcome Tab Content -->
-        <div id="welcomeTab" class="tab-content active">
+        <section id="welcomeTab" class="tab-content active">
             <div class="account-container">
                 <h2 id="welcomeMessage">Welcome,</h2>
                 <div class="user-info">
@@ -68,10 +68,10 @@
                     <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Classes Tab Content -->
-        <div id="classesTab" class="tab-content">
+        <section id="classesTab" class="tab-content">
             <div class="account-container">
                 <h2>Your Classes</h2>
                 <p>Here you will see the list of your assigned classes.</p>
@@ -122,24 +122,24 @@
             
 			
 			</div>
-        </div>
-	     <div id="helpTab" class="tab-content">
+	</section>
+	     <section id="helpTab" class="tab-content">
             <div class="account-container">
 		    <h2> Help / FAQs: </h2>
             </div>
-        </div>
-	    	 <div id="accountTab" class="tab-content">
+	     </section>
+	    	 <section id="accountTab" class="tab-content">
             <div class="account-container">
 		    <h2> View your Account Information: </h2>
             </div>
-        </div>
+        </section>
 	
 
-	 <div id="notificationTab"  class="tab-content">
+	 <section id="notificationTab"  class="tab-content">
             <div class="account-container">
 		    <h2>View Your Notifications:  </h2>
                 </div>
-        </div>
+	 </section>
      
 	
 	
