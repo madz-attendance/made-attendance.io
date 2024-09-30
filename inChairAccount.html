@@ -17,7 +17,8 @@
    <header>
        <div style="margin: 0 auto;">
        	    <button id="welcome_button" class="tab-button" onclick="openTab('welcomeTab')">Welcome</button>
-	    <button id="classes_button" class="tab-button" onclick="openTab('classesTab')">Classes</button>
+	    <button id="my_classes_button" class="tab-button" onclick="openTab('MyclassesTab')">My Classes</button>
+	    <button id="dept_classes_button" class="tab-button" onclick="openTab('DeptclassesTab')">Dept. Classes</button>
         </div>
                 </div>
 	    <button id="help_button" class="tab-button" onclick="openTab('helpTab')" title="Help">
@@ -69,10 +70,10 @@
         </section>
 
         <!-- Classes Tab Content -->
-        <section id="classesTab" class="tab-content">
+        <section id="MyclassesTab" class="tab-content">
             <div class="account-container">
-                <h2>Your Department's Classes</h2>
-                <p>Here you will see the list of your assigned classes, and your Dept.'s classes. </p>
+                <h2>Your  Classes</h2>
+                <p>Here you will see the list of your assigned classes. </p>
                 <!-- You can add a dynamic list of classes here -->
 				
 				
@@ -122,6 +123,60 @@
             </div>
         </section>
 
+
+	  <section id="DeptclassesTab" class="tab-content">
+            <div class="account-container">
+                <h2>Your Department's Classes</h2>
+                <p>Here you will see the list of your your Dept.'s classes. </p>
+                <!-- You can add a dynamic list of classes here -->
+				
+				
+				<!-- Zaynin Sept 26 (START) -->
+				<!--
+				Create a Dropdown Menu for the Departments:
+				If the user is an admin, show all departments as options.
+				Otherwise, show the user's department only.
+				Impacts the course dropdown menu (below) options based on what department
+				is selected.
+				-->
+				<div>
+					<label for="department_dropdown">Select a Department:</label>
+					<select id="department_dropdown" name="options">
+					<option value="any">Any</option> <!-- The Any option -->
+					</select>
+				</div>
+				
+				<!--
+				Create a Dropdown Menu for the Semesters:
+				Checks all of the professor's courses and displays a drop-down menu for them
+				to select a specific semester. Only semesters that the professor has classes in
+				will be options.
+				-->
+				<div>
+					<label for="semester_dropdown">Select a Semester:</label>
+					<select id="semester_dropdown" name="options">
+					<option value="any">Any</option> <!-- The Any option -->
+					</select>
+				</div>
+				
+				<!--
+				Create a Dropdown Menu for the Courses:
+				Checks all of the professor's courses, and the selected semester (from the semester dropdown menu)
+				and fills the dropdown menu with all valid courses. If no semester is selected, it will show all of
+				the professor's courses from all semesters.
+				-->
+				<div>
+					<label for="courses_dropdown">Select a Course:</label>
+					<select id="courses_dropdown" name="options">
+					<option value="none"></option> <!-- The blank/empty option -->
+					</select>
+				</div>
+				<!-- Zaynin Sept 26 (END) -->
+				
+				
+            </div>
+        </section>
+	    
 
 	 <section id="helpTab" class="tab-content">
             <div class="account-container">
