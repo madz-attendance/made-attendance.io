@@ -52,29 +52,26 @@ madzLogoButton.addEventListener("click", function()
 	window.location.href = "inProfessorAccount.html";
 });
 
-// Tab functionality to toggle between Welcome and Classes sections
-function openTab(tabName) 
-{
-	// Hide all tab content
-	const tabContents = document.getElementsByClassName('tab-content');
-	for (let i = 0; i < tabContents.length; i++) 
-	{
-		tabContents[i].classList.remove('active');
-	}
+   // Define the openTab function
+    function openTab(tabName) {
+        var tabContents = document.querySelectorAll('.tab-content');
+        tabContents.forEach(function(tabContent) {
+            tabContent.style.display = 'none';
+        });
 
-	// Remove active class from all buttons
-	const tabButtons = document.getElementsByClassName('tab-button');
-	for (let i = 0; i < tabButtons.length; i++) 
-	{
-		tabButtons[i].classList.remove('active');
-	}
+        document.getElementById(tabName).style.display = 'block';
 
-	// Show the clicked tab's content
-	document.getElementById(tabName).classList.add('active');
+        var tabButtons = document.querySelectorAll('.tab-button');
+        tabButtons.forEach(function(tabButton) {
+            tabButton.classList.remove('active');
+        });
 
-	// Add active class to the clicked tab button
-	event.target.classList.add('active');
-}
+        var clickedButton = document.querySelector('[onclick="openTab(\'' + tabName + '\')"]');
+        if (clickedButton) {
+            clickedButton.classList.add('active');
+        }
+    }
+
 
 // Fetch the user data after signing in
 async function fetchProfessorData() 
