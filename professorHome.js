@@ -49,8 +49,27 @@ async function initializePage()
 var madzLogoButton = document.getElementById("madz_logo");
 madzLogoButton.addEventListener("click", function() 
 {
-	window.location.href = "inProfessorAccount.html?tab=welcomeTab";
+	window.location.href = "inProfessorAccount.html";
 });
+// Function to show the home tab content on page load
+function showWelcomeTab() {
+    // Hide all tab contents
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    // Always default to the home tab
+    document.getElementById('welcomeTab').style.display = 'block';
+  
+    window.history.pushState({}, '', '?tab=home');
+}
+  
+  // Call the function to show the home tab content on page load
+  window.onload = showWelcomeTab;
+ 
+
+
   // Define the openTab function
   function openTab(tabName) {
     var tabContents = document.querySelectorAll('.tab-content');
