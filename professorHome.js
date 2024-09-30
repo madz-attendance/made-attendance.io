@@ -571,11 +571,11 @@ async function renderCourses(email) {
 
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
-var welcome_button = document.querySelector("button[onclick=\"openTab('welcomeTab')\"]");
-var classes_button = document.querySelector("button[onclick=\"openTab('classesTab')\"]");
-var help_button = document.querySelector("button[onclick=\"openTab('helpTab')\"]");
-var account_button = document.querySelector("button[onclick=\"openTab('accountTab')\"]");
-var notification_button = document.querySelector("button[onclick=\"openTab('notificationTab')\"]");
+var home_button = document.getElementById("home_button");
+var classes_button = document.getElementById("classes_button");
+var help_button = document.getElementById("help_button");
+var account_button = document.getElementById("account_button");
+var notification_button = document.getElementById("notification_button");
 var log_out_button = document.querySelector(".log-out-button");
 
 var currentTab = "welcomeTab"; // Default current tab
@@ -588,28 +588,23 @@ function resetButtonColors() {
     log_out_button.style.filter = "brightness(100%)";
 }
 
-welcome_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "welcomeTab") {
-        currentTab = "welcomeTab";
-        welcome_button.style.color = "#FFFFFF"; // Brighten text for active tab
-    }
-});
-
-// Change text color on mouseover if the tab is not active
-welcome_button.addEventListener("mouseover", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.color = "#FFFFFF"; // Brighten text on hover
-    }
-});
-
-// Reset text color on mouseout if the tab is not active
-welcome_button.addEventListener("mouseout", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.color = "#CCCCCC"; // Reset to default color
-    }
-});
-
+    welcome_button.addEventListener("click", function() {
+        resetButtonColors();
+        if (currentTab != "welcomeTab") {
+            currentTab = "welcomeTab";
+            welcome_button.style.filter = "brightness(150%)";
+        }
+    });
+    welcome_button.addEventListener("mouseover", function() {
+        if (currentTab != "welcomeTab") {
+            welcome_button.style.filter = "brightness(150%)";
+        }
+    });
+    welcome_button.addEventListener("mouseout", function() {
+        if (currentTab != "welcomeTab") {
+            welcome_button.style.filter = "brightness(100%)";
+        }
+    });
 
 // Classes tab logic
 classes_button.addEventListener("click", function() {
