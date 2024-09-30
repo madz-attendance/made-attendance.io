@@ -51,26 +51,18 @@ madzLogoButton.addEventListener("click", function()
 {
 	window.location.href = "inProfessorAccount.html";
 });
-
-   // Define the openTab function
-    function openTab(tabName) {
-        var tabContents = document.querySelectorAll('.tab-content');
-        tabContents.forEach(function(tabContent) {
-            tabContent.style.display = 'none';
-        });
-
-        document.getElementById(tabName).style.display = 'block';
-
-        var tabButtons = document.querySelectorAll('.tab-button');
-        tabButtons.forEach(function(tabButton) {
-            tabButton.classList.remove('active');
-        });
-
-        var clickedButton = document.querySelector('[onclick="openTab(\'' + tabName + '\')"]');
-        if (clickedButton) {
-            clickedButton.classList.add('active');
-        }
-    }
+  // Define the openTab function
+  function openTab(tabName) {
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    document.getElementById(tabName).style.display = 'block';
+  
+    // Update URL based on tabName
+    window.history.pushState({}, '', '?tab=' + tabName);
+}
 
 
 // Fetch the user data after signing in
