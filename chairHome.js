@@ -588,7 +588,7 @@ var currentTab = "welcomeTab"; // Default current tab
 function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
     my_classes_button.style.filter = "brightness(100%)";
-    dept_classes_button.style.filter = "brightness(100%);
+    dept_classes_button.style.filter = "brightness(100%)";
     account_button.style.filter = "brightness(100%)";
     notification_button.style.filter = "brightness(100%)";
     log_out_button.style.filter = "brightness(100%)";
