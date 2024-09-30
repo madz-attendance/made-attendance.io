@@ -49,6 +49,24 @@ var madzLogoButton = document.getElementById("madz_logo");
 madzLogoButton.addEventListener("click", function() {
 	window.location.href = "inAdminAccount.html";
 });
+
+  function showWelcomeTab() {
+    // Hide all tab contents
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    // Always default to the home tab
+    document.getElementById('welcomeTab').style.display = 'block';
+  
+    window.history.pushState({}, '', '?tab=home');
+}
+  
+  // Call the function to show the home tab content on page load
+  window.onload = showWelcomeTab;
+ 
+
 	 // Define the openTab function
   function openTab(tabName) {
     var tabContents = document.querySelectorAll('.tab-content');
@@ -722,6 +740,8 @@ function resetButtonColors() {
     notification_button.style.filter = "brightness(100%)";
     log_out_button.style.filter = "brightness(100%)";
 }
+
+welcome_button.style.filter = "brightness(150%)";
 
 // Welcome tab logic
 welcome_button.addEventListener("click", function() {
