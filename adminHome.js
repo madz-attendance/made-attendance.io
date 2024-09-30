@@ -49,26 +49,18 @@ var madzLogoButton = document.getElementById("madz_logo");
 madzLogoButton.addEventListener("click", function() {
 	window.location.href = "inAdminAccount.html";
 });
-	// Tab functionality to toggle between Welcome and Classes sections
-	function openTab(tabName) {
-		// Hide all tab content
-		const tabContents = document.getElementsByClassName('tab-content');
-		for (let i = 0; i < tabContents.length; i++) {
-			tabContents[i].classList.remove('active');
-		}
-
-		// Remove active class from all buttons
-		const tabButtons = document.getElementsByClassName('tab-button');
-		for (let i = 0; i < tabButtons.length; i++) {
-			tabButtons[i].classList.remove('active');
-		}
-
-		// Show the clicked tab's content
-		document.getElementById(tabName).classList.add('active');
-
-		// Add active class to the clicked tab button
-		event.target.classList.add('active');
-	}
+	 // Define the openTab function
+  function openTab(tabName) {
+    var tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(function(tabContent) {
+      tabContent.style.display = 'none';
+    });
+  
+    document.getElementById(tabName).style.display = 'block';
+  
+    // Update URL based on tabName
+    window.history.pushState({}, '', '?tab=' + tabName);
+}
 
 
 
@@ -712,11 +704,11 @@ async function fetchDepartments(email)
 
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
-var welcome_button = document.querySelector("button[onclick=\"openTab('welcomeTab')\"]");
-var classes_button = document.querySelector("button[onclick=\"openTab('classesTab')\"]");
+var welcome_button = document.getElementById("welcome_button");
+var classes_button = document.getElementById("classes_button");
 var create_account_button = document.getElementById("create_account_button");
-var account_button = document.querySelector("button[onclick=\"openTab('accountTab')\"]");
-var notification_button = document.querySelector("button[onclick=\"openTab('notificationTab')\"]");
+var account_button = document.getElementById("account_button");
+var notification_button = document.getElementById("notification_button");
 var log_out_button = document.querySelector(".log-out-button");
 
 var currentTab = "welcomeTab"; // Default current tab
