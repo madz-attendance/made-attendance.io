@@ -592,6 +592,8 @@ function resetButtonColors() {
     log_out_button.style.filter = "brightness(100%)";
 }
 
+  welcome_button.style.filter = "brightness(150%)";
+
 // Welcome tab logic
 welcome_button.addEventListener("click", function() {
     resetButtonColors();
