@@ -631,7 +631,7 @@ help_button.addEventListener("click", function() {
     resetButtonColors();
     if (currentTab != "helpTab") {
         currentTab = "helpTab";
-        account_button.style.filter = "brightness(150%)";
+        help_button.style.filter = "brightness(150%)";
     }
 });
 help_button.addEventListener("mouseover", function() {
