@@ -6,27 +6,59 @@
     <title>MADZ Attendance | Chair Account</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="./images/madz-tab-icon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
 <script src="supabaseInit.js"></script>
 <body>
+<!-- The style for Material Symbols -->
 
     <!-- Header section with navigation tabs and log out button -->
-    <header>
-        <div class="header-center">
-            <button class="tab-button active" onclick="openTab('welcomeTab')">Welcome</button>
-            <button class="tab-button" onclick="openTab('classesTab')">Classes</button>
+   <header>
+       <div style="margin: 0 auto;">
+       	    <button id="welcome_button" class="tab-button" onclick="openTab('welcomeTab')">Welcome</button>
+	    <button id="classes_button" class="tab-button" onclick="openTab('classesTab')">Classes</button>
         </div>
+                </div>
+	    <button id="help_button" class="tab-button" onclick="openTab('helpTab')">
+		<span class="material-symbols-outlined">
+		help
+	    	</span>
+	    </button>
+	    <button id="account_button" class="tab-button" onclick="openTab('accountTab')">
+		<span class="material-symbols-outlined">
+		account_circle
+	    	</span>
+	    </button>
+	  <button id="notification_button" class="tab-button" onclick="openTab('notificationTab')">   
+		<span class="material-symbols-outlined">
+		notifications
+		</span>
+	    
         <!-- Log out button aligned to the right -->
-        <div class="log-out-container">
-            <button class="tab-button log-out-button" onclick="logOut()">Log Out</button>
-        </div>
+	<div class="log-out-container">
+    <button class="tab-button log-out-button" onclick="logOut()">
+        <span class="material-symbols-outlined">
+            logout
+        </span>
+    </button>
+</div>
+<style>
+    .material-symbols-outlined {
+        font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+    }
+</style>
+
     </header>
     <img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz_logo"> 
     <!-- Main Content Area -->
     <main>
         <!-- Welcome Tab Content -->
-        <div id="welcomeTab" class="tab-content active">
+        <section id="welcomeTab" class="tab-content active">
             <div class="account-container">
                 <h2 id="welcomeMessage">Welcome,</h2>
                 <div class="user-info">
@@ -34,10 +66,10 @@
                     <p><strong>Last Name:</strong> <span id="facLastName"></span></p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Classes Tab Content -->
-        <div id="classesTab" class="tab-content">
+        <section id="classesTab" class="tab-content">
             <div class="account-container">
                 <h2>Your Department's Classes</h2>
                 <p>Here you will see the list of your assigned classes, and your Dept.'s classes. </p>
@@ -88,7 +120,28 @@
 				
 				
             </div>
-        </div>
+        </section>
+
+
+	 <section id="helpTab" class="tab-content">
+            <div class="account-container">
+		    <h2> FAQ / Help for Administrators: </h2>
+            </div>
+        </section>
+	
+	 <section id="accountTab" class="tab-content">
+            <div class="account-container">
+		    <h2> View your Account Information: </h2>
+            </div>
+        </section>
+	
+
+	 <section id="notificationTab"  class="tab-content">
+            <div class="account-container">
+		    <h2>View Your Notifications:  </h2>
+                </div>
+        </section>
+	    
     </main>
 
     <footer>
