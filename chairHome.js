@@ -561,6 +561,7 @@ async function renderCourses(email) {
 // Buttons for welcome, classes, create account, account, notifications, and log out
 var welcome_button = document.getElementById("welcome_button");
 var classes_button = document.getElementById("classes_button");
+var help_button = document.getElementById("help_button");
 var account_button = document.getElementById("account_button");
 var notification_button = document.getElementById("notification_button");
 var log_out_button = document.querySelector(".log-out-button");
@@ -613,6 +614,24 @@ classes_button.addEventListener("mouseout", function() {
     }
 });
 
+
+help_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "helpTab") {
+        currentTab = "helpTab";
+        help_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseover", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseout", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(100%)";
+    }
+});
 
 
 // Account tab logic
