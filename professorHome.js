@@ -588,24 +588,28 @@ function resetButtonColors() {
     log_out_button.style.filter = "brightness(100%)";
 }
 
-// Welcome tab logic
 welcome_button.addEventListener("click", function() {
     resetButtonColors();
     if (currentTab != "welcomeTab") {
         currentTab = "welcomeTab";
-        welcome_button.style.filter = "brightness(150%)";
+        welcome_button.style.color = "#FFFFFF"; // Brighten text for active tab
     }
 });
+
+// Change text color on mouseover if the tab is not active
 welcome_button.addEventListener("mouseover", function() {
     if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(150%)";
+        welcome_button.style.color = "#FFFFFF"; // Brighten text on hover
     }
 });
+
+// Reset text color on mouseout if the tab is not active
 welcome_button.addEventListener("mouseout", function() {
     if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(100%)";
+        welcome_button.style.color = "#CCCCCC"; // Reset to default color
     }
 });
+
 
 // Classes tab logic
 classes_button.addEventListener("click", function() {
