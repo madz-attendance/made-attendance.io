@@ -49,7 +49,7 @@ async function initializePage()
 var madzLogoButton = document.getElementById("madz_logo");
 madzLogoButton.addEventListener("click", function() 
 {
-	window.location.href = "inProfessorAccount.html";
+	window.location.href = "inProfessorAccount.html?tab=welcomeTab";
 });
   // Define the openTab function
   function openTab(tabName) {
