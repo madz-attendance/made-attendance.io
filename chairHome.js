@@ -576,7 +576,8 @@ async function renderCourses(email) {
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
 var welcome_button = document.getElementById("welcome_button");
-var classes_button = document.getElementById("classes_button");
+var my_classes_button = document.getElementById("my_classes_button");
+var dept_classes_button = document.getElementById("dept_classes_button");
 var help_button = document.getElementById("help_button");
 var account_button = document.getElementById("account_button");
 var notification_button = document.getElementById("notification_button");
@@ -586,7 +587,8 @@ var currentTab = "welcomeTab"; // Default current tab
 
 function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
-    classes_button.style.filter = "brightness(100%)";
+    my_classes_button.style.filter = "brightness(100%)";
+    dept_classes_button.style.filter = "brightness(100%);
     account_button.style.filter = "brightness(100%)";
     notification_button.style.filter = "brightness(100%)";
     log_out_button.style.filter = "brightness(100%)";
@@ -614,21 +616,40 @@ welcome_button.addEventListener("mouseout", function() {
 });
 
 // Classes tab logic
-classes_button.addEventListener("click", function() {
+my_classes_button.addEventListener("click", function() {
     resetButtonColors();
-    if (currentTab != "classesTab") {
-        currentTab = "classesTab";
-        classes_button.style.filter = "brightness(150%)";
+    if (currentTab != "MyclassesTab") {
+        currentTab = "MyclassesTab";
+        my_classes_button.style.filter = "brightness(150%)";
     }
 });
-classes_button.addEventListener("mouseover", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(150%)";
+my_classes_button.addEventListener("mouseover", function() {
+    if (currentTab != "MyclassesTab") {
+        my_classes_button.style.filter = "brightness(150%)";
     }
 });
-classes_button.addEventListener("mouseout", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(100%)";
+my_classes_button.addEventListener("mouseout", function() {
+    if (currentTab != "MyclassesTab") {
+        my_classes_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Classes tab logic for dept 
+dept_classes_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "DeptclassesTab") {
+        currentTab = "DeptclassesTab";
+        dept_classes_button.style.filter = "brightness(150%)";
+    }
+});
+dept_classes_button.addEventListener("mouseover", function() {
+    if (currentTab != "DeptclassesTab") {
+        dept_classes_button.style.filter = "brightness(150%)";
+    }
+});
+dept_classes_button.addEventListener("mouseout", function() {
+    if (currentTab != "DeptclassesTab") {
+        dept_classes_button.style.filter = "brightness(100%)";
     }
 });
 
