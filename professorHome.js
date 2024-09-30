@@ -573,7 +573,7 @@ async function renderCourses(email) {
 // Buttons for welcome, classes, create account, account, notifications, and log out
 var welcome_button = document.querySelector("button[onclick=\"openTab('welcomeTab')\"]");
 var classes_button = document.querySelector("button[onclick=\"openTab('classesTab')\"]");
-var create_account_button = document.getElementById("create_account_button");
+var help_button = document.querySelector("button[onclick=\"openTab('helpTab')\"]");
 var account_button = document.querySelector("button[onclick=\"openTab('accountTab')\"]");
 var notification_button = document.querySelector("button[onclick=\"openTab('notificationTab')\"]");
 var log_out_button = document.querySelector(".log-out-button");
@@ -626,6 +626,24 @@ classes_button.addEventListener("mouseout", function() {
     }
 });
 
+// Help tab logic
+help_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "helpTab") {
+        currentTab = "helpTab";
+        account_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseover", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseout", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(100%)";
+    }
+});
 
 
 // Account tab logic
@@ -648,7 +666,7 @@ account_button.addEventListener("mouseout", function() {
 });
 
 
-// Account tab logic
+// Notification tab logic
 notification_button.addEventListener("click", function() {
     resetButtonColors();
     if (currentTab != "notificationTab") {
