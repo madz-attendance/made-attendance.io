@@ -142,15 +142,15 @@ async function fetchProfessorData()
 
 
 var create_account_button = document.getElementById("create_account_button");
+//Mark addition 10/1/24
+document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
+    	if (event.key === 'Enter') {
+		event.preventDefault(); // Prevent form submission if inside a form
+        	createUser(); // Call the signIn function
+    	}
+});
 
 async function createUser() {
-	//Mark addition 10/1/24
-	document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
-    		if (event.key === 'Enter') {
-        		event.preventDefault(); // Prevent form submission if inside a form
-        		signUp(); // Call the signIn function
-    		}
-	});
     try {
         const facemail = document.getElementById('facemail').value;
         const password = document.getElementById('password').value;
