@@ -1,11 +1,3 @@
-//Mark addition 10/1/24
-document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
-    	if (event.key === 'Enter') {
-		event.preventDefault(); // Prevent form submission if inside a form
-        	createUser(); // Call the signIn function
-    	}
-});
-
 // "MAIN()"
 // Zaynin 09/26/2024
 // Call initializePage when the page loads
@@ -888,3 +880,10 @@ log_out_button.addEventListener("mouseout", function() {
     }
 });
 
+//Mark addition 10/1/24
+document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
+    	if (event.key === 'Enter') {
+		event.preventDefault(); // Prevent form submission if inside a form
+        	createUser(); // Call the signIn function
+    	}
+});
