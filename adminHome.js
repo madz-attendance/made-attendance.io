@@ -2,7 +2,7 @@
 document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
     	if (event.key === 'Enter') {
 		event.preventDefault(); // Prevent form submission if inside a form
-        	createUser(); // Call the signIn function
+        	createUser(); // Call the createUser function
     	}
 });
 // "MAIN()"
