@@ -1,22 +1,25 @@
 // Function to check if the user is logged in
 async function checkAuth() {
-  const { data: { session } } = await supabasePublicClient.auth.getSession();
+  // Call to get the current session
+  const { data: { session }, error } = await supabasePublicClient.auth.getSession();
 
+  // Check if there's an error getting the session (optional)
   if (error) {
     console.error('Error getting session:', error.message);
     return;
   }
+
+  // If no session exists, redirect to the login page
   if (!session) {
-    // No session found, redirect to login page
-    window.location.href = 'index.html';
+    window.location.href = 'index.html'; // Redirect to login
   } else {
-    // User is authenticated, allow access to the page
+    // User is authenticated, log the user info and proceed
     console.log('User is authenticated:', session.user);
   }
 }
+
 // Call checkAuth on page load
 window.addEventListener('DOMContentLoaded', checkAuth);
-
 
 
 
