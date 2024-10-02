@@ -4,7 +4,7 @@ async function checkAuth() {
 
   if (!session) {
     // No session found, redirect to login page
-    window.location.href = '/index.html';
+    window.location.href = 'index.html';
   } else {
     // User is authenticated, allow access to the page
     console.log('User is authenticated:', session.user);
