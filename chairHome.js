@@ -2,6 +2,10 @@
 async function checkAuth() {
   const { data: { session } } = await supabasePublicClient.auth.getSession();
 
+  if (error) {
+    console.error('Error getting session:', error.message);
+    return;
+  }
   if (!session) {
     // No session found, redirect to login page
     window.location.href = 'index.html';
@@ -10,11 +14,9 @@ async function checkAuth() {
     console.log('User is authenticated:', session.user);
   }
 }
+// Call checkAuth on page load
+window.addEventListener('DOMContentLoaded', checkAuth);
 
-// Call the checkAuth function on page load
-window.onload = () => {
-  checkAuth();
-};
 
 
 
