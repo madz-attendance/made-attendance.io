@@ -18,6 +18,12 @@ async function checkAuth() {
   }
 }
 
+document.getElementById('create_account').addEventListener('keydown', function(event) { //Can press enter to sign in
+    if (event.key === 'Enter') {
+        createUser(); // Call the createUser function
+    }
+});
+
 // Call checkAuth on page load
 window.addEventListener('DOMContentLoaded', checkAuth);
 
