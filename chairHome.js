@@ -1,3 +1,24 @@
+// Function to check if the user is logged in
+async function checkAuth() {
+  const { data: { session } } = await supabasePublicClient.auth.getSession();
+
+  if (!session) {
+    // No session found, redirect to login page
+    window.location.href = '/index.html';
+  } else {
+    // User is authenticated, allow access to the page
+    console.log('User is authenticated:', session.user);
+  }
+}
+
+// Call the checkAuth function on page load
+window.onload = () => {
+  checkAuth();
+};
+
+
+
+
 // "MAIN()"
 // Zaynin 09/26/2024
 // Call initializePage when the page loads
