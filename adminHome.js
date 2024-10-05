@@ -25,7 +25,7 @@ window.addEventListener('DOMContentLoaded', checkAuth);
 
 
 //Mark addition 10/1/24
-document.getElementById('sign_in').addEventListener('keydown', function(event) { //Can press enter to sign in
+document.getElementById('create_account').addEventListener('keydown', function(event) { //Can press enter to sign in
     	if (event.key === 'Enter') {
         	createUser(); // Call the createUser function
     	}
