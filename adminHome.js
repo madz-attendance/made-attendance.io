@@ -69,7 +69,7 @@ async function initializePage()
 	attachDepartmentDropdownListener(professor_courses);// Now that the professor information is loaded, attach the event listener to its drop down menu. Must wait for prev async funcs to finish.
 	attachSemesterDropdownListener(professor_courses); // Now that the semesters information is loaded, attach the event listener to its dropdown menu. Must wait for the previous async functions to finish.
 	attachCoursesDropdownListener();	// Now that the courses information is loaded, attach the event listener to its dropdown menu. Must wait for previous async functions to finish.
-	
+	await populateDepartmentsDropdown();
 }
 
 // ===================================================
@@ -171,6 +171,38 @@ async function fetchProfessorData()
 
 
 
+async function populateDepartmentsDropdown() {
+    try {
+        // Fetch all departments from the 'departments' table (assuming the table has 'id', 'name', and 'code' columns)
+        const { data: departments, error: departmentError } = await supabasePublicClient
+            .from('departments')
+            .select('deptcode, deptname');  // Assuming 'code' is the department code
+
+        if (departmentError) {
+            console.error('Error fetching departments:', departmentError);
+            return;
+        }
+
+        // Get the department dropdown element
+        const departmentDropdown = document.getElementById('create_department_dropdown');
+
+        // Clear existing options
+        departmentDropdown.innerHTML = '<option value="any">Any</option>';
+
+        // Append each department as an option
+        departments.forEach(department => {
+            const option = document.createElement('option');
+            option.value = department.deptcode; // Use department ID as the value
+            option.textContent = `${department.deptcode} - ${department.deptname}`; // Show department code and name as the label
+            departmentDropdown.appendChild(option);
+        });
+
+        console.log('Departments dropdown populated with all departments.');
+        
+    } catch (error) {
+        console.error('Error populating departments dropdown:', error);
+    }
+}
 
 
 
