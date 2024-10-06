@@ -182,7 +182,9 @@ async function createUser() {
         const password = document.getElementById('password').value;
         const faclastname = document.getElementById('faclastname').value;  // Get the last name input
         const facrank = document.getElementById('facrank').value; 
-        
+	const deptcode = document.getElementById('create_department_dropdown').value;
+	    
+	    
         // Sign up the user
         const { data, error } = await supabasePublicClient.auth.signUp({
             email: facemail,
@@ -200,7 +202,8 @@ async function createUser() {
                 { 
                     facemail: facemail, 
                     facrank: facrank,  // Set the default rank here
-                    faclastname: faclastname 
+                    faclastname: faclastname,
+		    deptcode: deptcode
                 }
             ]);
 
