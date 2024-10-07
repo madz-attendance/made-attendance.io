@@ -551,7 +551,7 @@ async function fetchDepartments(email)
 
 
 
-/ Function to fetch notifications for the logged-in user
+// Function to fetch notifications for the logged-in user
 async function fetchNotificationsForCurrentUser() {
     // Get the current session and user details
     const {
