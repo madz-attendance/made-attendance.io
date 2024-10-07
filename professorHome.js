@@ -550,6 +550,56 @@ async function fetchDepartments(email)
 }
 
 
+
+/ Function to fetch notifications for the logged-in user
+async function fetchNotificationsForCurrentUser() {
+    // Get the current session and user details
+    const {
+        data: { session },
+        error: authError,
+    } = await supabasePublicClient.auth.getSession();
+
+    if (authError || !session) {
+        console.error('Error fetching user session:', authError || 'No active session');
+        return;
+    }
+
+    const loggedInFacemail = session.user.email; // Get the authenticated user's email
+
+    // Fetch notifications where the facemail matches the logged-in user's email
+    const { data, error } = await supabasePublicClient
+        .from('temptable') // Replace with your actual table name
+        .select('*') // Select all columns or specify the columns you need
+        .eq('facemail', loggedInFacemail); // Filter by logged-in user's facemail
+
+    if (error) {
+        console.error('Error fetching notifications:', error);
+        return;
+    }
+
+    // Display notifications
+    const notificationsContainer = document.getElementById('notifications-container');
+
+    if (data.length > 0) {
+        notificationsContainer.innerHTML = ''; // Clear previous notifications
+        data.forEach((notification) => {
+            const notificationElement = document.createElement('div');
+            notificationElement.className = 'notification';
+            notificationElement.innerHTML = `
+                <h3>${temptable.studentfirstname} ${temptable.studentlastname}'s Request </h3> <!-- Replace with your column name -->
+                <p>${temptable.coursecode}, ${temptable.note}, ${temptable.insertdate}, ${temptable.inserttime} </p> <!-- Replace with your column name -->
+            `;
+            notificationsContainer.appendChild(notificationElement);
+        });
+    } else {
+        notificationsContainer.innerHTML = '<p>No notifications found.</p>';
+    }
+}
+
+// Call the function to fetch and display notifications on page load
+fetchNotificationsForCurrentUser();
+
+
 // Zaynin Sept 26 2024 (END)
 // =====================================================
 
