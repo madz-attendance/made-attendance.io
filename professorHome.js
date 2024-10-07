@@ -550,41 +550,35 @@ async function fetchDepartments(email)
 }
 
 async function fetchNotificationsForCurrentUser() {
-    // Get the current session and user details
-    const {
-        data: { session },
-        error: authError,
-    } = await supabasePublicClient.auth.getSession();
+    const { data: { session }, error: authError } = await supabasePublicClient.auth.getSession();
 
     if (authError || !session) {
         console.error('Error fetching user session:', authError || 'No active session');
         return;
     }
 
-    const loggedInFacemail = session.user.email; // Get the authenticated user's email
+    const loggedInFacemail = session.user.email; 
 
-    // Fetch notifications where the facemail matches the logged-in user's email
     const { data, error } = await supabasePublicClient
-        .from('temptable') // Replace with your actual table name
-        .select('*') // Select all columns or specify the columns you need
-        .eq('facemail', loggedInFacemail); // Filter by logged-in user's facemail
+        .from('temptable')
+        .select('*')
+        .eq('facemail', loggedInFacemail);
 
     if (error) {
         console.error('Error fetching notifications:', error);
         return;
     }
 
-    // Display notifications
     const notificationsContainer = document.getElementById('notifications-container');
 
     if (data.length > 0) {
-        notificationsContainer.innerHTML = ''; // Clear previous notifications
+        notificationsContainer.innerHTML = ''; 
         data.forEach((notification) => {
-            const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`; // Create a unique key
+            const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`;
 
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification';
-            notificationElement.setAttribute('data-unique-key', uniqueKey); // Store the unique key as a data attribute
+            notificationElement.setAttribute('data-unique-key', uniqueKey);
             notificationElement.innerHTML = `
                 <div class="notification-header">
                     <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
@@ -600,7 +594,6 @@ async function fetchNotificationsForCurrentUser() {
                             data-course="${notification.coursecode}" 
                             data-student-firstname="${notification.studentfirstname}" 
                             data-student-lastname="${notification.studentlastname}" 
-                            data-student-id="${notification.stuid}" 
                             data-date="${notification.insertdate}" 
                             data-time="${notification.inserttime}">Approve</button>
                     <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
@@ -608,8 +601,7 @@ async function fetchNotificationsForCurrentUser() {
             `;
             notificationsContainer.appendChild(notificationElement);
         });
-
-        // Attach event listeners to buttons
+//Attach event listeners to buttons
         attachButtonListeners();
     } else {
         notificationsContainer.innerHTML = '<p>No notifications found.</p>';
@@ -633,34 +625,29 @@ async function handleApprove(event) {
     const courseCode = event.target.getAttribute('data-course');
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
-    const stuid = event.target.getAttribute('data-student-id');
     const submissionDate = event.target.getAttribute('data-date');
     const submissionTime = event.target.getAttribute('data-time');
-
-    // Combine date and time into a timestamp
+    
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
 
-    // Find the course ID based on the course code
     const { data: courseData, error: courseError } = await supabasePublicClient
-        .from('courses') // Assuming you have a courses table
+        .from('courses')
         .select('courseid')
         .eq('coursecode', courseCode)
-        .single(); // Get a single result
+        .single();
 
     if (courseError || !courseData) {
         console.error('Error fetching course ID:', courseError);
         return;
     }
 
-    // Update the attendance table
     const { error } = await supabasePublicClient
-        .from('attendance') // Replace with your actual attendance table name
+        .from('attendance')
         .insert([
             {
                 courseid: courseData.courseid,
                 stufirstname: stufirstname,
                 stulastname: stulastname,
-                stuid: stuid,
                 attendancetime: attendanceTime,
             }
         ]);
@@ -668,10 +655,7 @@ async function handleApprove(event) {
     if (error) {
         console.error('Error updating attendance table:', error);
     } else {
-        console.log('Attendance approved successfully!');
-        // Display success message on the screen
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
-        // Optionally, remove the notification or mark it as handled
         removeNotification(courseCode, stufirstname, submissionDate);
     }
 }
