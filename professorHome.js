@@ -631,7 +631,7 @@ function attachButtonListeners() {
 }
 
 async function handleApprove(event) {
-    const courseCode = event.target.getAttribute('data-course');
+    const courseFullCode = event.target.getAttribute('data-course'); // e.g., "CPSC 135 010"
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
     const stuid = event.target.getAttribute('data-student-id');
@@ -641,11 +641,14 @@ async function handleApprove(event) {
     // Combine date and time into a timestamp
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
 
+    // Extract the course code from the full course code
+    const courseCode = courseFullCode.split(' ')[0]; // This gets the first part (e.g., "CPSC")
+
     // Find the course ID based on the course code
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses') // Assuming you have a courses table
         .select('courseid')
-        .eq('coursecode', courseCode)
+        .eq('coursecode', courseCode) // Make sure to use the extracted course code
         .single(); // Get a single result
 
     if (courseError || !courseData) {
@@ -673,7 +676,7 @@ async function handleApprove(event) {
         // Display success message on the screen
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
         // Optionally, remove the notification or mark it as handled
-        removeNotification(courseCode, stufirstname, submissionDate);
+        removeNotification(courseFullCode, stufirstname, submissionDate);
     }
 }
 
