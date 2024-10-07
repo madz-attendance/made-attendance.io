@@ -574,33 +574,39 @@ async function fetchNotificationsForCurrentUser() {
     if (data.length > 0) {
         notificationsContainer.innerHTML = ''; 
         data.forEach((notification) => {
-            const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`;
+    // Assuming notification.coursecode is formatted as "CPSC 135 010"
+    const [deptCode, courseNum, courseSec] = notification.coursecode.split(' '); // Split by spaces
 
-            const notificationElement = document.createElement('div');
-            notificationElement.className = 'notification';
-            notificationElement.setAttribute('data-unique-key', uniqueKey);
-            notificationElement.innerHTML = `
-                <div class="notification-header">
-                    <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
-                </div>
-                <div class="notification-body">
-                    <p><strong>Course:</strong> ${notification.coursecode}</p>
-                    <p><strong>Note:</strong> ${notification.note}</p>
-                    <p><strong>Date of Submission:</strong> ${notification.insertdate}</p>
-                    <p><strong>Time of Submission:</strong> ${notification.inserttime}</p>
-                </div>
-                <div class="notification-actions">
-                    <button class="approve-button" 
-                            data-course="${notification.coursecode}" 
-                            data-student-firstname="${notification.studentfirstname}" 
-                            data-student-lastname="${notification.studentlastname}" 
-                            data-date="${notification.insertdate}" 
-                            data-time="${notification.inserttime}">Approve</button>
-                    <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
-                </div>
-            `;
-            notificationsContainer.appendChild(notificationElement);
-        });
+    const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`;
+    
+    const notificationElement = document.createElement('div');
+    notificationElement.className = 'notification';
+    notificationElement.setAttribute('data-unique-key', uniqueKey);
+    notificationElement.innerHTML = `
+        <div class="notification-header">
+            <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
+        </div>
+        <div class="notification-body">
+            <p><strong>Course:</strong> ${notification.coursecode}</p>
+            <p><strong>Note:</strong> ${notification.note}</p>
+            <p><strong>Date of Submission:</strong> ${notification.insertdate}</p>
+            <p><strong>Time of Submission:</strong> ${notification.inserttime}</p>
+        </div>
+        <div class="notification-actions">
+            <button class="approve-button" 
+                    data-dept="${deptCode}"
+                    data-course-number="${courseNum}"
+                    data-course-section="${courseSec}"
+                    data-student-firstname="${notification.studentfirstname}" 
+                    data-student-lastname="${notification.studentlastname}" 
+                    data-date="${notification.insertdate}" 
+                    data-time="${notification.inserttime}">Approve</button>
+            <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
+        </div>
+    `;
+    notificationsContainer.appendChild(notificationElement);
+});
+
 //Attach event listeners to buttons
         attachButtonListeners();
     } else {
