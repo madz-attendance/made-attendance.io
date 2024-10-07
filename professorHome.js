@@ -549,8 +549,6 @@ async function fetchDepartments(email)
 	}
 }
 
-
-// Function to fetch notifications for the logged-in user
 async function fetchNotificationsForCurrentUser() {
     // Get the current session and user details
     const {
@@ -582,21 +580,126 @@ async function fetchNotificationsForCurrentUser() {
     if (data.length > 0) {
         notificationsContainer.innerHTML = ''; // Clear previous notifications
         data.forEach((notification) => {
+            const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`; // Create a unique key
+
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification';
+            notificationElement.setAttribute('data-unique-key', uniqueKey); // Store the unique key as a data attribute
             notificationElement.innerHTML = `
-                <h3>${notification.studentfirstname} ${notification.studentlastname}'s Request</h3>
-                <p>${notification.coursecode}, ${notification.note}, ${notification.insertdate}, ${notification.inserttime}</p>
+                <div class="notification-header">
+                    <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
+                </div>
+                <div class="notification-body">
+                    <p><strong>Course:</strong> ${notification.coursecode}</p>
+                    <p><strong>Note:</strong> ${notification.note}</p>
+                    <p><strong>Date of Submission:</strong> ${notification.insertdate}</p>
+                    <p><strong>Time of Submission:</strong> ${notification.inserttime}</p>
+                </div>
+                <div class="notification-actions">
+                    <button class="approve-button" 
+                            data-course="${notification.coursecode}" 
+                            data-student-firstname="${notification.studentfirstname}" 
+                            data-student-lastname="${notification.studentlastname}" 
+                            data-student-id="${notification.stuid}" 
+                            data-date="${notification.insertdate}" 
+                            data-time="${notification.inserttime}">Approve</button>
+                    <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
+                </div>
             `;
             notificationsContainer.appendChild(notificationElement);
         });
+
+        // Attach event listeners to buttons
+        attachButtonListeners();
     } else {
         notificationsContainer.innerHTML = '<p>No notifications found.</p>';
     }
 }
 
+function attachButtonListeners() {
+    const approveButtons = document.querySelectorAll('.approve-button');
+    const denyButtons = document.querySelectorAll('.deny-button');
+
+    approveButtons.forEach((button) => {
+        button.addEventListener('click', handleApprove);
+    });
+
+    denyButtons.forEach((button) => {
+        button.addEventListener('click', handleDeny);
+    });
+}
+
+async function handleApprove(event) {
+    const courseCode = event.target.getAttribute('data-course');
+    const stufirstname = event.target.getAttribute('data-student-firstname');
+    const stulastname = event.target.getAttribute('data-student-lastname');
+    const stuid = event.target.getAttribute('data-student-id');
+    const submissionDate = event.target.getAttribute('data-date');
+    const submissionTime = event.target.getAttribute('data-time');
+
+    // Combine date and time into a timestamp
+    const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
+
+    // Find the course ID based on the course code
+    const { data: courseData, error: courseError } = await supabasePublicClient
+        .from('courses') // Assuming you have a courses table
+        .select('courseid')
+        .eq('coursecode', courseCode)
+        .single(); // Get a single result
+
+    if (courseError || !courseData) {
+        console.error('Error fetching course ID:', courseError);
+        return;
+    }
+
+    // Update the attendance table
+    const { error } = await supabasePublicClient
+        .from('attendance') // Replace with your actual attendance table name
+        .insert([
+            {
+                courseid: courseData.courseid,
+                stufirstname: stufirstname,
+                stulastname: stulastname,
+                stuid: stuid,
+                attendancetime: attendanceTime,
+            }
+        ]);
+
+    if (error) {
+        console.error('Error updating attendance table:', error);
+    } else {
+        console.log('Attendance approved successfully!');
+        // Optionally, remove the notification or mark it as handled
+        removeNotification(courseCode, stufirstname, submissionDate);
+    }
+}
+
+async function handleDeny(event) {
+    const uniqueKey = event.target.getAttribute('data-unique-key');
+    // Optionally, you can remove the notification or mark it as denied
+    removeNotificationFromUI(uniqueKey);
+}
+
+function removeNotification(courseCode, stufirstname, submissionDate) {
+    const uniqueKey = `${stufirstname}-${submissionDate}`; // Create the unique key again to identify the notification in the UI
+    const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
+    if (notificationElement) {
+        notificationElement.remove();
+    }
+}
+
+function removeNotificationFromUI(uniqueKey) {
+    const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
+    if (notificationElement) {
+        notificationElement.remove();
+    }
+}
+
 // Call the function to fetch and display notifications on page load
 fetchNotificationsForCurrentUser();
+
+
+
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================
