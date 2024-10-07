@@ -583,6 +583,12 @@ async function fetchNotificationsForCurrentUser() {
         data.forEach((notification) => {
             const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`; // Create a unique key
 
+            // Extract course code components
+            const courseParts = notification.coursecode.split(' '); // Split the course code into parts
+            const deptCode = courseParts[0]; // e.g., "CPSC"
+            const courseNum = courseParts[1]; // e.g., "135"
+            const courseSec = courseParts[2]; // e.g., "010"
+
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification';
             notificationElement.setAttribute('data-unique-key', uniqueKey); // Store the unique key as a data attribute
@@ -599,6 +605,9 @@ async function fetchNotificationsForCurrentUser() {
                 <div class="notification-actions">
                     <button class="approve-button" 
                             data-course="${notification.coursecode}" 
+                            data-dept="${deptCode}" // Store dept code
+                            data-course-num="${courseNum}" // Store course number
+                            data-course-sec="${courseSec}" // Store course section
                             data-student-firstname="${notification.studentfirstname}" 
                             data-student-lastname="${notification.studentlastname}" 
                             data-student-id="${notification.stuid}" 
@@ -631,7 +640,10 @@ function attachButtonListeners() {
 }
 
 async function handleApprove(event) {
-    const courseFullCode = event.target.getAttribute('data-course'); // e.g., "CPSC 135 010"
+    const courseFullCode = event.target.getAttribute('data-course');
+    const deptCode = event.target.getAttribute('data-dept');
+    const courseNum = event.target.getAttribute('data-course-num');
+    const courseSec = event.target.getAttribute('data-course-sec');
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
     const stuid = event.target.getAttribute('data-student-id');
@@ -641,23 +653,27 @@ async function handleApprove(event) {
     // Combine date and time into a timestamp
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
 
-    // Extract the course code from the full course code
-    const courseCode = courseFullCode.split(' ')[0]; // This gets the first part (e.g., "CPSC")
-
-    // Find the course ID based on the course code
+    // Fetch the course ID based on the department code, course number, and course section
     const { data: courseData, error: courseError } = await supabasePublicClient
-        .from('courses') // Assuming you have a courses table
+        .from('courses')
         .select('courseid')
-        .eq('coursecode', courseCode) // Make sure to use the extracted course code
-        .single(); // Get a single result
+        .eq('coursecode', deptCode) // Match by department code
+        .eq('coursenum', courseNum)   // Assuming you have this column in your courses table
+        .eq('coursesec', courseSec)    // Assuming you have this column in your courses table
+        .single();
 
-    if (courseError || !courseData) {
+    if (courseError) {
         console.error('Error fetching course ID:', courseError);
         return;
     }
 
+    if (!courseData) {
+        console.error('No course found for code:', courseFullCode);
+        return;
+    }
+
     // Update the attendance table
-    const { error } = await supabasePublicClient
+    const { error: attendanceError } = await supabasePublicClient
         .from('attendance') // Replace with your actual attendance table name
         .insert([
             {
@@ -669,8 +685,8 @@ async function handleApprove(event) {
             }
         ]);
 
-    if (error) {
-        console.error('Error updating attendance table:', error);
+    if (attendanceError) {
+        console.error('Error updating attendance table:', attendanceError);
     } else {
         console.log('Attendance approved successfully!');
         // Display success message on the screen
