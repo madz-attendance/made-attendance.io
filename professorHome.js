@@ -682,9 +682,10 @@ function displaySuccessMessage(firstName, lastName, date, time) {
     
     // Create a new message element
     const messageElement = document.createElement('div');
+    document.getElementById('message-container').style.backgroundColor = 'green';
     messageElement.className = 'success-message'; // Add a class for styling (optional)
     messageElement.textContent = message;
-
+	
     // Append the message to the message container
     messageContainer.appendChild(messageElement);
 
