@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Get references to the department code and class section elements
     const deptCodeInput = document.getElementById("dept_code");
     const classSectionInput = document.getElementById("class_section");
@@ -178,53 +178,47 @@ document.addEventListener("DOMContentLoaded", function() {
     const clearClassButton = document.getElementById("clear_class_button");
 
     // Function to clear the selected department code
-    clearDeptButton.addEventListener("click", function() {
+    clearDeptButton.addEventListener("click", function () {
         deptCodeInput.value = "";
         classSectionInput.value = "";
-        classSectionDatalist.innerHTML = ''; 
+        classSectionDatalist.innerHTML = '';
     });
 
     // Function to clear the selected class section
-    clearClassButton.addEventListener("click", function() {
+    clearClassButton.addEventListener("click", function () {
         classSectionInput.value = "";
     });
-    const classSections = {
-        "CPSC": ["CPSC 135 010", "CPSC 135 020", "CPSC 136 010"],
-        "ARTH": ["ARTH 124 010", "ARTH 25 19H", "ARTH 309 010"],
-        "POLI": ["POLI 10 010", "POLI 140 020", "POLI 181 010"],
-        "CHEM": ["CHEM 100 015", "CHEM 204 012", "CHEM 230 011"],
-        "BIOL": ["BIOL 10 012", "BIOL 104 013", "BIOL 104 012"],
-        "ANTH": ["ANTH 10 030", "ANTH 105 020", "ANTH 213 010"],
-        "CRJU": ["CRJU 10 010", "CRJU 101 020", "CRJU 182 010"],
-        "GEOL": ["GEOL 1 810", "GEOL 100 011", "GEOL 110 012"],
-        "ACCT": ["ACCT 121 020", "ACCT 122 010", "ACCT 305 010"],
-        "ANIA": ["ANIA 141 030", "ANIA 171 020", "ANIA 231 610"],
-        "ART": ["ART 141 011", "ART 161 610", "ART 31 010"],
-        "BUSN": ["BUSN 131 030", "BUSN 275 810", "BUSN 130 010"]
-        
-    };
-    // Function to update the department code based on the selected class section
-
 
     // Function to update the class section options based on the selected department
-    function updateClassSections() {
+    async function updateClassSections() {
         const selectedDept = deptCodeInput.value.toUpperCase(); // Convert input to uppercase
         console.log("Selected department:", selectedDept);
-        
+
         // Clear existing options
         classSectionDatalist.innerHTML = '';
 
         if (deptCodeInput.value === '') {
-        return;
+            return;
         }
+
+        // Fetch class sections from the database based on selected department
+        const { data, error } = await supabasePublicClient
+            .from('courses') // Fetch from courses table
+            .select('coursecode, coursenum, coursesec') // Select relevant columns
+            .eq('dept', selectedDept); // Filter by department
+
+        if (error) {
+            console.error('Error fetching courses:', error);
+            return;
+        }
+
         // Add options for the selected department
-        if (classSections[selectedDept]) {
-            classSections[selectedDept].forEach(section => {
-                const option = document.createElement("option");
-                option.value = section;
-                classSectionDatalist.appendChild(option);
-            });
-        }
+        data.forEach(course => {
+            const option = document.createElement("option");
+            // Combine course code, course number, and course section into a single string
+            option.value = `${course.coursecode} ${course.coursenum} ${course.coursesec}`;
+            classSectionDatalist.appendChild(option);
+        });
     }
 
     // Event listener to update class sections when department code changes
@@ -234,90 +228,90 @@ document.addEventListener("DOMContentLoaded", function() {
     updateClassSections();
 });
 
-document.addEventListener('DOMContentLoaded', function() {
-  document.getElementById('attendanceform').addEventListener('submit', async function(event) {
-    event.preventDefault(); // Prevent default form submission
-    console.log('Form submission triggered!'); // Debug message
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('attendanceform').addEventListener('submit', async function (event) {
+        event.preventDefault(); // Prevent default form submission
+        console.log('Form submission triggered!'); // Debug message
 
-    const email = document.getElementById('professor_email').value;
+        const email = document.getElementById('professor_email').value;
 
-    // Email validation using regex
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      document.getElementById('submissionInfo').innerHTML = `
-        <p>Status: Error - Invalid email format</p>
-        <p>Email: ${email}</p>
-      `;
-      document.getElementById('submissionInfo').style.backgroundColor = 'red';
-      return; // Stop the submission if email is invalid
-    }
+        // Email validation using regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            document.getElementById('submissionInfo').innerHTML = `
+                <p>Status: Error - Invalid email format</p>
+                <p>Email: ${email}</p>
+            `;
+            document.getElementById('submissionInfo').style.backgroundColor = 'red';
+            return; // Stop the submission if email is invalid
+        }
 
-    // Check if the email exists in the users database table
-    const { data: usersData, error: usersError } = await supabasePublicClient
-      .from('users') // The users table where you are storing faculty emails
-      .select('facemail')
-      .eq('facemail', email); // Check if the submitted email matches any email in the users table
+        // Check if the email exists in the users database table
+        const { data: usersData, error: usersError } = await supabasePublicClient
+            .from('users') // The users table where you are storing faculty emails
+            .select('facemail')
+            .eq('facemail', email); // Check if the submitted email matches any email in the users table
 
-    if (usersError) {
-      console.log('Supabase Error:', usersError); // Debug message
-      document.getElementById('submissionInfo').innerHTML = `
-        <p>Status: Error - ${usersError.message}</p>
-      `;
-      document.getElementById('submissionInfo').style.backgroundColor = 'red';
-      return;
-    }
+        if (usersError) {
+            console.log('Supabase Error:', usersError); // Debug message
+            document.getElementById('submissionInfo').innerHTML = `
+                <p>Status: Error - ${usersError.message}</p>
+            `;
+            document.getElementById('submissionInfo').style.backgroundColor = 'red';
+            return;
+        }
 
-    // If no matching email is found in the users table
-    if (usersData.length === 0) {
-      document.getElementById('submissionInfo').innerHTML = `
-        <p>Submission Time: ${new Date().toLocaleString()}</p>
-        <p>Status: Fail - No matching email found in the users database</p>
-        <p>Email: ${email}</p>
-      `;
-      document.getElementById('submissionInfo').style.backgroundColor = 'red';
-      return; // Stop the submission process
-    }
+        // If no matching email is found in the users table
+        if (usersData.length === 0) {
+            document.getElementById('submissionInfo').innerHTML = `
+                <p>Submission Time: ${new Date().toLocaleString()}</p>
+                <p>Status: Fail - No matching email found in the users database</p>
+                <p>Email: ${email}</p>
+            `;
+            document.getElementById('submissionInfo').style.backgroundColor = 'red';
+            return; // Stop the submission process
+        }
 
-    // Collect form data
-    const formData = {
-      studentfirstname: document.getElementById('student_firstname').value,
-      studentlastname: document.getElementById('student_lastname').value,
-      deptcode: document.getElementById('dept_code').value,
-      coursecode: document.getElementById('class_section').value,
-      facemail: document.getElementById('professor_email').value,
-      note: document.getElementById('professor_note').value,
-      insertdate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
-      inserttime: new Date().toLocaleTimeString() // HH:MM:SS
-    };
+        // Collect form data
+        const formData = {
+            studentfirstname: document.getElementById('student_firstname').value,
+            studentlastname: document.getElementById('student_lastname').value,
+            deptcode: document.getElementById('dept_code').value,
+            coursecode: document.getElementById('class_section').value,
+            facemail: document.getElementById('professor_email').value,
+            note: document.getElementById('professor_note').value,
+            insertdate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
+            inserttime: new Date().toLocaleTimeString() // HH:MM:SS
+        };
 
-    console.log('Form Data:', formData); // Debug message
+        console.log('Form Data:', formData); // Debug message
 
-    // Insert data into Supabase
-    const { data, error } = await supabasePublicClient
-      .from('temptable') // Your table name in Supabase
-      .insert([formData]);
+        // Insert data into Supabase
+        const { data, error } = await supabasePublicClient
+            .from('temptable') // Your table name in Supabase
+            .insert([formData]);
 
-    const submissionTime = new Date().toLocaleString(); // Capture the submission time
+        const submissionTime = new Date().toLocaleString(); // Capture the submission time
 
-    if (error) {
-      console.log('Supabase Error:', error); // Debug message
-      document.getElementById('submissionInfo').innerHTML = `
-        <p>Submission Time: ${submissionTime}</p>
-        <p>Status: Error - ${error.message}</p>
-        <p>Email: ${formData.facemail}</p>
-      `;
-      document.getElementById('submissionInfo').style.backgroundColor = 'red'; // <-- Moved this outside the template string
-    } else {
-      console.log('Data successfully inserted:', data); // Debug message
-      document.getElementById('attendanceform').reset(); // Clear the form
-      document.getElementById('submissionInfo').innerHTML = `
-        <p>Submission Time: ${submissionTime}</p>
-        <p>Status: Success</p>
-        <p>Email: ${formData.facemail}</p>
-      `;
-      document.getElementById('submissionInfo').style.backgroundColor = 'green';
-    }
-  }); // <-- Correctly closed the callback here
+        if (error) {
+            console.log('Supabase Error:', error); // Debug message
+            document.getElementById('submissionInfo').innerHTML = `
+                <p>Submission Time: ${submissionTime}</p>
+                <p>Status: Error - ${error.message}</p>
+                <p>Email: ${formData.facemail}</p>
+            `;
+            document.getElementById('submissionInfo').style.backgroundColor = 'red'; // <-- Moved this outside the template string
+        } else {
+            console.log('Data successfully inserted:', data); // Debug message
+            document.getElementById('attendanceform').reset(); // Clear the form
+            document.getElementById('submissionInfo').innerHTML = `
+                <p>Submission Time: ${submissionTime}</p>
+                <p>Status: Success</p>
+                <p>Email: ${formData.facemail}</p>
+            `;
+            document.getElementById('submissionInfo').style.backgroundColor = 'green';
+        }
+    }); // <-- Correctly closed the callback here
 });
 
 async function signIn() {
