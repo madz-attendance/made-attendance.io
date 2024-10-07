@@ -550,7 +550,6 @@ async function fetchDepartments(email)
 }
 
 
-
 // Function to fetch notifications for the logged-in user
 async function fetchNotificationsForCurrentUser() {
     // Get the current session and user details
@@ -586,8 +585,8 @@ async function fetchNotificationsForCurrentUser() {
             const notificationElement = document.createElement('div');
             notificationElement.className = 'notification';
             notificationElement.innerHTML = `
-                <h3>${temptable.studentfirstname} ${temptable.studentlastname}'s Request </h3> <!-- Replace with your column name -->
-                <p>${temptable.coursecode}, ${temptable.note}, ${temptable.insertdate}, ${temptable.inserttime} </p> <!-- Replace with your column name -->
+                <h3>${notification.studentfirstname} ${notification.studentlastname}'s Request</h3>
+                <p>${notification.coursecode}, ${notification.note}, ${notification.insertdate}, ${notification.inserttime}</p>
             `;
             notificationsContainer.appendChild(notificationElement);
         });
@@ -598,7 +597,6 @@ async function fetchNotificationsForCurrentUser() {
 
 // Call the function to fetch and display notifications on page load
 fetchNotificationsForCurrentUser();
-
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================
