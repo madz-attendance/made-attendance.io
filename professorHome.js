@@ -669,9 +669,29 @@ async function handleApprove(event) {
         console.error('Error updating attendance table:', error);
     } else {
         console.log('Attendance approved successfully!');
+        // Display success message on the screen
+        displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
         // Optionally, remove the notification or mark it as handled
         removeNotification(courseCode, stufirstname, submissionDate);
     }
+}
+
+function displaySuccessMessage(firstName, lastName, date, time) {
+    const messageContainer = document.getElementById('message-container'); // Ensure you have a container for messages
+    const message = `Added ${firstName} ${lastName}'s attendance for ${date} at ${time}.`;
+    
+    // Create a new message element
+    const messageElement = document.createElement('div');
+    messageElement.className = 'success-message'; // Add a class for styling (optional)
+    messageElement.textContent = message;
+
+    // Append the message to the message container
+    messageContainer.appendChild(messageElement);
+
+    // Optional: Auto-remove the message after a few seconds
+    setTimeout(() => {
+        messageElement.remove();
+    }, 5000); // Remove after 5 seconds
 }
 
 async function handleDeny(event) {
