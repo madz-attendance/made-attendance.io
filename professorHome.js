@@ -622,6 +622,14 @@ function attachButtonListeners() {
 }
 
 async function handleApprove(event) {
+    // Fetch the session again to ensure it's available
+    const { data: { session }, error: sessionError } = await supabasePublicClient.auth.getSession();
+
+    if (sessionError || !session) {
+        console.error('Error fetching session:', sessionError || 'No active session');
+        return;
+    }
+
     const courseCode = event.target.getAttribute('data-course');
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
@@ -662,6 +670,7 @@ async function handleApprove(event) {
         removeNotification(courseCode, stufirstname, submissionDate);
     }
 }
+
 
 
 function displaySuccessMessage(firstName, lastName, date, time) {
