@@ -630,10 +630,12 @@ async function handleApprove(event) {
     
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
 
+    // Step 1: Fetch the course ID from the 'courses' table using courseCode and facemail
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses')
         .select('courseid')
         .eq('coursecode', courseCode)
+        .eq('facemail', session.user.email) // Ensure it matches the logged-in faculty
         .single();
 
     if (courseError || !courseData) {
@@ -641,24 +643,26 @@ async function handleApprove(event) {
         return;
     }
 
-    const { error } = await supabasePublicClient
+    // Step 2: Insert the attendance using courseID
+    const { error: insertError } = await supabasePublicClient
         .from('attendance')
         .insert([
             {
-                courseid: courseData.courseid,
+                courseid: courseData.courseid, // Use courseID from the courses table
                 stufirstname: stufirstname,
                 stulastname: stulastname,
                 attendancetime: attendanceTime,
             }
         ]);
 
-    if (error) {
-        console.error('Error updating attendance table:', error);
+    if (insertError) {
+        console.error('Error updating attendance table:', insertError);
     } else {
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
         removeNotification(courseCode, stufirstname, submissionDate);
     }
 }
+
 
 function displaySuccessMessage(firstName, lastName, date, time) {
     const messageContainer = document.getElementById('message-container'); // Ensure you have a container for messages
