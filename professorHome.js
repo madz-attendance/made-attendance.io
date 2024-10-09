@@ -27,17 +27,32 @@ window.addEventListener('DOMContentLoaded', checkAuth);
 // "MAIN()"
 // Zaynin 09/26/2024
 // Call initializePage when the page loads
-document.addEventListener('DOMContentLoaded', function() 
-{
-	// Get the dropdown menus (for semester and courses)
-	const semester_dropdown = document.getElementById('semester_dropdown');
+document.addEventListener('DOMContentLoaded', function() {
+    // Get the dropdown menus (for semester, courses, and department)
+    const semester_dropdown = document.getElementById('semester_dropdown');
     const courses_dropdown = document.getElementById('courses_dropdown');
-	const department_dropdown = document.getElementById('department_dropdown');
-	
-	// Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
-	initializePage();
-	
+    const department_dropdown = document.getElementById('department_dropdown');
+    
+    // Get the date fields container (initially hidden)
+    const dateFields = document.getElementById('date-fields');
+    dateFields.style.display = 'none'; // Hide the date fields initially
+
+    // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
+    initializePage();
+
+    // Listen for changes in the courses dropdown to show/hide date fields
+    courses_dropdown.addEventListener('change', function() {
+        const selectedCourse = courses_dropdown.value;
+        
+        // Check if a course is selected (value isn't "none")
+        if (selectedCourse && selectedCourse !== 'none') {
+            dateFields.style.display = 'block';  // Show date fields
+        } else {
+            dateFields.style.display = 'none';  // Hide date fields if no course is selected
+        }
+    });
 });
+
 
 // =====================================================
 // Zaynin Sept 26 2024 (START)
