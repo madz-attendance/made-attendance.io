@@ -305,12 +305,12 @@ input[type="button"]:hover {
   background-color: #555; /* Change color on hover */
 }
 
-/*Makes drop down look good*/
+/*Makes dropdown look good*/
 #department_dropdown,
 #semester_dropdown,
 #courses_dropdown{
   padding: 1px;
-  background-color: #B2A4C6; 
+  background-color: #2A4C6B; 
   text-align: center; 
   color: #fff; 
   font-size: 16px; 
