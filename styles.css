@@ -304,3 +304,23 @@ input[type="button"] {
 input[type="button"]:hover {
   background-color: #555; /* Change color on hover */
 }
+
+/*Makes drop down look good*/
+#department_dropdown,
+#semester_dropdown,
+#courses_dropdown{
+  padding: 1px;
+  background-color: #4285c4; 
+  text-align: center; 
+  color: #fff; 
+  font-size: 16px; 
+  cursor: pointer; 
+}
+
+/*lights up when highlighted*/
+#department_dropdown:hover,
+#semester_dropdown:hover,
+#courses_dropdown:hover{
+  border-color: #4198e9;
+  outline: none;
+} 
