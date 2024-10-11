@@ -290,7 +290,7 @@ input:focus {
 /* Submit button style */
 input[type="button"] {
   padding: 15px;
-  background-color: #2A4C6B; 
+  background-color: #B2A4C6; 
   text-align: center;
   color: #fff;
   border: none;
@@ -310,7 +310,7 @@ input[type="button"]:hover {
 #semester_dropdown,
 #courses_dropdown{
   padding: 1px;
-  background-color: #4285c4; 
+  background-color: #B2A4C6; 
   text-align: center; 
   color: #fff; 
   font-size: 16px; 
