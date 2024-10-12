@@ -62,24 +62,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Function that initializes the page - fetches user data (and waits for it to finish),
 // and then fetches/renders courses.
-async function initializePage()
-{
-	email = await fetchProfessorData();		// Get professor information and store email
-	//renderCourses(email);					// Query & render professor's courses
-	
-	await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
-	
-	await fetchSemesters(email);			// Populate the semesters drop-down menu with the valid semesters of the professor's courses
-	professor_courses = await fetchCourses(email);	// Populate the courses drop-down menu with the valid professor courses. Store prof courses
-	
-	// IMPORTANT NOTE: "professor_courses" can actually represent the courses that a professor, chair, or admin sees.
-	// I'm just too deep into this to change the variable name.
-	
-	attachDepartmentDropdownListener(professor_courses);// Now that the professor information is loaded, attach the event listener to its drop down menu. Must wait for prev async funcs to finish.
-	attachSemesterDropdownListener(professor_courses); // Now that the semesters information is loaded, attach the event listener to its dropdown menu. Must wait for the previous async functions to finish.
-	attachCoursesDropdownListener();	// Now that the courses information is loaded, attach the event listener to its dropdown menu. Must wait for previous async functions to finish.
-	
+async function initializePage() {
+    email = await fetchProfessorData(); // Get professor information and store email
+    
+    await fetchDepartments(email); // Populate the departments dropdown menu with valid departments
+    await fetchSemesters(email);   // Populate the semesters drop-down menu with valid semesters
+    professor_courses = await fetchCourses(email); // Fetch and store the professor's courses
+    
+    // Attach event listeners to dropdowns
+    attachDepartmentDropdownListener(professor_courses); // Pass the professor's courses
+    attachSemesterDropdownListener(professor_courses);   // Pass the professor's courses
+    attachCoursesDropdownListener(professor_courses);    // Pass the professor's courses
 }
+
 
 // ===================================================
 // ===================================================
@@ -472,17 +467,34 @@ function updateCoursesDropdown(professor_courses)
 // Function to attach the event listener
 // This must be done in a function, called in itializePage(). This will continue
 // to listen to changes in selection in the courses dropdown menu.
-function attachCoursesDropdownListener() 
-{
-	//console.log("Professor Courses in ATTACH: ", professor_courses)
+function attachCoursesDropdownListener(professor_courses) {
     const courses_dropdown = document.getElementById('courses_dropdown');
-    courses_dropdown.addEventListener('change', function() 
-	{
+    
+    courses_dropdown.addEventListener('change', async function() {
         const selectedCourse = courses_dropdown.value;
+        console.log("Selected course: ", selectedCourse);
+        
+        // Find the corresponding course object from the professor_courses array
+        const selectedCourseObj = professor_courses.find(course => {
+            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursename} - ${course.coursesem}`;
+            return courseString === selectedCourse;
+        });
 
-		console.log("Courses Dropdown Menu Selection Updated. Selected: ", selectedCourse);
-		
+        if (selectedCourseObj) {
+            const courseId = selectedCourseObj.courseid; // Ensure courseid is defined in your course data
+            console.log("Extracted Course ID: ", courseId);
+            
+            // Get the start and end dates from your date input fields
+            const startDate = document.getElementById('start_date_input').value; // Adjust these IDs as necessary
+            const endDate = document.getElementById('end_date_input').value; // Adjust these IDs as necessary
+
+            // Check attendance against roster and download CSV
+            await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
+        } else {
+            console.error("Course not found");
+        }
     });
+
     console.log("Event listener successfully attached to courses_dropdown.");
 }
 
@@ -670,39 +682,6 @@ function downloadCSV(csvData, filename) {
     a.click();
     document.body.removeChild(a);
 }
-
-// Example usage within the event listener
-function attachCoursesDropdownListener() {
-    const courses_dropdown = document.getElementById('courses_dropdown');
-    
-    courses_dropdown.addEventListener('change', async function() {
-        const selectedCourse = courses_dropdown.value;
-        console.log("Selected course: ", selectedCourse);
-        
-        // Find the corresponding course object from the coursesData array
-        const selectedCourseObj = coursesData.find(course => {
-            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursename} - ${course.coursesem}`;
-            return courseString === selectedCourse;
-        });
-
-        if (selectedCourseObj) {
-            const courseId = selectedCourseObj.courseid;
-            console.log("Extracted Course ID: ", courseId);
-            
-            // Get the start and end dates from your date input fields
-            const startDate = document.getElementById('start_date_input').value; // Adjust these IDs
-            const endDate = document.getElementById('end_date_input').value; // Adjust these IDs
-
-            // Check attendance against roster and download CSV
-            await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
-        } else {
-            console.error("Course not found");
-        }
-    });
-
-    console.log("Event listener successfully attached to courses_dropdown.");
-}
-
 
 
 
