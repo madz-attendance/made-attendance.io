@@ -78,15 +78,19 @@
         
         <!-- Form Structure -->
         <form id="classForm">
-            
-            <!-- Department Dropdown -->
+            <div class="input-wrapper">
+    		<input type="text" id="department_dropdown" name="department_code" list="departments" required placeholder="Select a Department Code">
+    		<button id="clear_dept_button" class="clear-button"><i class="far fa-times-circle"></i></button>
+		</div>
+            <!-- Department Dropdown 
             <div>
                 <label for="department_dropdown">Select a Department:<span class="required"></span></label>
                 <select id="department_dropdown" name="department">
                     <option value="any">Any</option>
                 </select>
             </div>
-
+		-->
+		
             <!-- Semester Dropdown -->
             <div>
                 <label for="semester_dropdown">Select a Semester:<span class="required"></span></label>
