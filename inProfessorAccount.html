@@ -104,14 +104,17 @@
             </div>
 
             <!-- Date Fields -->
-            <div>
-                <label for="start_date_input">Start Date:</label>
-                <input type="date" id="start_date_input" name="start_date">
-            </div>
-            <div>
-                <label for="end_date_input">End Date:</label>
-                <input type="date" id="end_date_input" name="end_date">
-            </div>
+            <div id="date-fields" style="display: none;">
+    		<div>
+        	<label for="start_date">Start Date:</label>
+        	<input type="date" id="start_date" name="start_date">
+    		</div>
+    		<div>
+        	<label for="end_date">End Date:</label>
+        	<input type="date" id="end_date" name="end_date">
+    		</div>
+	   </div>
+
 
             <!-- Button to Download CSV -->
             <button type="button" id="download_csv">Download CSV</button>
