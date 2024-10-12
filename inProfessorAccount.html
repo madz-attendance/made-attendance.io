@@ -81,7 +81,7 @@
             
             <!-- Department Dropdown -->
             <div>
-                <label for="department_dropdown">Select a Department:</label>
+                <label for="department_dropdown">Select a Department:<span class="required"></span></label>
                 <select id="department_dropdown" name="department">
                     <option value="any">Any</option>
                 </select>
@@ -89,7 +89,7 @@
 
             <!-- Semester Dropdown -->
             <div>
-                <label for="semester_dropdown">Select a Semester:</label>
+                <label for="semester_dropdown">Select a Semester:<span class="required"></span></label>
                 <select id="semester_dropdown" name="semester">
                     <option value="any">Any</option>
                 </select>
@@ -97,7 +97,7 @@
 
             <!-- Courses Dropdown -->
             <div>
-                <label for="courses_dropdown">Select a Course:</label>
+                <label for="courses_dropdown">Select a Course:<span class="required"></span></label>
                 <select id="courses_dropdown" name="course">
                     <option value="none"></option>
                 </select>
@@ -106,11 +106,11 @@
             <!-- Date Fields -->
             <div id="date-fields" style="display: none;">
     		<div>
-        	<label for="start_date">Start Date:</label>
+        	<label for="start_date">Start Date:<span class="required"></span></label>
         	<input type="date" id="start_date" name="start_date">
     		</div>
     		<div>
-        	<label for="end_date">End Date:</label>
+        	<label for="end_date">End Date:<span class="required"></span></label>
         	<input type="date" id="end_date" name="end_date">
     		</div>
 	   </div>
