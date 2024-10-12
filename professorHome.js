@@ -804,18 +804,19 @@ async function renderCourses(email) {
 
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
-var home_button = document.getElementById("home_button");
-var classes_button = document.getElementById("classes_button");
-var help_button = document.getElementById("help_button");
-var account_button = document.getElementById("account_button");
-var notification_button = document.getElementById("notification_button");
-var log_out_button = document.querySelector(".log-out-button");
+var classes_button = document.getElementById("classes_button_PROFESSOR");
+var help_button = document.getElementById("help_button_PROFESSOR");
+var account_button = document.getElementById("account_button_PROFESSOR");
+var notification_button = document.getElementById("notification_button_PROFESSOR");
+var log_out_button = document.getElementById("log_out_button_PROFESSOR");
+var welcome_button = document.getElementById("welcome_button_PROFESSOR");
 
 var currentTab = "welcomeTab"; // Default current tab
 
 function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
     classes_button.style.filter = "brightness(100%)";
+    help_button.style.filter = "brightness(100%)";
     account_button.style.filter = "brightness(100%)";
     notification_button.style.filter = "brightness(100%)";
     log_out_button.style.filter = "brightness(100%)";
