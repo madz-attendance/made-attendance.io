@@ -434,24 +434,24 @@ function updateCoursesDropdown(professor_courses)
 // to listen to changes in selection in the courses dropdown menu.
 function attachCoursesDropdownListener(professor_courses) {
     const courses_dropdown = document.getElementById('courses_dropdown');
-    
+
     courses_dropdown.addEventListener('change', async function() {
         const selectedCourse = courses_dropdown.value;
         console.log("Selected course: ", selectedCourse);
         
         // Find the corresponding course object from the professor_courses array
         const selectedCourseObj = professor_courses.find(course => {
-            const courseString = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`;
+            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
             return courseString === selectedCourse;
         });
 
         if (selectedCourseObj) {
-            const courseId = selectedCourseObj.courseid; // Ensure courseid is defined in your course data
+            const courseId = selectedCourseObj.courseid; // Adjust if your course object contains courseId
             console.log("Extracted Course ID: ", courseId);
             
             // Get the start and end dates from your date input fields
-            const startDate = document.getElementById('start_date').value; // Adjust these IDs as necessary
-            const endDate = document.getElementById('end_date').value; // Adjust these IDs as necessary
+            const startDate = document.getElementById('start_date_input').value; // Adjust these IDs
+            const endDate = document.getElementById('end_date_input').value; // Adjust these IDs
 
             // Check attendance against roster and download CSV
             await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
