@@ -601,13 +601,13 @@ async function renderCourses(email) {
 */
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
-var welcome_button = document.getElementById("welcome_button");
-var my_classes_button = document.getElementById("my_classes_button");
-var dept_classes_button = document.getElementById("dept_classes_button");
-var help_button = document.getElementById("help_button");
-var account_button = document.getElementById("account_button");
-var notification_button = document.getElementById("notification_button");
-var log_out_button = document.querySelector(".log-out-button");
+var welcome_button = document.getElementById("welcome_button_CHAIR");
+var my_classes_button = document.getElementById("my_classes_button_CHAIR");
+var dept_classes_button = document.getElementById("dept_classes_button_CHAIR");
+var help_button = document.getElementById("help_button_CHAIR");
+var account_button = document.getElementById("account_button_CHAIR");
+var notification_button = document.getElementById("notification_button_CHAIR");
+var log_out_button = document.getElementById("log_out_button_CHAIR");
 
 var currentTab = "welcomeTab"; // Default current tab
 
@@ -615,6 +615,7 @@ function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
     my_classes_button.style.filter = "brightness(100%)";
     dept_classes_button.style.filter = "brightness(100%)";
+    help_button.style.filter = "brightness(100%)";
     account_button.style.filter = "brightness(100%)";
     notification_button.style.filter = "brightness(100%)";
     log_out_button.style.filter = "brightness(100%)";
