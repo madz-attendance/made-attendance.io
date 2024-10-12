@@ -790,19 +790,20 @@ async function fetchDepartments(email)
 
 // Styling for tabbing added by Anthony: 
 // Buttons for welcome, classes, create account, account, notifications, and log out
-var welcome_button = document.getElementById("welcome_button");
-var classes_button = document.getElementById("classes_button");
-var create_account_button = document.getElementById("create_account_button");
-var help_button = document.getElementById("help_button");
-var account_button = document.getElementById("account_button");
-var notification_button = document.getElementById("notification_button");
-var log_out_button = document.querySelector(".log-out-button");
+var welcome_button = document.getElementById("welcome_button_ADMIN");
+var classes_button = document.getElementById("classes_button_ADMIN");
+var create_account_button = document.getElementById("create_account_button_ADMIN");
+var help_button = document.getElementById("help_button_ADMIN");
+var account_button = document.getElementById("account_button_ADMIN");
+var notification_button = document.getElementById("notification_button_ADMIN");
+var log_out_button = document.getElementById("log_out_button_ADMIN");
 
 var currentTab = "welcomeTab"; // Default current tab
 
 function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
     classes_button.style.filter = "brightness(100%)";
+    help_button.style.filter = "brightness(100%)";
     create_account_button.style.filter = "brightness(100%)";
     account_button.style.filter = "brightness(100%)";
     notification_button.style.filter = "brightness(100%)";
