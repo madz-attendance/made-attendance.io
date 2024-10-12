@@ -8,19 +8,39 @@
   <link rel="icon" href="./images/madz-tab-icon.png" type="image/x-icon">
 </head>
 <body>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
-<header> 
-    <div style="margin: 0 auto;">
-        <button id="home_button" class="tab-button" onclick="openTab('home')">Home</button>
-        <button id="faq_button" class="tab-button" onclick="openTab('faq')">FAQ</button>
-        <button id="about_button" class="tab-button" onclick="openTab('about')">About</button>
-        <button id="request_button" class="tab-button" onclick="openTab('request')">Request</button>
-        <button id="sign_in_button" class="tab-button" onclick="openTab('sign_in')">Sign In</button>
-    </div>
-</header>
-
-<img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz_logo">  <!-- added by zaynin -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.43.4/dist/umd/supabase.min.js"></script>
   
+	<!-- The header, is a bounding box (header-master-box) filled with columns (header-col) -->
+	<div class="header-master-box" id="header-master-box">
+		<div class="header-col" id="header-col1-madz-logo">
+			<img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz-logo-v2">
+		</div>
+		<div class="header-col" id="header-col2-left-gap">
+		
+		</div>
+		<div class="header-col" id="header-col3-tab-buttons">
+			<div class="header-col-sub" id="header-col-buttons">
+				<div class="header-button" id="home_button" onclick="openTab('home')">
+					Home
+				</div>
+				<div class="header-button" id="faq_button" onclick="openTab('faq')">
+					FAQ
+				</div>
+				<div class="header-button" id="about_button" onclick="openTab('about')">
+					About
+				</div>
+				<div class="header-button" id="request_button" onclick="openTab('request')">
+					Request
+				</div>
+				<div class="header-button" id="sign_in_button" onclick="openTab('sign_in')">
+					Sign In
+				</div>
+			</div>
+		</div>
+		<div class="header-col" id="header-col4-right-gap">
+		
+		</div>
+	</div>
 <main>
     <section id="home" class="tab-content">
       <h2>Welcome to MADZ Attendance</h2>
