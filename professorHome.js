@@ -73,15 +73,6 @@ async function initializePage() {
     attachDepartmentDropdownListener(professor_courses); // Pass the professor's courses
     attachSemesterDropdownListener(professor_courses);   // Pass the professor's courses
     attachCoursesDropdownListener(professor_courses);    // Pass the professor's courses
-
-    // Attach listener for the download button
-    attachDownloadButtonListener(); // Attach listener for the download button
-}
-
-// Function to attach download button listener
-function attachDownloadButtonListener() {
-    const downloadButton = document.getElementById('downloadcsv');
-    downloadButton.addEventListener('click', handleCSVDownload);
 }
 
 
@@ -394,6 +385,33 @@ function updateCoursesDropdown(professor_courses) {
     });
 }
 
+function attachCoursesDropdownListener(professor_courses) {
+    const courses_dropdown = document.getElementById('courses_dropdown');
+
+    courses_dropdown.addEventListener('change', async function () {
+        const selectedCourse = courses_dropdown.value;
+        console.log("Selected course: ", selectedCourse);
+
+        const selectedCourseObj = professor_courses.find(course => {
+            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
+            return courseString === selectedCourse;
+        });
+
+        if (selectedCourseObj) {
+            const courseId = selectedCourseObj.courseid; // Ensure this is correct
+            console.log("Extracted Course ID: ", courseId);
+
+            const startDate = document.getElementById('start_date').value; // Adjust these IDs
+            const endDate = document.getElementById('end_date').value; // Adjust these IDs
+
+            await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
+        } else {
+            console.error("Course not found");
+        }
+    });
+
+    console.log("Event listener successfully attached to courses_dropdown.");
+}
 
 function attachDepartmentDropdownListener(professor_courses) {
     const department_dropdown = document.getElementById('department_dropdown');
@@ -488,23 +506,6 @@ async function fetchAttendanceData(courseId, startDate, endDate) {
     }
 }
 
-// Global variables to store selected values
-let selectedCourseId = null;
-let startDate = '';
-let endDate = '';
-
-// Function to handle downloading CSV
-async function handleCSVDownload() {
-    if (!selectedCourseId || !startDate || !endDate) {
-        alert("Please select a course and enter both start and end dates.");
-        return;
-    }
-
-    console.log("Proceeding to check attendance and download CSV.");
-    await checkAttendanceAgainstRosterAndDownloadCSV(selectedCourseId, startDate, endDate);
-}
-
-// Function to check attendance against roster and download CSV
 async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate) {
     const roster = await fetchRoster(courseId);
     const attendance = await fetchAttendanceData(courseId, startDate, endDate);
@@ -529,7 +530,6 @@ async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, e
     downloadCSV(csvString, `attendance_${startDate}_to_${endDate}.csv`);
 }
 
-// CSV conversion function
 function convertToCSV(data) {
     if (!Array.isArray(data) || data.length === 0) {
         console.error("No data available to convert to CSV");
@@ -552,7 +552,6 @@ function convertToCSV(data) {
     return csvRows.join('\n');
 }
 
-// Function to download CSV file
 function downloadCSV(csvData, filename) {
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -565,55 +564,6 @@ function downloadCSV(csvData, filename) {
     a.click();
     document.body.removeChild(a);
 }
-
-// Example listener for the download button
-function attachDownloadButtonListener() {
-    const downloadButton = document.getElementById('download_csv_button');
-    downloadButton.addEventListener('click', handleCSVDownload);
-}
-
-// Example function to attach course selection
-function attachCoursesDropdownListener(professor_courses) {
-    const courses_dropdown = document.getElementById('courses_dropdown');
-
-    courses_dropdown.addEventListener('change', function() {
-        const selectedCourse = courses_dropdown.value;
-        console.log("Selected course: ", selectedCourse);
-
-        // Find the corresponding course object
-        const selectedCourseObj = professor_courses.find(course => {
-            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-            return courseString === selectedCourse;
-        });
-
-        if (selectedCourseObj) {
-            selectedCourseId = selectedCourseObj.courseid; // Store the selected course ID
-            console.log("Extracted Course ID: ", selectedCourseId);
-        } else {
-            console.error("Course not found");
-        }
-    });
-
-    console.log("Event listener successfully attached to courses_dropdown.");
-}
-
-// Example function to attach date change listeners
-function attachDateChangeListener() {
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
-
-    startDateInput.addEventListener('change', function() {
-        startDate = startDateInput.value; // Update start date
-    });
-    endDateInput.addEventListener('change', function() {
-        endDate = endDateInput.value; // Update end date
-    });
-}
-
-// Call attachListeners to set everything up
-attachListeners();
-
-
 
 
 
