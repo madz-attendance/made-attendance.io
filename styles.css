@@ -376,3 +376,151 @@ input[type="button"]:hover {
     background-color: #0056b3; /* Darken the button on hover */
 }
 
+
+/* ================================================================== */
+/* ================================================================== */
+/* ================================================================== */
+/* ZAYNIN OCT 12 2024 - BETTER HEADER */
+/* NEW HEADER */
+.header-master-box
+{
+	width: 100%;
+	aspect-ratio: 1920/90;
+	
+	/* margin: 2% auto; */
+	display: flex;
+	flex-direction: row;
+	gap: 0%; /* Space between rows */
+	/*border: 2px solid red; /* Uncomment this to see the master header bounding box on the screen */
+	padding: 0px;
+	background-color: #2A4C6B;
+	position: relative;
+	
+}
+
+/* Separates header cols */
+.header-col
+{
+	display: flex;
+	flex-direction: column;
+	gap: 10%;
+	width: 33.33%;
+	/*border: 2px solid #00FF21; /* Uncomment this to see each header column bounding box on the screen */
+	
+}
+
+/* A sub-section of header-col3-tab-buttons. Stores all of the header-buttons */
+.header-col-sub
+{
+	display: flex;
+	width: 100%;
+	/*border: 2px solid #FF00DC; /* Uncomment this to see each header button bounding box on the screen */
+	height: 100%;
+	flex-direction: row;
+}
+
+/* Buttons in header */
+.header-button
+{
+	cursor: pointer;
+	/*aspect-ratio: 1/1;*/
+	
+	/* Center */
+	margin-left: auto;
+	margin-right: auto;
+	
+	text-align: center;
+	padding-top: 4%;
+	
+	font-family: 'Corbel', sans-serif;
+	font-weight: bold;
+	font-size: calc(40% + 1vw); /* Dynamically scaling font size */
+	color: #CCCCCC;
+	/*border: 2px solid yellow; /* Uncomment this to see each header button bounding box on the screen */
+}
+
+/* EXTRA STUFF */
+.madz-logo-v2
+{
+	cursor: pointer;
+	padding-top: 2%;
+	padding-left: 4%;
+
+	
+}
+
+/* =========================================================================== */
+/* CUSTOM HEADER VARIABLES BASED ON PAGE */
+#header-col1-madz-logo { width: 11%; }
+
+/* ================== */
+/* INDEX.HTML */
+#header-col2-left-gap { width: 20%; }
+#header-col3-tab-buttons {width: 38%;}
+#header-col4-right-gap { width: 31%; }
+
+/* Make each tab button take up an equal portion of the header-col-sub */
+/* If we add a button in the future, make the widths equal 100% */
+#home_button { width: 20%; }
+#faq_button { width: 20%; }
+#about_button { width: 20%; }
+#request_button { width: 20%; }
+#sign_in_button { width: 20%; }
+/* ================== */
+
+/* ================== */
+/* PROFESSOR PAGE */
+#header-col2-left-gap-PROFESSOR { width: 31%; }
+#header-col3-tab-buttons-PROFESSOR {width: 16%;}
+#header-col4-right-gap-PROFESSOR { width: 26%; }
+#header-col5-extra-buttons-PROFESSOR { width: 15%; }
+
+/* Make each tab button take up an equal portion of the header-col-sub */
+/* If we add a button in the future, make the widths equal 100% */
+#welcome_button_PROFESSOR { width: 50%; padding-top: 9%; }
+#classes_button_PROFESSOR { width: 50%; padding-top: 9%; }
+
+#help_button_PROFESSOR { width: 25%; padding-top: 10%; }
+#account_button_PROFESSOR { width: 25%; padding-top: 10%; }
+#notification_button_PROFESSOR { width: 25%; padding-top: 10%; }
+#log_out_button_PROFESSOR { width: 25%; padding-top: 10%; }
+
+/* ================== */
+/* CHAIR PAGE */
+#header-col2-left-gap-CHAIR { width: 22%; }
+#header-col3-tab-buttons-CHAIR {width: 30%;}
+#header-col4-right-gap-CHAIR { width: 21%; }
+#header-col5-extra-buttons-CHAIR { width: 15%; }
+
+/* Make each tab button take up an equal portion of the header-col-sub */
+/* If we add a button in the future, make the widths equal 100% */
+#welcome_button_CHAIR { width: 33.33%; padding-top: 5%; }
+#my_classes_button_CHAIR { width: 33.33%; padding-top: 5%; }
+#dept_classes_button_CHAIR { width: 33.33%; padding-top: 5%; }
+
+#help_button_CHAIR { width: 25%; padding-top: 10%; }
+#account_button_CHAIR { width: 25%; padding-top: 10%; }
+#notification_button_CHAIR { width: 25%; padding-top: 10%; }
+#log_out_button_CHAIR { width: 25%; padding-top: 10%; }
+
+/* ================== */
+/* ADMIN PAGE */
+#header-col2-left-gap-ADMIN { width: 22%; }
+#header-col3-tab-buttons-ADMIN {width: 30%;}
+#header-col4-right-gap-ADMIN { width: 21%; }
+#header-col5-extra-buttons-ADMIN { width: 15%; }
+
+/* Make each tab button take up an equal portion of the header-col-sub */
+/* If we add a button in the future, make the widths equal 100% */
+#welcome_button_ADMIN { width: 33.33%; padding-top: 5%; }
+#classes_button_ADMIN { width: 33.33%; padding-top: 5%; }
+#create_account_button_ADMIN { width: 33.33%; padding-top: 5%; }
+
+#help_button_ADMIN { width: 25%; padding-top: 10%; }
+#account_button_ADMIN { width: 25%; padding-top: 10%; }
+#notification_button_ADMIN { width: 25%; padding-top: 10%; }
+#log_out_button_ADMIN { width: 25%; padding-top: 10%; }
+/* =========================================================================== */
+/* =========================================================================== */
+/* =========================================================================== */
+
