@@ -192,119 +192,83 @@ async function logOut()
 // If the faculty logged in is a admin, it will query all courses.
 // Course options will later be filtered based on dept/semester, but this function obtains
 // all possible courses that would need to be seen by this faculty
-async function fetchCourses(email)
-{
-	// Determine whether this faculty is an Admin or a Prof/Chair
-	// Get faculty role and dept by querying "users" table
-	const { data, error } = await supabasePublicClient
-		.from('users')
-		.select("facrank, deptcode")
-		.eq('facemail', email);
+async function fetchCourses(email) {
+    // Determine whether this faculty is an Admin or a Prof/Chair
+    // Get faculty role and dept by querying "users" table
+    const { data: userData, error: userError } = await supabasePublicClient
+        .from('users')
+        .select("facrank, deptcode")
+        .eq('facemail', email);
 
-	console.log("Professor courses: ", professor_courses);
+    if (userError) {
+        console.error("Error fetching facrank in fetchDepartments()", userError);
+        return []; // Return an empty array or handle the error appropriately
+    }
 
-	
-	if (error)
-	{ console.error("Error fetching facrank in fetchDepartments()", error); }
-	else
-	{
-		const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
-		                                       // Variables MUST be named the same as in database for some reason
-			
-		// If the faculty is an Admin
-		if (facrank == "Admin") //CORRECT, commented out for testing
-		//if (facrank == "Professor") // WRONG, used for testing
-		{
-			const { data, error } = await supabasePublicClient
-			.from("courses")
-			.select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-			.order('coursecode', { ascending: true }) // Order by course code ascending
-			.order('coursenum', { ascending: true }) // Order by course number ascending
-			.order('coursesec', { ascending: false }) // Order by course section ascending
-			.order('coursesem', { ascending: true }) // Order by course semester ascending
-			.order('faclastname', { ascending: true }); // Order by faclastname ascending
-			
-			//print("ADMIN COURSES: ", data);
-			
-			// For each course that this admin has access to (all the courses), add it to the courses dropdown menu
-			data.forEach(course => 
-			{
-				// Extract all the variables from this course
-				const coursecode = course.coursecode;
-				const coursename = course.coursename;
-				const coursesem = course.coursesem;
-				const facemail = course.facemail;
-				const coursesec = course.coursesec;
-				const days = course.days;
-				const start = course.start;
-				const finish = course.finish;
-				const building = course.building;
-				const room = course.room;
-				const coursenum = course.coursenum;
-				const faclastname = course.faclastname;
-				
-				// Create an entry into the courses dropdown menu
-				courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`
+    const { facrank, deptcode } = userData[0]; // Store the faculty rank and dept of that faculty.
 
-				// Add the course entry into the courses dropdown menu
-				//courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
-				newOption = document.createElement("option"); // Create a new option for the dropdown menu
-				newOption.value = courseEntry;
-				newOption.text = courseEntry;
-				courses_dropdown.appendChild(newOption);
-			
-			});
-			
-			return data; // Return the courses that this admin has. To be used when updating the courses displayed by selecting a semester
-		}
-			
-		
-		else
-		{
-			// Chairs/Professors can see only their own courses
-			// Select all of the courses (and all of their fields) from this professor
-			const { data, error } = await supabasePublicClient
-			.from("courses")
-			.select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-			.eq('facemail', email); // Only get this professor's courses
-			
-			//print("PROFESSOR COURSES: ", data);
-			
-			// For each course that this professor teaches, add it to the courses dropdown menu
-			data.forEach(course => 
-			{
-				// Extract all the variables from this course
-				const coursecode = course.coursecode;
-				const coursename = course.coursename;
-				const coursesem = course.coursesem;
-				const facemail = course.facemail;
-				const coursesec = course.coursesec;
-				const days = course.days;
-				const start = course.start;
-				const finish = course.finish;
-				const building = course.building;
-				const room = course.room;
-				const coursenum = course.coursenum;
-				const faclastname = course.faclastname;
-				
-				// Create an entry into the courses dropdown menu
-				courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`
+    let professor_courses = []; // Initialize an empty array to store courses
 
-				// Add the course entry into the courses dropdown menu
-				//courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
-				newOption = document.createElement("option"); // Create a new option for the dropdown menu
-				newOption.value = courseEntry;
-				newOption.text = courseEntry;
-				courses_dropdown.appendChild(newOption);
-			
-			});
-			
-			return data; // Return the courses that this professor has. To be used when updating the courses displayed by selecting a semester
-		}
-											   
-	}
+    // If the faculty is an Admin
+    if (facrank === "Admin") {
+        const { data: adminCourses, error: adminError } = await supabasePublicClient
+            .from("courses")
+            .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+            .order('coursecode', { ascending: true })
+            .order('coursenum', { ascending: true })
+            .order('coursesec', { ascending: false })
+            .order('coursesem', { ascending: true })
+            .order('faclastname', { ascending: true });
+
+        if (adminError) {
+            console.error("Error fetching admin courses", adminError);
+            return [];
+        }
+
+        // For each course that this admin has access to (all the courses), add it to the courses dropdown menu
+        adminCourses.forEach(course => {
+            // Create an entry into the courses dropdown menu
+            const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
+
+            // Add the course entry into the courses dropdown menu
+            const newOption = document.createElement("option");
+            newOption.value = courseEntry;
+            newOption.text = courseEntry;
+            courses_dropdown.appendChild(newOption);
+
+            // Add the course to professor_courses array
+            professor_courses.push(course);
+        });
+    } else {
+        // Chairs/Professors can see only their own courses
+        const { data: profCourses, error: profError } = await supabasePublicClient
+            .from("courses")
+            .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+            .eq('facemail', email);
+
+        if (profError) {
+            console.error("Error fetching professor courses", profError);
+            return [];
+        }
+
+        // For each course that this professor teaches, add it to the courses dropdown menu
+        profCourses.forEach(course => {
+            // Create an entry into the courses dropdown menu
+            const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
+
+            // Add the course entry into the courses dropdown menu
+            const newOption = document.createElement("option");
+            newOption.value = courseEntry;
+            newOption.text = courseEntry;
+            courses_dropdown.appendChild(newOption);
+
+            // Add the course to professor_courses array
+            professor_courses.push(course);
+        });
+    }
+
+    return professor_courses; // Return the courses for the professor
 }
-
 
 
 // Zaynin 09/26/2024
