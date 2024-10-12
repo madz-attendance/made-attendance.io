@@ -311,7 +311,7 @@ input[type="button"]:hover {
 #courses_dropdown{
   padding: 1px;
   background-color: #2A4C6B; 
-  text-align: center; 
+  text-align: left; 
   color: #fff; 
   font-size: 16px; 
   cursor: pointer; 
