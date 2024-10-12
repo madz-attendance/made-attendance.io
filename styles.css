@@ -329,28 +329,28 @@ input[type="button"]:hover {
 
 
 /* General styles for the account container */
-.account-container {
+.account-containertwo {
     max-width: 600px; /* Optional: Set a max width for the container */
     margin: 0 auto; /* Center the container */
 }
 
 /* Styling for each dropdown and input field container */
-.account-container div {
+.account-containertwo div {
     display: flex; /* Use flexbox for alignment */
     align-items: center; /* Align items vertically */
     margin-bottom: 20px; /* Space between lines */
 }
 
 /* Styling for labels */
-.account-container label {
+.account-containertwo label {
     width: 200px; /* Fixed width for labels */
     margin-right: 15px; /* Space between label and input */
     font-weight: bold; /* Make labels bold for better visibility */
 }
 
 /* Styling for dropdowns and inputs */
-.account-container select,
-.account-container input[type="date"] {
+.account-containertwo select,
+.account-containertwo input[type="date"] {
     flex: 1; /* Make the dropdowns and inputs take available space */
     padding: 10px; /* Add padding for better appearance */
     font-size: 16px; /* Increase font size */
