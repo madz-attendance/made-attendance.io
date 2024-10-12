@@ -246,7 +246,7 @@ async function fetchCourses(email)
 				const faclastname = course.faclastname;
 				
 				// Create an entry into the courses dropdown menu
-				courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
+				courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`
 
 				// Add the course entry into the courses dropdown menu
 				//courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
@@ -290,7 +290,7 @@ async function fetchCourses(email)
 				const faclastname = course.faclastname;
 				
 				// Create an entry into the courses dropdown menu
-				courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
+				courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`
 
 				// Add the course entry into the courses dropdown menu
 				//courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
@@ -421,7 +421,7 @@ function updateCoursesDropdown(professor_courses)
 			const faclastname = course.faclastname;
 		
 			// Create an entry into the courses dropdown menu
-			courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`;
 			
 			// Only add the course entry into the dropdown menu if it is in the selected department
 			if (coursecode == selectedDept || selectedDept == "any")
