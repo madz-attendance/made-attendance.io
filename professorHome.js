@@ -200,6 +200,9 @@ async function fetchCourses(email)
 		.from('users')
 		.select("facrank, deptcode")
 		.eq('facemail', email);
+
+	console.log("Professor courses: ", professor_courses);
+
 	
 	if (error)
 	{ console.error("Error fetching facrank in fetchDepartments()", error); }
