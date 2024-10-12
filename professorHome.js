@@ -605,15 +605,20 @@ async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, e
         console.log("All students in the roster attended.");
     }
 
-    // Convert fetched attendance data to CSV format
-    const csvData = convertToCSV(attendance);
+    console.log("Data to convert to CSV:", data);
+const csvString = convertToCSV(data);
 
     // Trigger the CSV file download
     downloadCSV(csvData, `attendance_${startDate}_to_${endDate}.csv`);
 }
 
-// Function to convert data to CSV format
 function convertToCSV(data) {
+    // Check if data is valid
+    if (!Array.isArray(data) || data.length === 0) {
+        console.error("No data available to convert to CSV");
+        return '';
+    }
+
     // Extract the keys (column headers) from the first object
     const headers = Object.keys(data[0]);
     const csvRows = [];
