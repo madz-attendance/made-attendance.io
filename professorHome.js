@@ -565,6 +565,148 @@ async function fetchDepartments(email)
 }
 
 
+// Function to fetch the roster for the selected course
+async function fetchRoster(courseId) {
+    try {
+        const { data, error } = await supabasePublicClient
+            .from('roster') // Adjust this to your roster table name
+            .select('*')
+            .eq('courseid', courseId);
+
+        if (error) {
+            console.error('Error fetching roster data:', error);
+            alert("Error fetching roster data. Please check the console.");
+            return [];
+        }
+
+        return data; // Return the roster data
+    } catch (err) {
+        console.error('Error:', err);
+        return [];
+    }
+}
+
+// Function to fetch attendance data based on the courseId
+async function fetchAttendanceData(courseId, startDate, endDate) {
+    try {
+        const { data, error } = await supabasePublicClient
+            .from('attendance')
+            .select('*')
+            .eq('courseid', courseId)
+            .gte('attendancedate::date', startDate)
+            .lte('attendancedate::date', endDate);
+
+        if (error) {
+            console.error('Error fetching attendance data:', error);
+            alert("Error fetching attendance data. Please check the console.");
+            return [];
+        }
+
+        return data; // Return attendance data
+    } catch (err) {
+        console.error('Error:', err);
+        return [];
+    }
+}
+
+// Function to check attendance against roster and download CSV
+async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate) {
+    const roster = await fetchRoster(courseId); // Get the roster
+    const attendance = await fetchAttendanceData(courseId, startDate, endDate); // Fetch attendance data
+
+    // Assuming roster and attendance have a 'studentId' property
+    const rosterStudentIds = roster.map(student => student.stuId); // Adjust property name as needed
+    const attendanceStudentIds = attendance.map(record => record.stuId); // Adjust property name as needed
+
+    // Check for students in the roster not present in attendance
+    const absentStudents = rosterStudentIds.filter(id => !attendanceStudentIds.includes(id));
+
+    if (absentStudents.length > 0) {
+        console.log("Students in roster but not in attendance:", absentStudents);
+        alert("The following students are in the roster but did not attend: " + absentStudents.join(', '));
+    } else {
+        console.log("All students in the roster attended.");
+    }
+
+    // Convert fetched attendance data to CSV format
+    const csvData = convertToCSV(attendance);
+
+    // Trigger the CSV file download
+    downloadCSV(csvData, `attendance_${startDate}_to_${endDate}.csv`);
+}
+
+// Function to convert data to CSV format
+function convertToCSV(data) {
+    // Extract the keys (column headers) from the first object
+    const headers = Object.keys(data[0]);
+    const csvRows = [];
+
+    // Add the headers as the first row
+    csvRows.push(headers.join(','));
+
+    // Loop through each attendance record and format the row
+    data.forEach(row => {
+        const values = headers.map(header => {
+            const val = row[header];
+            return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+        });
+        csvRows.push(values.join(','));
+    });
+
+    // Join all rows with newlines and return the CSV string
+    return csvRows.join('\n');
+}
+
+// Function to download CSV file
+function downloadCSV(csvData, filename) {
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', filename);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Example usage within the event listener
+function attachCoursesDropdownListener() {
+    const courses_dropdown = document.getElementById('courses_dropdown');
+    
+    courses_dropdown.addEventListener('change', async function() {
+        const selectedCourse = courses_dropdown.value;
+        console.log("Selected course: ", selectedCourse);
+        
+        // Find the corresponding course object from the coursesData array
+        const selectedCourseObj = coursesData.find(course => {
+            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursename} - ${course.coursesem}`;
+            return courseString === selectedCourse;
+        });
+
+        if (selectedCourseObj) {
+            const courseId = selectedCourseObj.courseid;
+            console.log("Extracted Course ID: ", courseId);
+            
+            // Get the start and end dates from your date input fields
+            const startDate = document.getElementById('start_date_input').value; // Adjust these IDs
+            const endDate = document.getElementById('end_date_input').value; // Adjust these IDs
+
+            // Check attendance against roster and download CSV
+            await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
+        } else {
+            console.error("Course not found");
+        }
+    });
+
+    console.log("Event listener successfully attached to courses_dropdown.");
+}
+
+
+
+
+
 async function fetchNotificationsForCurrentUser() {
     // Get the current session and user details
     const {
