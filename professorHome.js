@@ -450,8 +450,8 @@ function attachCoursesDropdownListener(professor_courses) {
             console.log("Extracted Course ID: ", courseId);
             
             // Get the start and end dates from your date input fields
-            const startDate = document.getElementById('start_date_input').value; // Adjust these IDs
-            const endDate = document.getElementById('end_date_input').value; // Adjust these IDs
+            const startDate = document.getElementById('start_date').value; // Adjust these IDs
+            const endDate = document.getElementById('end_date').value; // Adjust these IDs
 
             // Check attendance against roster and download CSV
             await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
