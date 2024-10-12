@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Get the date fields container (initially hidden)
     const dateFields = document.getElementById('date-fields');
-    dateFields.style.display = 'none'; // Hide the date fields initially
+    //dateFields.style.display = 'none'; // Hide the date fields initially
 
     // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
     initializePage();
@@ -45,11 +45,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const selectedCourse = courses_dropdown.value;
         
         // Check if a course is selected (value isn't "none")
-        if (selectedCourse && selectedCourse !== 'none') {
-            dateFields.style.display = 'block';  // Show date fields
-        } else {
-            dateFields.style.display = 'none';  // Hide date fields if no course is selected
-        }
+        //if (selectedCourse && selectedCourse !== 'none') {
+         //   dateFields.style.display = 'block';  // Show date fields
+       // } else {
+       //     dateFields.style.display = 'none';  // Hide date fields if no course is selected
+       // }
     });
 });
 
