@@ -12,51 +12,57 @@
 
 <script src="supabaseInit.js"></script>
 <body>
+	<!-- The header, is a bounding box (header-master-box) filled with columns (header-col) -->
+	<div class="header-master-box" id="header-master-box-PROFESSOR">
+		<div class="header-col" id="header-col1-madz-logo">
+			<img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz-logo-v2">
+		</div>
+		<div class="header-col" id="header-col2-left-gap-PROFESSOR">
+		
+		</div>
+		<div class="header-col" id="header-col3-tab-buttons-PROFESSOR">
+			<div class="header-col-sub" id="header-col-buttons">
+				<div class="header-button" id="welcome_button_PROFESSOR" onclick="openTab('welcomeTab')">
+					Welcome
+				</div>
+				<div class="header-button" id="classes_button_PROFESSOR" onclick="openTab('classesTab')">
+					Classes
+				</div>
+			</div>
+		</div>
+		<div class="header-col" id="header-col4-right-gap-PROFESSOR">
+		
+		</div>
+		<div class="header-col" id="header-col5-extra-buttons-PROFESSOR">
+			<div class="header-col-sub" id="header-col-extra-buttons-PROFESSOR">
+			
+				<div class="header-button" id="help_button_PROFESSOR" onclick="openTab('helpTab')" title="Help">
+					<span class="material-symbols-outlined">
+						help
+					</span>
+				</div>
+				<div class="header-button" id="account_button_PROFESSOR" onclick="openTab('accountTab')" title="Account Info">
+					<span class="material-symbols-outlined">
+						account_circle
+					</span>
+				</div>
+				<div class="header-button" id="notification_button_PROFESSOR" onclick="openTab('notificationTab')" title="Notifications">
+					<span class="material-symbols-outlined">
+						notifications
+					</span>
+				</div>
+				<div class="header-button" id="log_out_button_PROFESSOR" onclick="logOut()" title="Log Out">
+					<span class="material-symbols-outlined">
+						logout
+					</span>
+				</div>
+				
+			</div>
+		</div>
+	</div>
 
-    <!-- Header section with navigation tabs and log out button -->
-    <header>
-        <div class="header-center">
-       	    <button id="welcome_button" class="tab-button" onclick="openTab('welcomeTab')">Welcome</button>
-	    <button id="classes_button" class="tab-button" onclick="openTab('classesTab')">Classes</button>
-        </div>
-                </div>
-	    <button id="help_button" class="tab-button" onclick="openTab('helpTab')" title="Help">
-		<span class="material-symbols-outlined">
-		help
-	    	</span>
-	    </button>
-	    <button id="account_button" class="tab-button" onclick="openTab('accountTab')" title="Account Info">
-		<span class="material-symbols-outlined">
-		account_circle
-	    	</span>
-	    </button>
-	  <button id="notification_button" class="tab-button" onclick="openTab('notificationTab')" title="Notifications">   
-		<span class="material-symbols-outlined">
-		notifications
-		</span>
-	    
-        <!-- Log out button aligned to the right -->
-	<div class="log-out-container">
-    <button class="tab-button log-out-button" onclick="logOut()" title="Log Out">
-        <span class="material-symbols-outlined">
-            logout
-        </span>
-    </button>
-</div>
 
-<!-- The style for Material Symbols -->
-<style>
-    .material-symbols-outlined {
-        font-variation-settings:
-            'FILL' 0,
-            'wght' 400,
-            'GRAD' 0,
-            'opsz' 24;
-    }
-</style>
-
-    </header>
-    <img id="madz_logo" src="/images/madz_attendance_logo_inverted.png" class="madz_logo"> 
+	
     <!-- Main Content Area -->
     <main>
         <!-- Welcome Tab Content -->
