@@ -213,7 +213,7 @@ async function fetchCourses(email) {
     if (facrank === "Admin") {
         const { data: adminCourses, error: adminError } = await supabasePublicClient
             .from("courses")
-            .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+            .select("coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
             .order('coursecode', { ascending: true })
             .order('coursenum', { ascending: true })
             .order('coursesec', { ascending: false })
@@ -243,7 +243,7 @@ async function fetchCourses(email) {
         // Chairs/Professors can see only their own courses
         const { data: profCourses, error: profError } = await supabasePublicClient
             .from("courses")
-            .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+            .select("coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
             .eq('facemail', email);
 
         if (profError) {
@@ -441,7 +441,7 @@ function attachCoursesDropdownListener(professor_courses) {
         
         // Find the corresponding course object from the professor_courses array
         const selectedCourseObj = professor_courses.find(course => {
-            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursename} - ${course.coursesem}`;
+            const courseString = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`;
             return courseString === selectedCourse;
         });
 
