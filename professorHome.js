@@ -451,7 +451,7 @@ function updateCoursesDropdown(professor_courses)
 			const faclastname = course.faclastname;
 		
 			// Create an entry into the courses dropdown menu
-			courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`;
 			
 			// Only add this course to the dropdown menu if it is in the selected semester and department
 			if (coursesem == selectedSemester && (coursecode == selectedDept || selectedDept == "any"))
