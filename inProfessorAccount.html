@@ -70,63 +70,73 @@
             </div>
         </section>
 
-       <!-- Classes Tab Content -->
-<section id="classesTab" class="tab-content">
-    <div class="account-container">
-        <h2>Your Classes</h2>
-        <p>Here you will see the list of your assigned classes.</p>
-        
-        <!-- Form Structure -->
-        <form id="classForm">
-            <div class="input-wrapper">
-		<label for="department_dropdown">Select a Department:<span class="required"></span></label>
-    		<input type="text" id="department_dropdown" name="department_code" list="departments" required placeholder="Select a Department Code">
-    		<button id="clear_dept_button" class="clear-button"><i class="far fa-times-circle"></i></button>
-		</div>
-            <!-- Department Dropdown 
-            <div>
-                <label for="department_dropdown">Select a Department:<span class="required"></span></label>
-                <select id="department_dropdown" name="department">
-                    <option value="any">Any</option>
-                </select>
-            </div>
-		-->
-		
-            <!-- Semester Dropdown -->
-            <div>
-                <label for="semester_dropdown">Select a Semester:<span class="required"></span></label>
-                <select id="semester_dropdown" name="semester">
-                    <option value="any">Any</option>
-                </select>
-            </div>
+        <!-- Classes Tab Content -->
+        <section id="classesTab" class="tab-content">
+            <div class="account-container">
+                <h2>Your Classes</h2>
+                <p>Here you will see the list of your assigned classes.</p>
+                <!-- You can add a dynamic list of classes here -->
+				
+				
+				<!-- Zaynin Sept 26 (START) -->
+				<!--
+				Create a Dropdown Menu for the Departments:
+				If the user is an admin, show all departments as options.
+				Otherwise, show the user's department only.
+				Impacts the course dropdown menu (below) options based on what department
+				is selected.
+				-->
+				<div>
+					<label for="department_dropdown">Select a Department:</label>
+					<select id="department_dropdown" name="options">
+					<option value="any">Any</option> <!-- The Any option -->
+					</select>
+				</div>
+				
+				<!--
+				Create a Dropdown Menu for the Semesters:
+				Checks all of the professor's courses and displays a drop-down menu for them
+				to select a specific semester. Only semesters that the professor has classes in
+				will be options.
+				-->
+				<div>
+					<label for="semester_dropdown">Select a Semester:</label>
+					<select id="semester_dropdown" name="options">
+					<option value="any">Any</option> <!-- The Any option -->
+					</select>
+				</div>
+				
+				<!--
+				Create a Dropdown Menu for the Courses:
+				Checks all of the professor's courses, and the selected semester (from the semester dropdown menu)
+				and fills the dropdown menu with all valid courses. If no semester is selected, it will show all of
+				the professor's courses from all semesters.
+				-->
+				<div>
+					<label for="courses_dropdown">Select a Course:</label>
+					<select id="courses_dropdown" name="options">
+					<option value="none"></option> <!-- The blank/empty option -->
+					</select>
+				</div>
+				<!-- Zaynin Sept 26 (END) -->
+            
+				<!-- Date Fields (Hidden Initially) -->
+        			  <div id="date-fields" style="display: none;">
+			          <div>
+                			<label for="start_date">Start Date:</label>
+                			<input type="date" id="start_date" name="start_date">
+            			 </div>
+            			 <div>
+                			<label for="end_date">End Date:</label>
+                			<input type="date" id="end_date" name="end_date">
+            			 </div>
+        			</div>
 
-            <!-- Courses Dropdown -->
-            <div>
-                <label for="courses_dropdown">Select a Course:<span class="required"></span></label>
-                <select id="courses_dropdown" name="course">
-                    <option value="none"></option>
-                </select>
-            </div>
-
-            <!-- Date Fields -->
-            <div id="date-fields" style="display: none;">
-    		<div>
-        	<label for="start_date">Start Date:<span class="required"></span></label>
-        	<input type="date" id="start_date" name="start_date">
-    		</div>
-    		<div>
-        	<label for="end_date">End Date:<span class="required"></span></label>
-        	<input type="date" id="end_date" name="end_date">
-    		</div>
-	   </div>
-
-
-            <!-- Button to Download CSV -->
-            <button type="button" id="download_csv">Download CSV</button>
-
-        </form>
-    </div>
-</section>
+        <!-- Button to Download CSV -->
+        		<button id="download_csv">Download CSV</button>
+   		 </div>
+			
+	</section>
 	     <section id="helpTab" class="tab-content">
             <div class="account-container">
 		    <h2> Help / FAQs: </h2>
