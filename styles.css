@@ -365,7 +365,7 @@ input[type="button"]:hover {
     padding: 10px 20px; /* Add padding for better appearance */
     font-size: 16px; /* Font size for the button */
     border: none; /* Remove border */
-    background-color: #007BFF; /* Button background color */
+    background-color: #2A4C6B; /* Button background color */
     color: white; /* Text color */
     border-radius: 4px; /* Rounded corners */
     cursor: pointer; /* Change cursor on hover */
