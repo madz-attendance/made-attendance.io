@@ -792,6 +792,7 @@ async function fetchDepartments(email)
 // Buttons for welcome, classes, create account, account, notifications, and log out
 var welcome_button = document.getElementById("welcome_button_ADMIN");
 var classes_button = document.getElementById("classes_button_ADMIN");
+var add_student_button =document.getElementById("add_student_button");
 var create_account_button = document.getElementById("create_account_button_ADMIN");
 var help_button = document.getElementById("help_button_ADMIN");
 var account_button = document.getElementById("account_button_ADMIN");
@@ -803,6 +804,7 @@ var currentTab = "welcomeTab"; // Default current tab
 function resetButtonColors() {
     welcome_button.style.filter = "brightness(100%)";
     classes_button.style.filter = "brightness(100%)";
+    add_student_button.style.filter = "brightness(100%)";
     help_button.style.filter = "brightness(100%)";
     create_account_button.style.filter = "brightness(100%)";
     account_button.style.filter = "brightness(100%)";
@@ -849,6 +851,27 @@ classes_button.addEventListener("mouseout", function() {
         classes_button.style.filter = "brightness(100%)";
     }
 });
+
+//New student tab logic
+add_student_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "classesTab") {
+        currentTab = "classesTab";
+        add_student_button.style.filter = "brightness(150%)";
+    }
+});
+
+add_student_button.addEventListener("mouseover", function() {
+    if (currentTab != "classesTab") {
+        add_student_button.style.filter = "brightness(150%)";
+    }
+});
+add_student_button.addEventListener("mouseout", function() {
+    if (currentTab != "classesTab") {
+        add_student_button.style.filter = "brightness(100%)";
+    }
+});
+
 
 // Create Account tab logic
 create_account_button.addEventListener("click", function() {
