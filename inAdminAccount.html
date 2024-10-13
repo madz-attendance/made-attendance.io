@@ -32,6 +32,9 @@
 				<div class="header-button" id="create_account_button_ADMIN" onclick="openTab('create_account')">
 					Create Account
 				</div>
+				<div class="header-button" id="add_student_button" onclick="openTab('newStudent')" title="New Student">
+    					New Student
+				</div>
 			</div>
 		</div>
 		<div class="header-col" id="header-col4-right-gap-ADMIN">
@@ -174,6 +177,46 @@
     </div>
   </section>
 
+<!-- New Student Tab Content -->
+<section id="newStudent" class="tab-content">
+    <div class="account-container">
+        <h2>Add Students</h2>
+        <form id="student_creation_form">
+            <!-- Roster ID Input -->
+            <div class="input-container">
+                <label for="roster_id">Enter Roster ID:</label>
+                <input type="text" id="roster_id" name="roster_id" required>
+            </div>
+            <!-- Student ID Input -->
+            <div class="input-container">
+                <label for="id_num">Student ID Number:</label>
+                <input type="text" id="id_num" name="id_num" required>
+            </div>
+            <!-- First Name Input -->
+            <div class="input-container">
+                <label for="first_name">Student First Name:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            <!-- Last Name Input -->
+            <div class="input-container">
+                <label for="last_name">Student Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            <!-- Course Dropdown Placeholder (unimplemented) -->
+            <!--
+            <div>
+                <label for="courses_dropdown">Select a Course:</label>
+                <select id="courses_dropdown" name="options">
+                    <option value="none"></option>
+                </select>
+            </div>
+            -->
+            <!-- Submit Button -->
+            <input type="submit" value="Submit">
+        </form>
+    </div>
+</section>
+	    
 	 <section id="helpTab" class="tab-content">
             <div class="account-container">
 		    <h2> FAQ / Help for Administrators: </h2>
