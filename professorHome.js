@@ -491,27 +491,37 @@ async function fetchAttendanceData(courseId, startDate, endDate) {
             .select('*')
             .eq('courseid', courseId) // Corrected to use courseId
             .gte('attendancedate::date', startDate)
-            .lte('attendancedate::date', endDate);
+            .lte('attendancedate::date', endDate)
+            .csv(); // Add .csv() here to request CSV format data
 
         if (error) {
-            console.error('Error fetching attendance data:', error);
-            alert("Error fetching attendance data. Please check the console.");
-            return [];
+            console.error('Error fetching attendance data in CSV format:', error);
+            alert("Error fetching attendance data in CSV format. Please check the console.");
+            return '';
         }
 
-        return data || []; // Ensure you return an empty array if data is undefined
+        return data || ''; // Return CSV string if data is undefined
     } catch (err) {
         console.error('Error:', err);
-        return [];
+        return '';
     }
 }
 
+
+
 async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate) {
     const roster = await fetchRoster(courseId);
-    const attendance = await fetchAttendanceData(courseId, startDate, endDate);
+    const csvData = await fetchAttendanceData(courseId, startDate, endDate);
 
-    const rosterStudentIds = roster.map(student => student.stuId); // Ensure property names match your schema
-    const attendanceStudentIds = attendance.map(record => record.stuId); // Ensure property names match your schema
+    if (!csvData) {
+        console.error("No CSV data available for download.");
+        return;
+    }
+
+    // Parse the CSV back into JSON if needed for comparison
+    const attendance = parseCSV(csvData); 
+    const rosterStudentIds = roster.map(student => student.stuId); 
+    const attendanceStudentIds = attendance.map(record => record.stuId);
 
     const absentStudents = rosterStudentIds.filter(id => !attendanceStudentIds.includes(id));
 
@@ -522,35 +532,25 @@ async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, e
         console.log("All students in the roster attended.");
     }
 
-    // Prepare data for CSV conversion
-    const csvData = attendance; // Assuming you want to download attendance data
-    const csvString = convertToCSV(csvData);
-
     // Trigger the CSV file download
-    downloadCSV(csvString, `attendance_${startDate}_to_${endDate}.csv`);
+    downloadCSV(csvData, `attendance_${startDate}_to_${endDate}.csv`);
 }
 
-function convertToCSV(data) {
-    if (!Array.isArray(data) || data.length === 0) {
-        console.error("No data available to convert to CSV");
-        return '';
-    }
+function parseCSV(csvString) {
+    const [headerLine, ...rows] = csvString.split('\n');
+    const headers = headerLine.split(',');
 
-    const headers = Object.keys(data[0]);
-    const csvRows = [];
-
-    csvRows.push(headers.join(','));
-
-    data.forEach(row => {
-        const values = headers.map(header => {
-            const val = row[header];
-            return typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val;
+    return rows.map(row => {
+        const values = row.split(',');
+        const record = {};
+        headers.forEach((header, index) => {
+            record[header] = values[index];
         });
-        csvRows.push(values.join(','));
+        return record;
     });
-
-    return csvRows.join('\n');
 }
+
+
 
 function downloadCSV(csvData, filename) {
     const blob = new Blob([csvData], { type: 'text/csv' });
