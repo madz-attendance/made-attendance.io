@@ -490,8 +490,8 @@ async function fetchAttendanceData(courseId, startDate, endDate) {
             .from('attendance')
             .select('*')
             .eq('courseid', courseId) // Corrected to use courseId
-            .gte('attendancedate::date', startDate)
-            .lte('attendancedate::date', endDate)
+            .gte('attendancetime::date', startDate)
+            .lte('attendancetime::date', endDate)
             .csv(); // Add .csv() here to request CSV format data
 
         if (error) {
