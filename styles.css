@@ -512,9 +512,10 @@ input[type="button"]:hover {
 
 /* Make each tab button take up an equal portion of the header-col-sub */
 /* If we add a button in the future, make the widths equal 100% */
-#welcome_button_ADMIN { width: 33.33%; padding-top: 5%; }
-#classes_button_ADMIN { width: 33.33%; padding-top: 5%; }
-#create_account_button_ADMIN { width: 33.33%; padding-top: 5%; }
+#welcome_button_ADMIN { width: 25%; padding-top: 5%; }
+#classes_button_ADMIN { width: 25%; padding-top: 5%; }
+#create_account_button_ADMIN { width: 25%; padding-top: 2%; }
+#add_student_button { width: 25%; padding-top: 2%; }
 
 #help_button_ADMIN { width: 25%; padding-top: 10%; }
 #account_button_ADMIN { width: 25%; padding-top: 10%; }
