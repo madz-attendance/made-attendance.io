@@ -41,11 +41,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
     initializePage();
 
-    // Listen for the semester selection submit button
-    semesterSubmitButton.addEventListener('click', function() {
-        console.log("Hello World");
-    });
-
     // Listen for changes in the courses dropdown to show/hide date fields
     courses_dropdown.addEventListener('change', function() {
         const selectedCourse = courses_dropdown.value;
