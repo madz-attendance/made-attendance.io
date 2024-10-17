@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const semester_dropdown = document.getElementById('semester_dropdown');
     const courses_dropdown = document.getElementById('courses_dropdown');
     const department_dropdown = document.getElementById('department_dropdown');
+    var semesterSubmitButton = document.getElementById('semesterSubmit');
     
     // Get the date fields container (initially hidden)
     const dateFields = document.getElementById('date-fields');
@@ -39,6 +40,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
     initializePage();
+
+    // Listen for the semester selection submit button
+    semesterSubmitButton.addEventListener('click', function() {
+        console.log("Hello World");
+    });
 
     // Listen for changes in the courses dropdown to show/hide date fields
     courses_dropdown.addEventListener('change', function() {
