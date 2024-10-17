@@ -552,7 +552,6 @@ function parseCSV(csvString) {
 }
 
 
-
 function downloadCSV(csvData, filename) {
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -565,8 +564,6 @@ function downloadCSV(csvData, filename) {
     a.click();
     document.body.removeChild(a);
 }
-
-
 
 
 async function fetchNotificationsForCurrentUser() {
