@@ -20,46 +20,6 @@ async function checkAuth() {
 // Call checkAuth on page load
 window.addEventListener('DOMContentLoaded', checkAuth);
 
-// Call initializePage when the page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Get the dropdown menus (for semester, courses, and department)
-    const semester_dropdown = document.getElementById('semesterDropdown');
-    const courses_dropdown = document.getElementById('courseDropdown');
-    const department_dropdown = document.getElementById('department_dropdown');
-    var semesterSubmitButton = document.getElementById('semesterSubmit');
-    
-    // Get the date fields container (initially hidden)
-    const dateFields = document.getElementById('date-fields');
-    //dateFields.style.display = 'none'; // Hide the date fields initially
-
-    // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
-    initializePage();
-
-    // Listen for changes in the courses dropdown to show/hide date fields
-    courses_dropdown.addEventListener('change', function() {
-        const selectedCourse = courses_dropdown.value;
-        
-        // Check if a course is selected (value isn't "none")
-        //if (selectedCourse && selectedCourse !== 'none') {
-         //   dateFields.style.display = 'block';  // Show date fields
-       // } else {
-       //     dateFields.style.display = 'none';  // Hide date fields if no course is selected
-       // }
-    });
-});
-
-// Function that initializes the page - fetches user data (and waits for it to finish),
-// and then fetches/renders courses.
-async function initializePage() {
-    // email = await fetchProfessorData(); // Get professor information and store email
-    
-    // await fetchSemesters(email);   // Populate the semesters drop-down menu with valid semesters
-    // professor_courses = await fetchCourses(email); // Fetch and store the professor's courses
-    
-    // attachSemesterDropdownListener(professor_courses);   // Pass the professor's courses
-    // attachCoursesDropdownListener(professor_courses);    // Pass the professor's courses
-}
-
 // Clicking on MADZ logo will go to home page
 var madzLogoButton = document.getElementById("madz_logo");
 madzLogoButton.addEventListener("click", function() 
@@ -154,158 +114,6 @@ async function logOut()
 		window.location.href = "index.html"; // Redirect to login page
 	}
 }
-
-// Zaynin 09/26/2024
-// Queries the supabase "courses" table and retrieves each unique semester that this professor
-// has a course in. It will then populate the semester_dropdown dropdown menu with all of these
-// semesters as options. It is expected that the professor will choose a semester and then when
-// going to choose a specific course, only courses that they have from that semester will be options.
-// INPUT: email - the professor's email, necessary to determine this specific professor's courses/semesters.
-async function fetchSemesters(email)
-{
-	// Get all of this professor's courses' semesters. This will include duplicates,
-	// and to my knowledge, there is no way to get unique valuees via supabase API. Must
-	// take the list of duplicates and then extract the unique values in JavaScript (below)
-	const { data, error } = await supabasePublicClient		
-        .from('courses')
-        .select('coursesem')
-		.eq('facemail', email);
-		
-    if (error) 
-	{
-        console.error('Error fetching unique coursesem:', error);
-    } 
-	else 
-	{
-        //console.log('Unique coursesem values:', data);
-		// Get the unique semesters in an array
-		uniqueSemesters = Array.from(new Set(data.map(item => item.coursesem)));
-		//console.log(uniqueSemesters);
-		
-		// Get the semester dropdown menu
-		semester_dropdown = document.getElementById("semesterDropdown");
-		
-		// Add each unique semester to the dropdown menu
-		uniqueSemesters.forEach(unique_semester =>
-		{
-			newOption = document.createElement("option");
-			newOption.value = unique_semester;
-			newOption.text = unique_semester;
-			semester_dropdown.appendChild(newOption);
-			console.log("Added option:", newOption.value);
-		});
-	}
-	// console.log("Dropdown options after adding semesters:", semester_dropdown.options);
-}
-
-
-
-// Zaynin 09/26/2024
-// Event Listener for the Semester Dropdown Menu - will handle selections
-// Function to attach the event listener to the semester dropdown menu
-// This must be done in a function, called in itializePage(). This will continue
-// to listen to changes in selection in the semesters dropdown menu. It will call
-// updateCoursesDropdown() to display the courses for the selected semester.
-function attachSemesterDropdownListener(professor_courses) 
-{
-	//console.log("Professor Courses in ATTACH: ", professor_courses)
-    const semester_dropdown = document.getElementById('semester_dropdown');
-    semester_dropdown.addEventListener('change', function() 
-	{
-        const selectedSemester = semester_dropdown.value;
-
-		console.log("Semester Dropdown Menu Selection Updated");
-		updateCoursesDropdown(professor_courses)
-		//console.log("professor_courses: ", professor_courses);
-		
-    });
-    console.log("Event listener successfully attached to semester_dropdown.");
-}
-
-
-// Zaynin 09/26/2024
-// Called by the semester dropdown event listener to change the courses based on the selected
-// semester.
-function updateCoursesDropdown(professor_courses) {
-    const courses_dropdown = document.getElementById('courseDropdown');
-
-    // GET THE CURRENT SELECTED DEPT
-    // const department_dropdown = document.getElementById('department_dropdown');
-    // const selectedDept = department_dropdown.value;
-    // console.log("In updateCoursesDropdown, current_selected_dept: ", selectedDept);
-
-    // GET THE CURRENT SELECTED SEMESTER
-    const semester_dropdown = document.getElementById('semesterDropdown');
-    const selectedSemester = semester_dropdown.value;
-    console.log("In updateCoursesDropdown, current_selected_semester: ", selectedSemester);
-
-    // Remove all options from the courses dropdown menu (except for the blank "none" option)
-    let valueToKeep = "none"; // The value of the option you want to keep
-    for (let i = courses_dropdown.options.length - 1; i >= 0; i--) {
-        if (courses_dropdown.options[i].value !== valueToKeep) {
-            courses_dropdown.remove(i);
-        }
-    }
-
-    // Show courses based on selected semester
-    professor_courses.forEach(course => {
-        const courseid = course.courseid;
-        const coursecode = course.coursecode;
-        const coursenum = course.coursenum;
-        const coursesec = course.coursesec;
-        const coursesem = course.coursesem;
-        const faclastname = course.faclastname;
-
-        // Create an entry into the courses dropdown menu
-        const courseEntry = `${coursecode} ${coursenum} - ${coursesec} - ${coursesem} - ${faclastname}`;
-
-        // Check if the department and semester match
-        if (selectedSemester === "any" || (coursesem === selectedSemester && (coursecode === selectedDept || selectedDept === "any"))) {
-            const newOption = document.createElement("option");
-            newOption.value = courseEntry;
-            newOption.text = courseEntry;
-            courses_dropdown.appendChild(newOption);
-        }
-    });
-}
-
-function attachCoursesDropdownListener(professor_courses) {
-    const courses_dropdown = document.getElementById('courses_dropdown');
-
-    courses_dropdown.addEventListener('change', async function () {
-        const selectedCourse = courses_dropdown.value;
-        console.log("Selected course: ", selectedCourse);
-
-        const selectedCourseObj = professor_courses.find(course => {
-            const courseString = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-            return courseString === selectedCourse;
-        });
-
-        if (selectedCourseObj) {
-            const courseId = selectedCourseObj.courseid; // Ensure this is correct
-            console.log("Extracted Course ID: ", courseId);
-
-            const startDate = document.getElementById('start_date').value; // Adjust these IDs
-            const endDate = document.getElementById('end_date').value; // Adjust these IDs
-
-            await checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate);
-        } else {
-            console.error("Course not found");
-        }
-    });
-
-    console.log("Event listener successfully attached to courses_dropdown.");
-}
-
-// function attachDepartmentDropdownListener(professor_courses) {
-//     const department_dropdown = document.getElementById('department_dropdown');
-//     department_dropdown.addEventListener('change', function () {
-//         const selectedDepartment = department_dropdown.value;
-//         console.log("Department Dropdown Menu Selection Updated. Selected: ", selectedDepartment);
-//         updateCoursesDropdown(professor_courses);
-//     });
-//     console.log("Event listener successfully attached to department_dropdown.");
-// }
 
 async function fetchRoster(courseId) {
     try {
@@ -591,7 +399,7 @@ async function getProfessorCourses() {
     const email = await fetchProfessorData();
     const { data, error } = await supabasePublicClient
         .from('courses')
-        .select('coursecode, coursenum, coursesem')
+        .select('coursecode, coursenum, coursesem, coursesec')
         .eq('facemail', email);
 
     if (error) {
@@ -608,6 +416,9 @@ async function populateSemesterDropdown() {
 
     // Get unique semesters from courses
     const semesters = [...new Set(courses.map(course => course.coursesem))];
+    semesters.sort((a,b) => {
+        return parseInt(b.split(" ")[1]) - parseInt(a.split(" ")[1]);
+    }); //Sort the semesters from most recent -> oldest so the most recent is the default semester
 
     // Populate semester dropdown
     semesterDropdown.innerHTML = '';
@@ -643,7 +454,7 @@ async function populateCourseDropdown(semester) {
     semesterCourses.forEach(course => {
         const option = document.createElement('option');
         option.value = `${course.coursecode}${course.coursenum}`;
-        option.textContent = `${course.coursecode}${course.coursenum}`;
+        option.textContent = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
         courseDropdown.appendChild(option);
     });
 
@@ -684,11 +495,6 @@ document.getElementById('backButton').addEventListener('click', function() {
 async function updateAttendanceTable(semester, course) {
     code = course.slice(0,4);
     nums = course.slice(4);
-
-    console.log('Selected Semester:', semester);
-    console.log('Selected Course:', course);
-    console.log('Course Code:', code);
-    console.log('Course Numbers:', nums);
 
     const { data, error } = await supabasePublicClient
     .from('courses')
@@ -857,177 +663,3 @@ log_out_button.addEventListener("mouseout", function() {
         log_out_button.style.filter = "brightness(100%)";
     }
 });
-
-
-// Zaynin 09/26/2024
-// Returns the courses relevant to the specific faculty member.
-// If the faculty logged in is a professor/chair, it will query all courses that they have.
-// If the faculty logged in is a admin, it will query all courses.
-// Course options will later be filtered based on dept/semester, but this function obtains
-// all possible courses that would need to be seen by this faculty
-// async function fetchCourses(email) {
-//     // Determine whether this faculty is an Admin or a Prof/Chair
-//     // Get faculty role and dept by querying "users" table
-//     const { data: userData, error: userError } = await supabasePublicClient
-//         .from('users')
-//         .select("facrank, deptcode")
-//         .eq('facemail', email);
-
-//     if (userError) {
-//         console.error("Error fetching facrank in fetchDepartments()", userError);
-//         return []; // Return an empty array or handle the error appropriately
-//     }
-
-//     const { facrank, deptcode } = userData[0]; // Store the faculty rank and dept of that faculty.
-
-//     let professor_courses = []; // Initialize an empty array to store courses
-
-//     // If the faculty is an Admin
-//     if (facrank === "Admin") {
-//         const { data: adminCourses, error: adminError } = await supabasePublicClient
-//             .from("courses")
-//             .select("coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-//             .order('coursecode', { ascending: true })
-//             .order('coursenum', { ascending: true })
-//             .order('coursesec', { ascending: false })
-//             .order('coursesem', { ascending: true })
-//             .order('faclastname', { ascending: true });
-
-//         if (adminError) {
-//             console.error("Error fetching admin courses", adminError);
-//             return [];
-//         }
-
-//         // For each course that this admin has access to (all the courses), add it to the courses dropdown menu
-//         adminCourses.forEach(course => {
-//             // Create an entry into the courses dropdown menu
-//             const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-
-//             // Add the course entry into the courses dropdown menu
-//             const newOption = document.createElement("option");
-//             newOption.value = courseEntry;
-//             newOption.text = courseEntry;
-//             courses_dropdown.appendChild(newOption);
-
-//             // Add the course to professor_courses array
-//             professor_courses.push(course);
-//         });
-//     } else {
-//         // Chairs/Professors can see only their own courses
-//         const { data: profCourses, error: profError } = await supabasePublicClient
-//             .from("courses")
-//             .select("courseid, coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-//             .eq('facemail', email);
-
-//         if (profError) {
-//             console.error("Error fetching professor courses", profError);
-//             return [];
-//         }
-
-//         // For each course that this professor teaches, add it to the courses dropdown menu
-//         profCourses.forEach(course => {
-//             // Create an entry into the courses dropdown menu
-//             const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-
-//             // Add the course entry into the courses dropdown menu
-//             const newOption = document.createElement("option");
-//             newOption.value = courseEntry;
-//             newOption.text = courseEntry;
-//             courses_dropdown.appendChild(newOption);
-
-//             // Add the course to professor_courses array
-//             professor_courses.push(course);
-//         });
-//     }
-
-//     return professor_courses; // Return the courses for the professor
-// }
-
-/*
-async function fetchAllClasses(email) 
-{
-	console.log("fetchAllClasses() email: " + email)
-	const { data, error } = await supabasePublicClient
-    .from('courses')
-    .select('*') // Selects all fields from the table
-	.eq('facemail', email) // when the email matches up to the professor's
-	 .order('coursenum', { ascending: true }); // Order by ascending course code
-	//.eq('facemail', 'earl@t.edu')
-
-  if (error) 
-  {
-    console.error('Error fetching courses:', error);
-  } 
-  else 
-  {
-    console.log('Courses:', data);
-    return data;
-  }
-}
-
-
-async function renderCourses(email) {
-  const courses = await fetchAllClasses(email);
-  const container = document.querySelector('#classesTab .account-container');
-
-  if (courses && courses.length > 0) 
-  {
-    let html = '<ul>';
-    courses.forEach(course => 
-	{
-      html += `<li>${course.courseid},${course.coursename},${course.coursesec},${course.coursesem}</li>`; // Assuming "name" is a column in the "courses" table
-    });
-    html += '</ul>';
-
-    container.innerHTML += html;
-  } 
-  else 
-  {
-    container.innerHTML += '<p>No courses available.</p>';
-  }
-  
-  return courses
-  
-}
-*/
-
-// async function fetchDepartments(email) {
-//     console.log("In fetchDepartments, email: ", email);
-//     const { data, error } = await supabasePublicClient
-//         .from('users')
-//         .select("facrank, deptcode")
-//         .eq('facemail', email);
-
-//     if (error) {
-//         console.error("Error fetching facrank in fetchDepartments()", error);
-//         return;
-//     }
-
-//     if (data && data.length > 0) {
-//         const { facrank, deptcode } = data[0];
-
-//         if (facrank === "Admin") {
-//             const { data: deptData, error: deptError } = await supabasePublicClient
-//                 .from('departments')
-//                 .select("deptcode");
-
-//             if (deptError) {
-//                 console.error("Error fetching departments:", deptError);
-//                 return;
-//             }
-
-//             deptData.forEach(dept => {
-//                 const deptOption = document.createElement("option");
-//                 deptOption.value = dept.deptcode;
-//                 deptOption.text = dept.deptcode;
-//                 department_dropdown.appendChild(deptOption);
-//             });
-//         } else {
-//             department_dropdown.remove(0); // Remove the "any" option
-//             const deptOption = document.createElement("option");
-//             deptOption.value = deptcode;
-//             deptOption.text = deptcode;
-//             department_dropdown.appendChild(deptOption);
-//         }
-//     }
-// }
