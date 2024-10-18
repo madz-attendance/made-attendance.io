@@ -371,12 +371,14 @@ input[type="button"]:hover {
   outline: none;
 }
 
+#backButtonContainer,
 #semesterButtonContainer {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+#backButton,
 #semesterSubmit {
     font-size: 20px;
     color: white;
@@ -388,6 +390,7 @@ input[type="button"]:hover {
     padding: 12px 25px;
 }
 
+#backButton:hover,
 #semesterSubmit:hover {
     background-color: #0056b3;
 }

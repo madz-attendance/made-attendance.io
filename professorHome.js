@@ -22,15 +22,13 @@ async function checkAuth() {
 window.addEventListener('DOMContentLoaded', checkAuth);
 
 
-
-
 // "MAIN()"
 // Zaynin 09/26/2024
 // Call initializePage when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Get the dropdown menus (for semester, courses, and department)
-    const semester_dropdown = document.getElementById('semester_dropdown');
-    const courses_dropdown = document.getElementById('courses_dropdown');
+    const semester_dropdown = document.getElementById('semesterDropdown');
+    const courses_dropdown = document.getElementById('courseDropdown');
     const department_dropdown = document.getElementById('department_dropdown');
     var semesterSubmitButton = document.getElementById('semesterSubmit');
     
@@ -746,6 +744,67 @@ function removeNotification(courseCode, stufirstname, submissionDate) {
 }
 
 fetchNotificationsForCurrentUser();
+
+document.getElementById('semesterButtonContainer').addEventListener('click', function(event) {
+    event.preventDefault();
+
+    const givenSemester = document.getElementById('semesterDropdown').value;
+    const givenCourse = document.getElementById('courseDropdown').value;
+
+    document.getElementById("form-section").style.display='none';
+    document.getElementById("table-section").style.display='block';
+
+    updateAttendanceTable(givenSemester, givenCourse);
+});
+
+document.getElementById('backButton').addEventListener('click', function() {
+    document.getElementById('table-section').style.display = 'none';
+    document.getElementById('form-section').style.display = 'block';
+});
+
+async function updateAttendanceTable(semester, course) {
+    code = course.slice(0,4);
+    nums = course.slice(4);
+
+    console.log('Selected Semester:', semester);
+    console.log('Selected Course:', course);
+    console.log('Course Code:', code);
+    console.log('Course Numbers:', nums);
+
+    const { data, error } = await supabasePublicClient
+    .from('courses')
+    .select('*')
+    .eq('coursesem', semester)
+    .eq('coursecode', code)
+    .eq('coursenum', nums);
+
+    if (error) {
+        console.error('Error fetching data:', error);
+        return;
+    }
+
+    const tableBody = document.querySelector('tbody');
+    tableBody.innerHTML = '';  // Clear the existing rows
+
+    data.forEach(row => {
+        const tableRow = document.createElement('tr');
+
+        const nameCell = document.createElement('th');
+        nameCell.textContent = row.name;
+
+        const idCell = document.createElement('td');
+        idCell.textContent = row.student_id;
+
+        const attendanceCell = document.createElement('td');
+        attendanceCell.textContent = row.attended ? 'Yes' : 'No';
+
+        tableRow.appendChild(nameCell);
+        tableRow.appendChild(idCell);
+        tableRow.appendChild(attendanceCell);
+
+        tableBody.appendChild(tableRow);
+    });
+};
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================

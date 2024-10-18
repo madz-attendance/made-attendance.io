@@ -75,24 +75,48 @@
 
         <!-- Classes Tab Content -->
         <section id="classesTab" class="tab-content">
-            <div class="account-containertwo">
+            <div id="form-section" class="account-containertwo">
                 <h2>Choose a Semester and Course Code</h2>
 				<div>
 					<label for="semesterDropdown">Semester:<span class="required"></span></label>
 					<select id="semesterDropdown" name="options">
 					<option value="any">Any</option> <!-- The Any option -->
+					<option value="Fall 2024">Fall 2024</option>
 					</select>
 				</div>
 				<div>
 					<label for="courseDropdown">Course:<span class="required"></span></label>
 					<select id="courseDropdown" name="options">
 					<option value="any">Any</option> <!-- The Any option -->
+					<option value="CPSC135">CSC135</option>
+					<option value="CPSC237">CSC237</option>
+					<option value="CPSC447">CSC447</option>
 					</select>
 				</div>
-				<div id="semesterButtonContainer" onclick="console.log('Hello World')"> <!--Call function to grab necessary info from DB-->
+				<div id="semesterButtonContainer">
     				<button id="semesterSubmit">Submit</button>
 				</div>
    			</div>
+
+			<!-- Attendance Table Section (Initially Hidden) -->
+			<div id="table-section" style="display: none;">
+				<h2>Attendance Information</h2>
+				<table id="attendance-table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Student ID</th>
+							<th>Attended?</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Rows will be dynamically generated here -->
+					</tbody>
+				</table>
+				<div id="backButtonContainer">
+					<button id="backButton">Go Back</button>
+				</div>
+			</div>
 
 			
 		</section>
@@ -124,6 +148,9 @@
 <script src="professorHome.js"></script>
 </body>
 </html>
+
+
+<!-- https://web.dev/learn/html/tables/#:~:text=If%20data%20is%20being%20presented%2C%20compared%2C%20sorted%2C%20calculated%2C,of%20images%20and%20style%20the%20grid%20with%20CSS.  -->
 
 
 <!-- <div>
