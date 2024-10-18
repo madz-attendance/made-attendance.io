@@ -17,13 +17,9 @@ async function checkAuth() {
     console.log('User is authenticated:', session.user);
   }
 }
-
 // Call checkAuth on page load
 window.addEventListener('DOMContentLoaded', checkAuth);
 
-
-// "MAIN()"
-// Zaynin 09/26/2024
 // Call initializePage when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     // Get the dropdown menus (for semester, courses, and department)
@@ -52,33 +48,17 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
-// =====================================================
-// Zaynin Sept 26 2024 (START)
-// Fetch user data when page loads
-//email = fetchProfessorData();
-//renderCourses(email); // Render courses
-
 // Function that initializes the page - fetches user data (and waits for it to finish),
 // and then fetches/renders courses.
 async function initializePage() {
-    email = await fetchProfessorData(); // Get professor information and store email
+    // email = await fetchProfessorData(); // Get professor information and store email
     
-    await fetchDepartments(email); // Populate the departments dropdown menu with valid departments
-    await fetchSemesters(email);   // Populate the semesters drop-down menu with valid semesters
-    professor_courses = await fetchCourses(email); // Fetch and store the professor's courses
+    // await fetchSemesters(email);   // Populate the semesters drop-down menu with valid semesters
+    // professor_courses = await fetchCourses(email); // Fetch and store the professor's courses
     
-    // Attach event listeners to dropdowns
-    attachDepartmentDropdownListener(professor_courses); // Pass the professor's courses
-    attachSemesterDropdownListener(professor_courses);   // Pass the professor's courses
-    attachCoursesDropdownListener(professor_courses);    // Pass the professor's courses
+    // attachSemesterDropdownListener(professor_courses);   // Pass the professor's courses
+    // attachCoursesDropdownListener(professor_courses);    // Pass the professor's courses
 }
-
-
-// ===================================================
-// ===================================================
-// ===================================================
-// ===================================================
 
 // Clicking on MADZ logo will go to home page
 var madzLogoButton = document.getElementById("madz_logo");
@@ -124,52 +104,44 @@ async function fetchProfessorData()
 {
 	const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
 
-	if (authError) 
-	{
+	if (authError) {
 		document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
 		return;
 	}
 
 	const email = user?.user?.email;
-	console.log("Email found: " + email)
+	// console.log("Email found: " + email)
 
-	if (!email) 
-	{
+	if (!email) {
 		document.getElementById('welcomeMessage').innerText = 'No user email found';
 		return;
 	}
 
-	try 
-	{
+	try {
 		const { data, error: dbError } = await supabasePublicClient
 			.from('users')
 			.select('facrank, faclastname')
 			.eq('facemail', email);
 
 		if (dbError) 
-		{
-			throw dbError;
-		}
+		    {throw dbError;}
 
-		if (data && data.length > 0) 
-		{
+		if (data && data.length > 0) {
 			const userInfo = data[0];
 			document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
 			document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
 			document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank} ${userInfo.faclastname}`;
 		}
-		else 
-		{
+		else {
 			document.getElementById('welcomeMessage').innerText = 'User data not found';
 		}
 
 	} 
-	catch (err) 
-	{
+	catch (err) {
 		document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
 	}
 	
-	console.log("Returning Email from fetchProfessorData(): " + email);
+	// console.log("Returning Email from fetchProfessorData(): " + email);
 	return email // Zaynin 9/26/2024 - Returns professor email to then be used in fetchAllClasses()
 }
 
@@ -182,93 +154,6 @@ async function logOut()
 		window.location.href = "index.html"; // Redirect to login page
 	}
 }
-
-
-
-// Zaynin 09/26/2024
-// Returns the courses relevant to the specific faculty member.
-// If the faculty logged in is a professor/chair, it will query all courses that they have.
-// If the faculty logged in is a admin, it will query all courses.
-// Course options will later be filtered based on dept/semester, but this function obtains
-// all possible courses that would need to be seen by this faculty
-async function fetchCourses(email) {
-    // Determine whether this faculty is an Admin or a Prof/Chair
-    // Get faculty role and dept by querying "users" table
-    const { data: userData, error: userError } = await supabasePublicClient
-        .from('users')
-        .select("facrank, deptcode")
-        .eq('facemail', email);
-
-    if (userError) {
-        console.error("Error fetching facrank in fetchDepartments()", userError);
-        return []; // Return an empty array or handle the error appropriately
-    }
-
-    const { facrank, deptcode } = userData[0]; // Store the faculty rank and dept of that faculty.
-
-    let professor_courses = []; // Initialize an empty array to store courses
-
-    // If the faculty is an Admin
-    if (facrank === "Admin") {
-        const { data: adminCourses, error: adminError } = await supabasePublicClient
-            .from("courses")
-            .select("coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-            .order('coursecode', { ascending: true })
-            .order('coursenum', { ascending: true })
-            .order('coursesec', { ascending: false })
-            .order('coursesem', { ascending: true })
-            .order('faclastname', { ascending: true });
-
-        if (adminError) {
-            console.error("Error fetching admin courses", adminError);
-            return [];
-        }
-
-        // For each course that this admin has access to (all the courses), add it to the courses dropdown menu
-        adminCourses.forEach(course => {
-            // Create an entry into the courses dropdown menu
-            const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-
-            // Add the course entry into the courses dropdown menu
-            const newOption = document.createElement("option");
-            newOption.value = courseEntry;
-            newOption.text = courseEntry;
-            courses_dropdown.appendChild(newOption);
-
-            // Add the course to professor_courses array
-            professor_courses.push(course);
-        });
-    } else {
-        // Chairs/Professors can see only their own courses
-        const { data: profCourses, error: profError } = await supabasePublicClient
-            .from("courses")
-            .select("courseid, coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-            .eq('facemail', email);
-
-        if (profError) {
-            console.error("Error fetching professor courses", profError);
-            return [];
-        }
-
-        // For each course that this professor teaches, add it to the courses dropdown menu
-        profCourses.forEach(course => {
-            // Create an entry into the courses dropdown menu
-            const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
-
-            // Add the course entry into the courses dropdown menu
-            const newOption = document.createElement("option");
-            newOption.value = courseEntry;
-            newOption.text = courseEntry;
-            courses_dropdown.appendChild(newOption);
-
-            // Add the course to professor_courses array
-            professor_courses.push(course);
-        });
-    }
-
-    return professor_courses; // Return the courses for the professor
-}
-
 
 // Zaynin 09/26/2024
 // Queries the supabase "courses" table and retrieves each unique semester that this professor
@@ -298,7 +183,7 @@ async function fetchSemesters(email)
 		//console.log(uniqueSemesters);
 		
 		// Get the semester dropdown menu
-		//semester_dropdown = document.getElementById("semester_dropdown");
+		semester_dropdown = document.getElementById("semesterDropdown");
 		
 		// Add each unique semester to the dropdown menu
 		uniqueSemesters.forEach(unique_semester =>
@@ -310,7 +195,7 @@ async function fetchSemesters(email)
 			console.log("Added option:", newOption.value);
 		});
 	}
-	console.log("Dropdown options after adding semesters:", semester_dropdown.options);
+	// console.log("Dropdown options after adding semesters:", semester_dropdown.options);
 }
 
 
@@ -342,15 +227,15 @@ function attachSemesterDropdownListener(professor_courses)
 // Called by the semester dropdown event listener to change the courses based on the selected
 // semester.
 function updateCoursesDropdown(professor_courses) {
-    const courses_dropdown = document.getElementById('courses_dropdown');
+    const courses_dropdown = document.getElementById('courseDropdown');
 
     // GET THE CURRENT SELECTED DEPT
-    const department_dropdown = document.getElementById('department_dropdown');
-    const selectedDept = department_dropdown.value;
-    console.log("In updateCoursesDropdown, current_selected_dept: ", selectedDept);
+    // const department_dropdown = document.getElementById('department_dropdown');
+    // const selectedDept = department_dropdown.value;
+    // console.log("In updateCoursesDropdown, current_selected_dept: ", selectedDept);
 
     // GET THE CURRENT SELECTED SEMESTER
-    const semester_dropdown = document.getElementById('semester_dropdown');
+    const semester_dropdown = document.getElementById('semesterDropdown');
     const selectedSemester = semester_dropdown.value;
     console.log("In updateCoursesDropdown, current_selected_semester: ", selectedSemester);
 
@@ -412,56 +297,15 @@ function attachCoursesDropdownListener(professor_courses) {
     console.log("Event listener successfully attached to courses_dropdown.");
 }
 
-function attachDepartmentDropdownListener(professor_courses) {
-    const department_dropdown = document.getElementById('department_dropdown');
-    department_dropdown.addEventListener('change', function () {
-        const selectedDepartment = department_dropdown.value;
-        console.log("Department Dropdown Menu Selection Updated. Selected: ", selectedDepartment);
-        updateCoursesDropdown(professor_courses);
-    });
-    console.log("Event listener successfully attached to department_dropdown.");
-}
-
-async function fetchDepartments(email) {
-    console.log("In fetchDepartments, email: ", email);
-    const { data, error } = await supabasePublicClient
-        .from('users')
-        .select("facrank, deptcode")
-        .eq('facemail', email);
-
-    if (error) {
-        console.error("Error fetching facrank in fetchDepartments()", error);
-        return;
-    }
-
-    if (data && data.length > 0) {
-        const { facrank, deptcode } = data[0];
-
-        if (facrank === "Admin") {
-            const { data: deptData, error: deptError } = await supabasePublicClient
-                .from('departments')
-                .select("deptcode");
-
-            if (deptError) {
-                console.error("Error fetching departments:", deptError);
-                return;
-            }
-
-            deptData.forEach(dept => {
-                const deptOption = document.createElement("option");
-                deptOption.value = dept.deptcode;
-                deptOption.text = dept.deptcode;
-                department_dropdown.appendChild(deptOption);
-            });
-        } else {
-            department_dropdown.remove(0); // Remove the "any" option
-            const deptOption = document.createElement("option");
-            deptOption.value = deptcode;
-            deptOption.text = deptcode;
-            department_dropdown.appendChild(deptOption);
-        }
-    }
-}
+// function attachDepartmentDropdownListener(professor_courses) {
+//     const department_dropdown = document.getElementById('department_dropdown');
+//     department_dropdown.addEventListener('change', function () {
+//         const selectedDepartment = department_dropdown.value;
+//         console.log("Department Dropdown Menu Selection Updated. Selected: ", selectedDepartment);
+//         updateCoursesDropdown(professor_courses);
+//     });
+//     console.log("Event listener successfully attached to department_dropdown.");
+// }
 
 async function fetchRoster(courseId) {
     try {
@@ -505,8 +349,6 @@ async function fetchAttendanceData(courseId, startDate, endDate) {
         return '';
     }
 }
-
-
 
 async function checkAttendanceAgainstRosterAndDownloadCSV(courseId, startDate, endDate) {
     const roster = await fetchRoster(courseId);
@@ -745,6 +587,82 @@ function removeNotification(courseCode, stufirstname, submissionDate) {
 
 fetchNotificationsForCurrentUser();
 
+async function getProfessorCourses() {
+    const email = await fetchProfessorData();
+    const { data, error } = await supabasePublicClient
+        .from('courses')
+        .select('coursecode, coursenum, coursesem')
+        .eq('facemail', email);
+
+    if (error) {
+        console.error('Error fetching professor courses:', error);
+        return [];
+    }
+    return data;
+}
+
+// Populate the semester dropdown with only semesters the professor has courses in
+async function populateSemesterDropdown() {
+    const courses = await getProfessorCourses();
+    const semesterDropdown = document.getElementById('semesterDropdown');
+
+    // Get unique semesters from courses
+    const semesters = [...new Set(courses.map(course => course.coursesem))];
+
+    // Populate semester dropdown
+    semesterDropdown.innerHTML = '';
+    semesters.forEach(coursesem => {
+        const option = document.createElement('option');
+        option.value = coursesem;
+        option.textContent = coursesem;
+        semesterDropdown.appendChild(option);
+    });
+
+    // Enable semester dropdown if semesters are available
+    if (semesters.length > 0) {
+        semesterDropdown.disabled = false;
+    }
+}
+
+// When a semester is selected, populate the course dropdown
+document.getElementById('semesterDropdown').addEventListener('change', function() {
+    const selectedSemester = this.value;
+    populateCourseDropdown(selectedSemester);
+});
+
+async function populateCourseDropdown(semester) {
+    const courses = await getProfessorCourses();
+    const courseDropdown = document.getElementById('courseDropdown');
+
+    // Filter courses based on selected semester
+    const semesterCourses = courses.filter(course => course.semester === semester);
+
+    // Populate course dropdown
+    courseDropdown.innerHTML = '';  // Clear previous options
+    semesterCourses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = `${course.coursecode}${course.coursenum}`;
+        option.textContent = `${course.coursecode}${course.coursenum}`;
+        courseDropdown.appendChild(option);
+    });
+
+    // Enable course dropdown and submit button if courses are available
+    if (semesterCourses.length > 0) {
+        courseDropdown.disabled = false;
+        document.getElementById('semesterSubmit').disabled = false;
+    } else {
+        courseDropdown.disabled = true;
+        document.getElementById('semesterSubmit').disabled = true;
+    }
+}
+
+// Initially, populate the semester dropdown when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    this.getElementById('courseDropdown').disabled = true;
+    this.getElementById('semesterSubmit').disabled = true;
+    populateSemesterDropdown();
+});
+
 document.getElementById('semesterButtonContainer').addEventListener('click', function(event) {
     event.preventDefault();
 
@@ -784,7 +702,7 @@ async function updateAttendanceTable(semester, course) {
     }
 
     const tableBody = document.querySelector('tbody');
-    tableBody.innerHTML = '';  // Clear the existing rows
+    tableBody.innerHTML = '';
 
     data.forEach(row => {
         const tableRow = document.createElement('tr');
@@ -806,9 +724,223 @@ async function updateAttendanceTable(semester, course) {
     });
 };
 
-// Zaynin Sept 26 2024 (END)
-// =====================================================
+// Styling for tabbing added by Anthony: 
+// Buttons for welcome, classes, create account, account, notifications, and log out
+var classes_button = document.getElementById("classes_button_PROFESSOR");
+var help_button = document.getElementById("help_button_PROFESSOR");
+var account_button = document.getElementById("account_button_PROFESSOR");
+var notification_button = document.getElementById("notification_button_PROFESSOR");
+var log_out_button = document.getElementById("log_out_button_PROFESSOR");
+var welcome_button = document.getElementById("welcome_button_PROFESSOR");
+var currentTab = "welcomeTab"; // Default current tab
 
+function resetButtonColors() {
+    welcome_button.style.filter = "brightness(100%)";
+    classes_button.style.filter = "brightness(100%)";
+    help_button.style.filter = "brightness(100%)";
+    account_button.style.filter = "brightness(100%)";
+    notification_button.style.filter = "brightness(100%)";
+    log_out_button.style.filter = "brightness(100%)";
+}
+
+welcome_button.style.filter = "brightness(150%)";
+welcome_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "welcomeTab") {
+        currentTab = "welcomeTab";
+        welcome_button.style.filter = "brightness(150%)";
+    }
+});
+welcome_button.addEventListener("mouseover", function() {
+    if (currentTab != "welcomeTab") {
+        welcome_button.style.filter = "brightness(150%)";
+    }
+});
+welcome_button.addEventListener("mouseout", function() {
+    if (currentTab != "welcomeTab") {
+        welcome_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Classes tab logic
+classes_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "classesTab") {
+        currentTab = "classesTab";
+        classes_button.style.filter = "brightness(150%)";
+    }
+});
+classes_button.addEventListener("mouseover", function() {
+    if (currentTab != "classesTab") {
+        classes_button.style.filter = "brightness(150%)";
+    }
+});
+classes_button.addEventListener("mouseout", function() {
+    if (currentTab != "classesTab") {
+        classes_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Help tab logic
+help_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "helpTab") {
+        currentTab = "helpTab";
+        help_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseover", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(150%)";
+    }
+});
+help_button.addEventListener("mouseout", function() {
+    if (currentTab != "helpTab") {
+        help_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Account tab logic
+account_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "accountTab") {
+        currentTab = "accountTab";
+        account_button.style.filter = "brightness(150%)";
+    }
+});
+account_button.addEventListener("mouseover", function() {
+    if (currentTab != "accountTab") {
+        account_button.style.filter = "brightness(150%)";
+    }
+});
+account_button.addEventListener("mouseout", function() {
+    if (currentTab != "accountTab") {
+        account_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Notification tab logic
+notification_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "notificationTab") {
+        currentTab = "notificationTab";
+        notification_button.style.filter = "brightness(150%)";
+    }
+});
+notification_button.addEventListener("mouseover", function() {
+    if (currentTab != "notificationTab") {
+        notification_button.style.filter = "brightness(150%)";
+    }
+});
+notification_button.addEventListener("mouseout", function() {
+    if (currentTab != "notificationTab") {
+        notification_button.style.filter = "brightness(100%)";
+    }
+});
+
+// Log Out button logic
+log_out_button.addEventListener("click", function() {
+    resetButtonColors();
+    if (currentTab != "log_out") {
+        currentTab = "log_out";
+        log_out_button.style.filter = "brightness(150%)";
+    }
+});
+log_out_button.addEventListener("mouseover", function() {
+    if (currentTab != "log_out") {
+        log_out_button.style.filter = "brightness(150%)";
+    }
+});
+log_out_button.addEventListener("mouseout", function() {
+    if (currentTab != "log_out") {
+        log_out_button.style.filter = "brightness(100%)";
+    }
+});
+
+
+// Zaynin 09/26/2024
+// Returns the courses relevant to the specific faculty member.
+// If the faculty logged in is a professor/chair, it will query all courses that they have.
+// If the faculty logged in is a admin, it will query all courses.
+// Course options will later be filtered based on dept/semester, but this function obtains
+// all possible courses that would need to be seen by this faculty
+// async function fetchCourses(email) {
+//     // Determine whether this faculty is an Admin or a Prof/Chair
+//     // Get faculty role and dept by querying "users" table
+//     const { data: userData, error: userError } = await supabasePublicClient
+//         .from('users')
+//         .select("facrank, deptcode")
+//         .eq('facemail', email);
+
+//     if (userError) {
+//         console.error("Error fetching facrank in fetchDepartments()", userError);
+//         return []; // Return an empty array or handle the error appropriately
+//     }
+
+//     const { facrank, deptcode } = userData[0]; // Store the faculty rank and dept of that faculty.
+
+//     let professor_courses = []; // Initialize an empty array to store courses
+
+//     // If the faculty is an Admin
+//     if (facrank === "Admin") {
+//         const { data: adminCourses, error: adminError } = await supabasePublicClient
+//             .from("courses")
+//             .select("coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+//             .order('coursecode', { ascending: true })
+//             .order('coursenum', { ascending: true })
+//             .order('coursesec', { ascending: false })
+//             .order('coursesem', { ascending: true })
+//             .order('faclastname', { ascending: true });
+
+//         if (adminError) {
+//             console.error("Error fetching admin courses", adminError);
+//             return [];
+//         }
+
+//         // For each course that this admin has access to (all the courses), add it to the courses dropdown menu
+//         adminCourses.forEach(course => {
+//             // Create an entry into the courses dropdown menu
+//             const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
+
+//             // Add the course entry into the courses dropdown menu
+//             const newOption = document.createElement("option");
+//             newOption.value = courseEntry;
+//             newOption.text = courseEntry;
+//             courses_dropdown.appendChild(newOption);
+
+//             // Add the course to professor_courses array
+//             professor_courses.push(course);
+//         });
+//     } else {
+//         // Chairs/Professors can see only their own courses
+//         const { data: profCourses, error: profError } = await supabasePublicClient
+//             .from("courses")
+//             .select("courseid, coursecode, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+//             .eq('facemail', email);
+
+//         if (profError) {
+//             console.error("Error fetching professor courses", profError);
+//             return [];
+//         }
+
+//         // For each course that this professor teaches, add it to the courses dropdown menu
+//         profCourses.forEach(course => {
+//             // Create an entry into the courses dropdown menu
+//             const courseEntry = `${course.coursecode} ${course.coursenum} - ${course.coursesec} - ${course.coursesem} - ${course.faclastname}`;
+
+//             // Add the course entry into the courses dropdown menu
+//             const newOption = document.createElement("option");
+//             newOption.value = courseEntry;
+//             newOption.text = courseEntry;
+//             courses_dropdown.appendChild(newOption);
+
+//             // Add the course to professor_courses array
+//             professor_courses.push(course);
+//         });
+//     }
+
+//     return professor_courses; // Return the courses for the professor
+// }
 
 /*
 async function fetchAllClasses(email) 
@@ -858,142 +990,43 @@ async function renderCourses(email) {
 }
 */
 
+// async function fetchDepartments(email) {
+//     console.log("In fetchDepartments, email: ", email);
+//     const { data, error } = await supabasePublicClient
+//         .from('users')
+//         .select("facrank, deptcode")
+//         .eq('facemail', email);
 
-// Styling for tabbing added by Anthony: 
-// Buttons for welcome, classes, create account, account, notifications, and log out
-var classes_button = document.getElementById("classes_button_PROFESSOR");
-var help_button = document.getElementById("help_button_PROFESSOR");
-var account_button = document.getElementById("account_button_PROFESSOR");
-var notification_button = document.getElementById("notification_button_PROFESSOR");
-var log_out_button = document.getElementById("log_out_button_PROFESSOR");
-var welcome_button = document.getElementById("welcome_button_PROFESSOR");
+//     if (error) {
+//         console.error("Error fetching facrank in fetchDepartments()", error);
+//         return;
+//     }
 
-var currentTab = "welcomeTab"; // Default current tab
+//     if (data && data.length > 0) {
+//         const { facrank, deptcode } = data[0];
 
-function resetButtonColors() {
-    welcome_button.style.filter = "brightness(100%)";
-    classes_button.style.filter = "brightness(100%)";
-    help_button.style.filter = "brightness(100%)";
-    account_button.style.filter = "brightness(100%)";
-    notification_button.style.filter = "brightness(100%)";
-    log_out_button.style.filter = "brightness(100%)";
-}
+//         if (facrank === "Admin") {
+//             const { data: deptData, error: deptError } = await supabasePublicClient
+//                 .from('departments')
+//                 .select("deptcode");
 
- welcome_button.style.filter = "brightness(150%)";
+//             if (deptError) {
+//                 console.error("Error fetching departments:", deptError);
+//                 return;
+//             }
 
-    welcome_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "welcomeTab") {
-            currentTab = "welcomeTab";
-            welcome_button.style.filter = "brightness(150%)";
-        }
-    });
-    welcome_button.addEventListener("mouseover", function() {
-        if (currentTab != "welcomeTab") {
-            welcome_button.style.filter = "brightness(150%)";
-        }
-    });
-    welcome_button.addEventListener("mouseout", function() {
-        if (currentTab != "welcomeTab") {
-            welcome_button.style.filter = "brightness(100%)";
-        }
-    });
-
-// Classes tab logic
-classes_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "classesTab") {
-        currentTab = "classesTab";
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseover", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseout", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Help tab logic
-help_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "helpTab") {
-        currentTab = "helpTab";
-        help_button.style.filter = "brightness(150%)";
-    }
-});
-help_button.addEventListener("mouseover", function() {
-    if (currentTab != "helpTab") {
-        help_button.style.filter = "brightness(150%)";
-    }
-});
-help_button.addEventListener("mouseout", function() {
-    if (currentTab != "helpTab") {
-        help_button.style.filter = "brightness(100%)";
-    }
-});
-
-
-// Account tab logic
-account_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "accountTab") {
-        currentTab = "accountTab";
-        account_button.style.filter = "brightness(150%)";
-    }
-});
-account_button.addEventListener("mouseover", function() {
-    if (currentTab != "accountTab") {
-        account_button.style.filter = "brightness(150%)";
-    }
-});
-account_button.addEventListener("mouseout", function() {
-    if (currentTab != "accountTab") {
-        account_button.style.filter = "brightness(100%)";
-    }
-});
-
-
-// Notification tab logic
-notification_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "notificationTab") {
-        currentTab = "notificationTab";
-        notification_button.style.filter = "brightness(150%)";
-    }
-});
-notification_button.addEventListener("mouseover", function() {
-    if (currentTab != "notificationTab") {
-        notification_button.style.filter = "brightness(150%)";
-    }
-});
-notification_button.addEventListener("mouseout", function() {
-    if (currentTab != "notificationTab") {
-        notification_button.style.filter = "brightness(100%)";
-    }
-});
-
-
-
-// Log Out button logic
-log_out_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "log_out") {
-        currentTab = "log_out";
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseover", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseout", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(100%)";
-    }
-});
+//             deptData.forEach(dept => {
+//                 const deptOption = document.createElement("option");
+//                 deptOption.value = dept.deptcode;
+//                 deptOption.text = dept.deptcode;
+//                 department_dropdown.appendChild(deptOption);
+//             });
+//         } else {
+//             department_dropdown.remove(0); // Remove the "any" option
+//             const deptOption = document.createElement("option");
+//             deptOption.value = deptcode;
+//             deptOption.text = deptcode;
+//             department_dropdown.appendChild(deptOption);
+//         }
+//     }
+// }
