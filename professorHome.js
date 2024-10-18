@@ -14,7 +14,7 @@ async function checkAuth() {
     window.location.href = 'index.html'; // Redirect to login
   } else {
     // User is authenticated, log the user info and proceed
-    console.log('User is authenticated:', session.user);
+    // console.log('User is authenticated:', session.user);
   }
 }
 // Call checkAuth on page load
@@ -626,6 +626,7 @@ async function populateSemesterDropdown() {
 
 // When a semester is selected, populate the course dropdown
 document.getElementById('semesterDropdown').addEventListener('change', function() {
+    document.getElementById('courseDropdown').disabled=false;
     const selectedSemester = this.value;
     populateCourseDropdown(selectedSemester);
 });
@@ -635,7 +636,7 @@ async function populateCourseDropdown(semester) {
     const courseDropdown = document.getElementById('courseDropdown');
 
     // Filter courses based on selected semester
-    const semesterCourses = courses.filter(course => course.semester === semester);
+    const semesterCourses = courses.filter(course => course.coursesem === semester);
 
     // Populate course dropdown
     courseDropdown.innerHTML = '';  // Clear previous options
