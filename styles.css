@@ -396,6 +396,18 @@ input[type="button"]:hover {
     background-color: #0056b3;
 }
 
+table,
+tr > * {
+  border: 1px solid;
+  text-align: center;
+  margin: 0 auto;
+}
+
+table,
+th > * {
+  padding: 12px;
+}
+
 /* Button styling */
 #download_csv {
     margin-top: 20px; /* Add margin above the button */

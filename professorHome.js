@@ -416,6 +416,7 @@ async function populateSemesterDropdown() {
 
     // Get unique semesters from courses
     const semesters = [...new Set(courses.map(course => course.coursesem))];
+
     semesters.sort((a,b) => {
         return parseInt(b.split(" ")[1]) - parseInt(a.split(" ")[1]);
     }); //Sort the semesters from most recent -> oldest so the most recent is the default semester
@@ -433,11 +434,11 @@ async function populateSemesterDropdown() {
     if (semesters.length > 0) {
         semesterDropdown.disabled = false;
     }
+    populateCourseDropdown(semesters[0]);
 }
 
 // When a semester is selected, populate the course dropdown
 document.getElementById('semesterDropdown').addEventListener('change', function() {
-    document.getElementById('courseDropdown').disabled=false;
     const selectedSemester = this.value;
     populateCourseDropdown(selectedSemester);
 });
