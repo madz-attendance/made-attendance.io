@@ -316,6 +316,7 @@ input[type="button"]:hover {
 
 /*Makes dropdown look good*/
 #department_dropdown,
+#semester_dropdown
 #courses_dropdown{
   padding: 1px;
   background-color: #2A4C6B; 
