@@ -182,11 +182,6 @@
     <div class="account-container">
         <h2>Add Students</h2>
         <form id="student_creation_form">
-            <!-- Roster ID Input -->
-            <div class="input-container">
-                <label for="roster_id">Enter Roster ID:</label>
-                <input type="text" id="roster_id" name="roster_id" required>
-            </div>
             <!-- Student ID Input -->
             <div class="input-container">
                 <label for="id_num">Student ID Number:</label>
@@ -202,15 +197,20 @@
                 <label for="last_name">Student Last Name:</label>
                 <input type="text" id="last_name" name="last_name" required>
             </div>
+            <!-- Department Dropdown Place holder (unimplemented)-->
+             <div>
+                <label for="department_dropdown">Select a Department:</label>
+                <select id="department_dropdown" name="options">
+                    <option value="none"></option>
+                </select>
+             </div>
             <!-- Course Dropdown Placeholder (unimplemented) -->
-            <!--
             <div>
                 <label for="courses_dropdown">Select a Course:</label>
                 <select id="courses_dropdown" name="options">
                     <option value="none"></option>
                 </select>
             </div>
-            -->
             <!-- Submit Button -->
             <input type="submit" value="Submit">
         </form>
