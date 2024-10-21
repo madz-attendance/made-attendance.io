@@ -58,6 +58,21 @@ function showWelcomeTab() {
     window.history.pushState({}, '', '?tab=' + tabName);
 }
 
+//added for faq functionality 
+document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('#helpTab .question button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const faq = button.nextElementSibling; // The <p> tag
+                const icon = button.querySelector('.d-arrow'); // The arrow icon
+
+                faq.classList.toggle('show'); // Toggle visibility
+                icon.classList.toggle('rotate'); // Toggle arrow rotation
+            });
+        });
+    });
+
 
 // Fetch the user data after signing in
 async function fetchProfessorData() 
