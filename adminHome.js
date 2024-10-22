@@ -1,65 +1,62 @@
+// Declare the variables that will store the dropdown menus. These are for all of the dropdown menus on each tab of the page.
+// These must be declared outside of the DOMContentLoaded so that they are global, however, must be initialized inside of DOMContentLoaded.
+// Otherwise, this will not work, just trust me.
+var semester_dropdown, courses_dropdown, new_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown;
+var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
+
+
+// "MAIN()" - DOMContentLoaded - this stuff happens first in the program and is very important.
+// 1. Immediately check the auth, 2. store the dropdown menus, 3. initialize the page
+document.addEventListener('DOMContentLoaded', function() 
+{
+  checkAuth();
+  getDropdownMenus();
+  initializePage();
+  
+});
+
+
 // Function to check if the user is logged in
-async function checkAuth() {
+async function checkAuth() 
+{
 	// Call to get the current session
 	const { data: { session }, error } = await supabasePublicClient.auth.getSession();
   
 	// Check if there's an error getting the session (optional)
-	if (error) {
-	  console.error('Error getting session:', error.message);
-	  return;
-	}
+	if (error) 
+	{ console.error('Error getting session:', error.message); return; }
   
 	console.log("IN CHECKAUTH: ")
   
-  
 	// If no session exists, redirect to the login page
-	if (!session) {
-	  window.location.href = 'index.html'; // Redirect to login
-	} else {
-	  // User is authenticated, log the user info and proceed
-	  console.log('User is authenticated:', session.user);
-	}
-  }
-  
-  //Mark addition 10/1/24
-  document.getElementById('create_account').addEventListener('keydown', function(event) { //Can press enter to sign in
-		  if (event.key === 'Enter') {
-			  createUser(); // Call the createUser function
-		  }
-  });
-  
-  // "MAIN()"
-  // Zaynin 09/26/2024
-  // Call initializePage when the page loads
-  document.addEventListener('DOMContentLoaded', function() 
+	if (!session) 
+	{ window.location.href = 'index.html'; } // Redirect to login
+	else 
+	{ console.log('User is authenticated:', session.user); } // User is authenticated, log the user info and proceed
+}
+
+
+
+  // Sets the values for all dropdown menus across all tabs on this page. These variables are already declared globally. Must be done this way.
+  function getDropdownMenus()
   {
-	  // Check Authentication immediately. Then, initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
-	  checkAuth();
-	  initializePage();
+	  // Get the dropdown menus for each tab. Any future added dropdown menu must be added here
+	  semester_dropdown = document.getElementById('semester_dropdown');
+	  courses_dropdown = document.getElementById('courses_dropdown');
+      new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
+	  department_dropdown = document.getElementById('department_dropdown');
+	  create_account_department_dropdown = document.getElementById('create_department_dropdown');
+	  new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
 	  
-  });
- 
+	  // Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
+	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown];
+	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown];
+	  semesters_dropdown_menus = [semester_dropdown];
+  }  
 
-// Get the dropdown menus for each tab. Any future added dropdown menu must be added here
-var semester_dropdown = document.getElementById('semester_dropdown');
-var courses_dropdown = document.getElementById('courses_dropdown');
-var new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
-var department_dropdown = document.getElementById('department_dropdown');
-var create_account_department_dropdown = document.getElementById('create_department_dropdown');
-var new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
 
-// Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
-var dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown];
-var courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown];
-var semesters_dropdown_menus = [semester_dropdown];
 
-  
-  // =====================================================
-  // Zaynin Sept 26 2024 (START)
-  // Fetch user data when page loads
-  
-  // Function that initializes the page - fetches user data (and waits for it to finish),
-  // and then fetches/renders courses.
+  // Initializes the page - fetches user data (and waits for it to finish), and then fetches/renders courses.
   async function initializePage()
   {
 	  // Get professor information and store their email
@@ -76,10 +73,18 @@ var semesters_dropdown_menus = [semester_dropdown];
 	  await populateDepartmentsDropdown();
   }
   
+  
   // ===================================================
   // ===================================================
   // ===================================================
   // ===================================================
+  
+//Mark addition 10/1/24
+document.getElementById('create_account').addEventListener('keydown', function(event) { //Can press enter to sign in
+	  if (event.key === 'Enter') {
+		  createUser(); // Call the createUser function
+	  }
+});
   
   // Clicking on MADZ logo will go to home page
   var madzLogoButton = document.getElementById("madz_logo");
