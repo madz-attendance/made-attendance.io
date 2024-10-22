@@ -584,3 +584,30 @@ th > * {
 /* =========================================================================== */
 /* =========================================================================== */
 
+
+/* Student Creation Form */
+#student_creation_form input,
+#student_creation_form select 
+{
+	width: 90%;
+	max-width: 90%;
+	padding: 10px;
+	margin-bottom: 20px;
+	box-sizing: border-box;
+}
+
+#student_creation_form label
+{
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+/*
+#student_creation_form input[type="submit"]
+{
+	width: 90%;
+	padding: 10px 20px;
+	cursor: pointer;
+}
+*/
+
