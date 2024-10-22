@@ -17,10 +17,7 @@ async function checkAuth() {
 	  console.log('User is authenticated:', session.user);
 	}
   }
-  
-  // Call checkAuth on page load
-  window.addEventListener('DOMContentLoaded', checkAuth);
-  
+
   
   
   
@@ -31,20 +28,18 @@ async function checkAuth() {
 		  }
   });
   
-  // "MAIN()"
-  // Zaynin 09/26/2024
-  // Call initializePage when the page loads
-  document.addEventListener('DOMContentLoaded', function() 
-  {
-	  // Get the dropdown menus (for semester and courses)
-	  const semester_dropdown = document.getElementById('semester_dropdown');
-	  const courses_dropdown = document.getElementById('courses_dropdown');
-	  const department_dropdown = document.getElementById('department_dropdown');
-	  
-	  // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
-	  initializePage();
-	  
-  });
+// "MAIN()" - when the page loads, do this stuff first. Variables declared in here only
+// remain in this scope, so declare any global variables directly under this function.
+document.addEventListener('DOMContentLoaded', function() 
+{
+  checkAuth(); // Call checkAuth immediately when page loads. This is the first thing that happens.
+  initializePage(); // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
+});
+
+// Get the dropdown menus as global variables. This MUST be at the top of the page, directly under DOMContentLoaded. 10/22/2024
+var semester_dropdown = document.getElementById('semester_dropdown');
+var courses_dropdown = document.getElementById('courses_dropdown');
+var department_dropdown = document.getElementById('department_dropdown');
   
   // =====================================================
   // Zaynin Sept 26 2024 (START)
