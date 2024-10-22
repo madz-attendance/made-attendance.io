@@ -9,6 +9,9 @@ async function checkAuth() {
 	  return;
 	}
   
+	console.log("IN CHECKAUTH: ")
+  
+  
 	// If no session exists, redirect to the login page
 	if (!session) {
 	  window.location.href = 'index.html'; // Redirect to login
@@ -17,9 +20,6 @@ async function checkAuth() {
 	  console.log('User is authenticated:', session.user);
 	}
   }
-
-  
-  
   
   //Mark addition 10/1/24
   document.getElementById('create_account').addEventListener('keydown', function(event) { //Can press enter to sign in
@@ -28,18 +28,31 @@ async function checkAuth() {
 		  }
   });
   
-// "MAIN()" - when the page loads, do this stuff first. Variables declared in here only
-// remain in this scope, so declare any global variables directly under this function.
-document.addEventListener('DOMContentLoaded', function() 
-{
-  checkAuth(); // Call checkAuth immediately when page loads. This is the first thing that happens.
-  initializePage(); // Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
-});
+  // "MAIN()"
+  // Zaynin 09/26/2024
+  // Call initializePage when the page loads
+  document.addEventListener('DOMContentLoaded', function() 
+  {
+	  // Check Authentication immediately. Then, initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
+	  checkAuth();
+	  initializePage();
+	  
+  });
+ 
 
-// Get the dropdown menus as global variables. This MUST be at the top of the page, directly under DOMContentLoaded. 10/22/2024
+// Get the dropdown menus for each tab. Any future added dropdown menu must be added here
 var semester_dropdown = document.getElementById('semester_dropdown');
 var courses_dropdown = document.getElementById('courses_dropdown');
+var new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
 var department_dropdown = document.getElementById('department_dropdown');
+var create_account_department_dropdown = document.getElementById('create_department_dropdown');
+var new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
+
+// Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
+var dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown];
+var courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown];
+var semesters_dropdown_menus = [semester_dropdown];
+
   
   // =====================================================
   // Zaynin Sept 26 2024 (START)
@@ -49,21 +62,17 @@ var department_dropdown = document.getElementById('department_dropdown');
   // and then fetches/renders courses.
   async function initializePage()
   {
-	  email = await fetchProfessorData();		// Get professor information and store email
+	  // Get professor information and store their email
+	  email = await fetchProfessorData();
 	  console.log("Email: ", email);
-	  //renderCourses(email);					// Query & render professor's courses
 	  
 	  await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
+	  await fetchSemesters(email);				// Populate the semesters drop-down menu with the valid semesters of the professor's courses
 	  
-	  await fetchSemesters(email);			// Populate the semesters drop-down menu with the valid semesters of the professor's courses
 	  professor_courses = await fetchCourses(email);	// Populate the courses drop-down menu with the valid professor courses. Store prof courses
-	  
-	  // IMPORTANT NOTE: "professor_courses" can actually represent the courses that a professor, chair, or admin sees.
-	  // I'm just too deep into this to change the variable name.
-	  
-	  attachDepartmentDropdownListener(professor_courses);// Now that the professor information is loaded, attach the event listener to its drop down menu. Must wait for prev async funcs to finish.
-	  attachSemesterDropdownListener(professor_courses); // Now that the semesters information is loaded, attach the event listener to its dropdown menu. Must wait for the previous async functions to finish.
-	  attachCoursesDropdownListener();	// Now that the courses information is loaded, attach the event listener to its dropdown menu. Must wait for previous async functions to finish.
+	  attachDepartmentDropdownListener(professor_courses);// Attach various dropdown menus to their update event listeners.
+	  attachSemesterDropdownListener(professor_courses); // Attach various semester dropdown menus to their update event listeners.
+	  attachCoursesDropdownListener();	// Attach various courses dropdown menus to their update event listeners
 	  await populateDepartmentsDropdown();
   }
   
@@ -113,12 +122,16 @@ var department_dropdown = document.getElementById('department_dropdown');
   // Fetch the user data after signing in
   async function fetchProfessorData() 
   {
+	  console.log("GETTING TO FETCH PROFESSOR DATA");
+	  
 	  const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
-  
+		console.log("USER: ", user);
+		
 	  if (authError) 
 	  {
-		  document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
-		  return;
+			console.error("AUTH ERROR ", authError);
+			document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
+			return;
 	  }
   
 	  const email = user?.user?.email;
@@ -177,19 +190,24 @@ var department_dropdown = document.getElementById('department_dropdown');
 			  console.error('Error fetching departments:', departmentError);
 			  return;
 		  }
-  
-		  // Get the department dropdown element
-		  const departmentDropdown = document.getElementById('create_department_dropdown');
-  
+
 		  // Clear existing options
-		  departmentDropdown.innerHTML = '<option value="any">Any</option>';
+		  department_dropdown.innerHTML = '<option value="any">Any</option>';
+		  create_account_department_dropdown.innerHTML = '<option value="any">Any</option>';
+		  new_student_department_dropdown.innerHTML = '<option value="any">Any</option>';
   
-		  // Append each department as an option
-		  departments.forEach(department => {
-			  const option = document.createElement('option');
-			  option.value = department.deptcode; // Use department ID as the value
-			  option.textContent = `${department.deptcode} - ${department.deptname}`; // Show department code and name as the label
-			  departmentDropdown.appendChild(option);
+		  // For every department dropdown menu
+		  dept_dropdown_menus.forEach(dropdown_menu => {
+			  // Append each department as an option
+			  departments.forEach(department => {
+				  const option = document.createElement('option');
+				  option.value = department.deptcode;
+				  //option.textContent = `${department.deptcode} - ${department.deptname}`; // Show department code and name as the label
+				  option.textContent = `${department.deptcode}`;							// Show just the department code
+				  
+				  dropdown_menu.appendChild(option);
+				  
+			  });  
 		  });
   
 		  console.log('Departments dropdown populated with all departments.');
@@ -247,91 +265,7 @@ var department_dropdown = document.getElementById('department_dropdown');
   
   
   
-  /*
-		  // Fetch the user data after signing in
-		  async function fetchProfessorData() {
-			  const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
-  
-			  if (authError) {
-				  document.getElementById('welcomeMessage').innerText = 'Error fetching user details';
-				  return;
-			  }
-  
-			  const email = user?.user?.email;
-  
-			  if (!email) {
-				  document.getElementById('welcomeMessage').innerText = 'No user email found';
-				  return;
-			  }
-  
-			  try {
-				  const { data, error: dbError } = await supabasePublicClient
-					  .from('users')
-					  .select('facrank, faclastname')
-					  .eq('facemail', email);
-  
-				  if (dbError) {
-					  throw dbError;
-				  }
-  
-				  if (data && data.length > 0) {
-					  const userInfo = data[0];
-					  document.getElementById('facRank').textContent = userInfo.facrank || 'N/A';
-					  document.getElementById('facLastName').textContent = userInfo.faclastname || 'N/A';
-					  document.getElementById('welcomeMessage').innerText = `Welcome, ${userInfo.facrank} ${userInfo.faclastname}`;
-				  } else {
-					  document.getElementById('welcomeMessage').innerText = 'User data not found';
-				  }
-  
-			  } catch (err) {
-				  document.getElementById('welcomeMessage').innerText = `Error: ${err.message}`;
-			  }
-		  }
-  */
-  
-  /*
-  async function fetchAllClasses() {
-	const { data, error } = await supabasePublicClient
-	  .from('courses')
-	  .select('*'); // Selects all fields from the table
-  
-	if (error) {
-	  console.error('Error fetching courses:', error);
-	} else {
-	  console.log('Courses:', data);
-	  return data;
-	}
-  }
-  
-  async function renderCourses() {
-	const courses = await fetchAllClasses();
-	const container = document.querySelector('#classesTab .account-container');
-  
-	if (courses && courses.length > 0) {
-	  let html = '<ul>';
-	  courses.forEach(course => {
-		html += `<li>${course.courseid},${course.coursename},${course.coursesec},${course.coursesem}</li>`; // Assuming "name" is a column in the "courses" table
-	  });
-	  html += '</ul>';
-  
-	  container.innerHTML += html;
-	} else {
-	  container.innerHTML += '<p>No courses available.</p>';
-	}
-  }
-  */
-  
-  
-  /*
-  // Call the render function when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-	// Check if the "Classes" tab is currently visible
-	const classesTab = document.querySelector('#classesTab');
-	if (classesTab) {
-	  renderCourses();
-	}
-  });
-  */
+ 
   
   
 		  // Log out functionality
@@ -359,7 +293,7 @@ var department_dropdown = document.getElementById('department_dropdown');
   {
 	  // Determine whether this faculty is an Admin or a Prof/Chair
 	  // Get faculty role and dept by querying "users" table
-	  const { data, error } = await supabasePublicClient
+	  const { data: courseData, error } = await supabasePublicClient
 		  .from('users')
 		  .select("facrank, deptcode")
 		  .eq('facemail', email);
@@ -368,24 +302,22 @@ var department_dropdown = document.getElementById('department_dropdown');
 	  { console.error("Error fetching facrank in fetchDepartments()", error); }
 	  else
 	  {
-		  const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
+		  const { facrank, deptcode } = courseData[0]; // Store the faculty rank and dept of that faculty.
 												 // Variables MUST be named the same as in database for some reason
 			  
-		  // If the faculty is an Admin
-		  if (facrank == "Admin") //CORRECT, commented out for testing
-		  //if (facrank == "Professor") // WRONG, used for testing
+		  const { data, error } = await supabasePublicClient
+		  .from("courses")
+		  .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
+		  .order('coursecode', { ascending: true }) 
+		  .order('coursenum', { ascending: true }) 
+		  .order('coursesec', { ascending: false }) 
+		  .order('coursesem', { ascending: true })
+		  .order('faclastname', { ascending: true }); 
+		  
+		  //print("ADMIN COURSES: ", data);
+		  
+		  courses_dropdown_menus.forEach(dropdown_menu =>
 		  {
-			  const { data, error } = await supabasePublicClient
-			  .from("courses")
-			  .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-			  .order('coursecode', { ascending: true }) // Order by course code ascending
-			  .order('coursenum', { ascending: true }) // Order by course number ascending
-			  .order('coursesec', { ascending: false }) // Order by course section ascending
-			  .order('coursesem', { ascending: true }) // Order by course semester ascending
-			  .order('faclastname', { ascending: true }); // Order by faclastname ascending
-			  
-			  //print("ADMIN COURSES: ", data);
-			  
 			  // For each course that this admin has access to (all the courses), add it to the courses dropdown menu
 			  data.forEach(course => 
 			  {
@@ -404,64 +336,21 @@ var department_dropdown = document.getElementById('department_dropdown');
 				  const faclastname = course.faclastname;
 				  
 				  // Create an entry into the courses dropdown menu
-				  courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
+				  //courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
+				  courseEntry = `${coursecode} ${coursenum} : ${coursesec} - ${coursesem} - ${faclastname}`;
   
 				  // Add the course entry into the courses dropdown menu
-				  //courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
 				  newOption = document.createElement("option"); // Create a new option for the dropdown menu
 				  newOption.value = courseEntry;
 				  newOption.text = courseEntry;
-				  courses_dropdown.appendChild(newOption);
+				  dropdown_menu.appendChild(newOption);
 			  
 			  });
-			  
-			  return data; // Return the courses that this admin has. To be used when updating the courses displayed by selecting a semester
-		  }
-			  
+		  });
 		  
-		  else
-		  {
-			  // Chairs/Professors can see only their own courses
-			  // Select all of the courses (and all of their fields) from this professor
-			  const { data, error } = await supabasePublicClient
-			  .from("courses")
-			  .select("coursecode, coursename, coursesem, facemail, coursesec, days, start, finish, building, room, coursenum, faclastname")
-			  .eq('facemail', email); // Only get this professor's courses
-			  
-			  //print("PROFESSOR COURSES: ", data);
-			  
-			  // For each course that this professor teaches, add it to the courses dropdown menu
-			  data.forEach(course => 
-			  {
-				  // Extract all the variables from this course
-				  const coursecode = course.coursecode;
-				  const coursename = course.coursename;
-				  const coursesem = course.coursesem;
-				  const facemail = course.facemail;
-				  const coursesec = course.coursesec;
-				  const days = course.days;
-				  const start = course.start;
-				  const finish = course.finish;
-				  const building = course.building;
-				  const room = course.room;
-				  const coursenum = course.coursenum;
-				  const faclastname = course.faclastname;
-				  
-				  // Create an entry into the courses dropdown menu
-				  courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`
-  
-				  // Add the course entry into the courses dropdown menu
-				  //courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
-				  newOption = document.createElement("option"); // Create a new option for the dropdown menu
-				  newOption.value = courseEntry;
-				  newOption.text = courseEntry;
-				  courses_dropdown.appendChild(newOption);
-			  
-			  });
-			  
-			  return data; // Return the courses that this professor has. To be used when updating the courses displayed by selecting a semester
-		  }
-												 
+
+		  
+		  return data; // Return the courses that this admin has. To be used when updating the courses displayed by selecting a semester										 
 	  }
   }
   
@@ -477,7 +366,7 @@ var department_dropdown = document.getElementById('department_dropdown');
   {
 	  // Determine whether this faculty is an Admin or a Prof/Chair
 	  // Get faculty role and dept by querying "users" table
-	  const { data, error } = await supabasePublicClient
+	  const { data: semData, error } = await supabasePublicClient
 		  .from('users')
 		  .select("facrank, deptcode")
 		  .eq('facemail', email);
@@ -486,80 +375,37 @@ var department_dropdown = document.getElementById('department_dropdown');
 	  { console.error("Error fetching facrank in fetchDepartments()", error); }
 	  else
 	  {
-		  const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
+		  const { facrank, deptcode } = semData[0]; // Store the faculty rank and dept of that faculty.
 												 // Variables MUST be named the same as in database for some reason
 			  
-		  // If the faculty is an Admin, Admins can see ALL semesters
-		  // Query the database for every unique semester in "courses"
-		  if (facrank == "Admin") //CORRECT, commented out for testing
+		  // Query the database for every unique semester in "courses". Admins can see all semesters
+		  const { data, error } = await supabasePublicClient
+			  .from('courses')
+			  .select('coursesem')
+			  
+		  if (error)
 		  {
-			  const { data, error } = await supabasePublicClient
-				  .from('courses')
-				  .select('coursesem')
-				  
-			  if (error)
-			  {
-				  console.error('Error fetching unique coursesem:', error);
-			  }
-			  else
-			  {
-				  //console.log('Unique coursesem values:', data);
-				  // Get the unique semesters in an array
-				  uniqueSemesters = Array.from(new Set(data.map(item => item.coursesem)));
-				  //console.log(uniqueSemesters);
-				  
-				  // Get the semester dropdown menu
-				  //semester_dropdown = document.getElementById("semester_dropdown");
-				  
-				  // Add each unique semester to the dropdown menu
-				  uniqueSemesters.forEach(unique_semester =>
-				  {
-					  newOption = document.createElement("option");
-					  newOption.value = unique_semester;
-					  newOption.text = unique_semester;
-					  semester_dropdown.appendChild(newOption);
-					  console.log("Added option:", newOption.value);
-				  });
-			  }
-				  
+			  console.error('Error fetching unique coursesem:', error);
 		  }
 		  else
 		  {
-			  // Get all of this professor's courses' semesters. This will include duplicates,
-			  // and to my knowledge, there is no way to get unique valuees via supabase API. Must
-			  // take the list of duplicates and then extract the unique values in JavaScript (below)
-			  const { data, error } = await supabasePublicClient		
-				  .from('courses')
-				  .select('coursesem')
-				  .eq('facemail', email);
-		  
-			  if (error) 
-			  {
-				  console.error('Error fetching unique coursesem:', error);
-			  } 
-			  else 
-			  {
-				  //console.log('Unique coursesem values:', data);
-				  // Get the unique semesters in an array
-				  uniqueSemesters = Array.from(new Set(data.map(item => item.coursesem)));
-				  //console.log(uniqueSemesters);
-				  
-				  // Get the semester dropdown menu
-				  //semester_dropdown = document.getElementById("semester_dropdown");
-				  
+			  // Get the unique semesters in an array
+			  uniqueSemesters = Array.from(new Set(data.map(item => item.coursesem)));
+			  
+			  // For every semester dropdown menu (on each tab)
+			  semesters_dropdown_menus.forEach(dropdown_menu => {
+			  
 				  // Add each unique semester to the dropdown menu
 				  uniqueSemesters.forEach(unique_semester =>
 				  {
 					  newOption = document.createElement("option");
 					  newOption.value = unique_semester;
 					  newOption.text = unique_semester;
-					  semester_dropdown.appendChild(newOption);
+					  dropdown_menu.appendChild(newOption);
 					  console.log("Added option:", newOption.value);
 				  });
-			  }
-			  console.log("Dropdown options after adding semesters:", semester_dropdown.options);
+			  });
 		  }
-			  
 	  }
   }
   
@@ -574,14 +420,13 @@ var department_dropdown = document.getElementById('department_dropdown');
   function attachSemesterDropdownListener(professor_courses) 
   {
 	  //console.log("Professor Courses in ATTACH: ", professor_courses)
-	  const semester_dropdown = document.getElementById('semester_dropdown');
+	  //const semester_dropdown = document.getElementById('semester_dropdown');
 	  semester_dropdown.addEventListener('change', function() 
 	  {
+		  const selectedDept = department_Dropdown.value;
 		  const selectedSemester = semester_dropdown.value;
   
-		  console.log("Semester Dropdown Menu Selection Updated");
-		  updateCoursesDropdown(professor_courses)
-		  //console.log("professor_courses: ", professor_courses);
+		  updateCoursesDropdown(professor_courses, courses_dropdown, selectedDept, selectedSemester);
 		  
 	  });
 	  console.log("Event listener successfully attached to semester_dropdown.");
@@ -591,30 +436,22 @@ var department_dropdown = document.getElementById('department_dropdown');
   // Zaynin 09/26/2024
   // Called by the semester dropdown event listener to change the courses based on the selected
   // semester.
-  function updateCoursesDropdown(professor_courses)
+  
+  // function updateCoursesDropdown(professor_courses)
+  function updateCoursesDropdown(professor_courses, specific_courses_dropdown, dept_selection, sem_selection)
   {
-	  console.log("In updateCoursesDropDown: professor_courses: ", professor_courses);
-	  // Get the courses dropdown menu, will update its options
-	  const courses_dropdown = document.getElementById('courses_dropdown');
-	  
-	  // GET THE CURRENT SELECTED DEPT
-	  const department_dropdown = document.getElementById('department_dropdown');
-	  const selectedDept = department_dropdown.value;
-	  console.log("In updateCoursesDropdown, current_selected_dept: ", selectedDept);
-	  
-	  // GET THE CURRENT SELECTED SEMESTER
-	  const semester_dropdown = document.getElementById('semester_dropdown');
-	  const selectedSemester = semester_dropdown.value;
-	  console.log("In updateCoursesDropdown, current_selected_semester: ", selectedSemester);
+	  // Get the current selected department and semester
+	  const selectedDept = dept_selection;
+	  const selectedSemester = sem_selection;
 	  
 	  // Remove all options from the courses dropdown menu (except for the blank "none" option
 	  let valueToKeep = "none"; // The value of the option you want to keep
   
-	  for (let i = courses_dropdown.options.length - 1; i >= 0; i--) 
+	  for (let i = specific_courses_dropdown.options.length - 1; i >= 0; i--) 
 	  {
-		if (courses_dropdown.options[i].value !== valueToKeep) 
+		if (specific_courses_dropdown.options[i].value !== valueToKeep) 
 		{
-		  courses_dropdown.remove(i);
+		  specific_courses_dropdown.remove(i);
 		}
 	  }
 	  
@@ -633,7 +470,8 @@ var department_dropdown = document.getElementById('department_dropdown');
 			  const faclastname = course.faclastname;
 		  
 			  // Create an entry into the courses dropdown menu
-			  courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			  //courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			  courseEntry = `${coursecode} ${coursenum} : ${coursesec} - ${coursesem} - ${faclastname}`;
 			  
 			  // Only add the course entry into the dropdown menu if it is in the selected department
 			  if (coursecode == selectedDept || selectedDept == "any")
@@ -643,7 +481,7 @@ var department_dropdown = document.getElementById('department_dropdown');
 				  newOption = document.createElement("option"); // Create a new option for the dropdown menu
 				  newOption.value = courseEntry;
 				  newOption.text = courseEntry;
-				  courses_dropdown.appendChild(newOption);
+				  specific_courses_dropdown.appendChild(newOption);
 			  }
 		  });
 	  }
@@ -663,7 +501,8 @@ var department_dropdown = document.getElementById('department_dropdown');
 			  const faclastname = course.faclastname;
 		  
 			  // Create an entry into the courses dropdown menu
-			  courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			  //courseEntry = `${coursecode} ${coursenum} - ${coursesec} : ${coursename} - ${coursesem} - ${faclastname}`;
+			  courseEntry = `${coursecode} ${coursenum} : ${coursesec} - ${coursesem} - ${faclastname}`;
 			  
 			  // Only add this course to the dropdown menu if it is in the selected semester and department
 			  if (coursesem == selectedSemester && (coursecode == selectedDept || selectedDept == "any"))
@@ -673,7 +512,7 @@ var department_dropdown = document.getElementById('department_dropdown');
 				  newOption = document.createElement("option"); // Create a new option for the dropdown menu
 				  newOption.value = courseEntry;
 				  newOption.text = courseEntry;
-				  courses_dropdown.appendChild(newOption);	
+				  specific_courses_dropdown.appendChild(newOption);	
 				  console.log("Adding course option: ", newOption);
 			  }	
 		  });
@@ -687,16 +526,24 @@ var department_dropdown = document.getElementById('department_dropdown');
   // to listen to changes in selection in the courses dropdown menu.
   function attachCoursesDropdownListener() 
   {
-	  //console.log("Professor Courses in ATTACH: ", professor_courses)
-	  const courses_dropdown = document.getElementById('courses_dropdown');
+	  // "Classes" Tab course dropdown
 	  courses_dropdown.addEventListener('change', function() 
 	  {
 		  const selectedCourse = courses_dropdown.value;
-  
 		  console.log("Courses Dropdown Menu Selection Updated. Selected: ", selectedCourse);
+		  // Do whatever you want with this selected course
 		  
 	  });
-	  console.log("Event listener successfully attached to courses_dropdown.");
+	  
+	  // "New Student" Tab course dropdown
+	  new_student_courses_dropdown.addEventListener('change', function ()
+	  {
+		 const selectedCourse = new_student_courses_dropdown.value; 
+		 console.log("New Student Courses Dropdown Menu Selection Updated. Selected: ", selectedCourse);
+		 // Do whatever you want with this selected course
+	  });
+	  
+
   }
   
   
@@ -708,19 +555,23 @@ var department_dropdown = document.getElementById('department_dropdown');
   // to listen to changes in selection in the courses dropdown menu.
   function attachDepartmentDropdownListener(professor_courses) 
   {
-	  //console.log("Professor Courses in ATTACH: ", professor_courses)
-	  const department_dropdown = document.getElementById('department_dropdown');
 	  department_dropdown.addEventListener('change', function() 
 	  {
-		  const selectedDepartment = department_dropdown.value;
-  
-		  console.log("Department Dropdown Menu Selection Updated. Selected: ", selectedDepartment);
-		  
-		  // UPDATE THE COURSES TABLE TO ONLY SHOW COURSES IN THIS DEPARTMENT
-		  updateCoursesDropdown(professor_courses);
+		  // Update the courses table to only show courses in this department
+		  const selectedDept = department_dropdown.value;
+		  const selectedSemester = semester_dropdown.value;
+		  updateCoursesDropdown(professor_courses, courses_dropdown, selectedDept, selectedSemester);
 		  
 	  });
-	  console.log("Event listener successfully attached to department_dropdown.");
+	  
+	  new_student_department_dropdown.addEventListener('change', function()
+	  {
+		  console.log("Selecting new student department");
+		  // Update the new student courses table to only show courses in this department
+		  const selectedDept = new_student_department_dropdown.value;
+		  const selectedSemester = "any";
+		  updateCoursesDropdown(professor_courses, new_student_courses_dropdown, selectedDept, selectedSemester);
+	  });
   }
   
   
@@ -732,8 +583,9 @@ var department_dropdown = document.getElementById('department_dropdown');
   async function fetchDepartments(email)
   {
 	  console.log("In fetchDepartments, email: ", email);
+	  //var department_dropdown = document.getElementById('department_dropdown');
 	  // Get this faculty's role and dept by querying the "users" table
-	  const { data, error } = await supabasePublicClient
+	  const { data: deptData, error } = await supabasePublicClient
 		  .from('users')
 		  .select("facrank, deptcode")
 		  .eq('facemail', email);
@@ -742,39 +594,23 @@ var department_dropdown = document.getElementById('department_dropdown');
 	  { console.error("Error fetching facrank in fetchDepartments()", error); }
 	  else
 	  {
-		  // WRONG - uncomment the line below
-		  const { facrank, deptcode } = data[0]; // Store the faculty rank and dept of that faculty.
+		  const { facrank, deptcode } = deptData[0]; // Store the faculty rank and dept of that faculty.
 												 // Variables MUST be named the same as in database for some reason
 											  
-		  // If the facrank is ADMIN
-		  if (facrank == "Admin") // CORRECT
-		  //if (facrank == "Professor") //WRONG, REMOVE, using for testing
-		  {
-			  // Query the "departments" table and make every single department an option in department_dropdown
-			  const { data, error } = await supabasePublicClient
-				  .from('departments')
-				  .select("deptcode");
-				  
-				  data.forEach(dept =>
-				  {
-					  deptName = dept.deptcode;
-					  deptOption = document.createElement("option");
-					  deptOption.value = deptName;
-					  deptOption.text = deptName;
-					  department_dropdown.appendChild(deptOption);
-				  });
-		  }
-		  // If the facrank is NOT an admin
-		  else
-		  {
-			  // Add factdept as the only option to the dropdown menu. Remove the "Any" option as well
-			  department_dropdown.remove(0);	// Remove the "any" option
-			  deptOption = document.createElement("option"); // Create the dept option for the dropdown menu
-			  deptOption.value = deptcode;
-			  deptOption.text = deptcode;
-			  department_dropdown.appendChild(deptOption);	// Add it to the dropdown menu
-		  
-		  }
+
+		  // Query the "departments" table and make every single department an option in department_dropdown. Admins can see all departments
+		  const { data, error } = await supabasePublicClient
+			  .from('departments')
+			  .select("deptcode");
+			  
+			  data.forEach(dept =>
+			  {
+				  deptName = dept.deptcode;
+				  deptOption = document.createElement("option");
+				  deptOption.value = deptName;
+				  deptOption.text = deptName;
+				  department_dropdown.appendChild(deptOption);
+			  });
 	  }
   }
   
