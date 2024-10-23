@@ -1,7 +1,7 @@
 // Declare the variables that will store the dropdown menus. These are for all of the dropdown menus on each tab of the page.
 // These must be declared outside of the DOMContentLoaded so that they are global, however, must be initialized inside of DOMContentLoaded.
 // Otherwise, this will not work, just trust me.
-var semester_dropdown, courses_dropdown, new_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown;
+var semester_dropdown, new_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
 
 
@@ -37,11 +37,12 @@ async function checkAuth()
 
 
 
-  // Sets the values for all dropdown menus across all tabs on this page. These variables are already declared globally. Must be done this way.
+  // Sets the values for all dropdown menus across all tabs on this page. These variables are already declared globally.
   function getDropdownMenus()
   {
 	  // Get the dropdown menus for each tab. Any future added dropdown menu must be added here
 	  semester_dropdown = document.getElementById('semester_dropdown');
+	  new_student_semester_dropdown = document.getElementById('new_student_semester_dropdown');
 	  courses_dropdown = document.getElementById('courses_dropdown');
       new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
 	  department_dropdown = document.getElementById('department_dropdown');
@@ -51,7 +52,7 @@ async function checkAuth()
 	  // Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
 	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown];
 	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown];
-	  semesters_dropdown_menus = [semester_dropdown];
+	  semesters_dropdown_menus = [semester_dropdown, new_student_semester_dropdown];
   }  
 
 
@@ -424,17 +425,24 @@ document.getElementById('create_account').addEventListener('keydown', function(e
   // updateCoursesDropdown() to display the courses for the selected semester.
   function attachSemesterDropdownListener(professor_courses) 
   {
-	  //console.log("Professor Courses in ATTACH: ", professor_courses)
-	  //const semester_dropdown = document.getElementById('semester_dropdown');
+
+	  // If the "Classes" tab's Semester dropdown selection is changed, update the "Classes" tab's Courses dropdown options
 	  semester_dropdown.addEventListener('change', function() 
 	  {
-		  const selectedDept = department_Dropdown.value;
+		  const selectedDept = department_dropdown.value;
 		  const selectedSemester = semester_dropdown.value;
-  
 		  updateCoursesDropdown(professor_courses, courses_dropdown, selectedDept, selectedSemester);
 		  
 	  });
-	  console.log("Event listener successfully attached to semester_dropdown.");
+	  
+	  // If the "New Student" tab's Semester dropdown selection is changed, update the "New Student" tab's Courses dropdown options
+	  new_student_semester_dropdown.addEventListener('change', function()
+	  {
+		  const selectedDept = new_student_department_dropdown.value;
+		  const selectedSemester = new_student_semester_dropdown.value;
+		  updateCoursesDropdown(professor_courses, new_student_courses_dropdown, selectedDept, selectedSemester);
+	  });
+	  
   }
   
   
@@ -461,7 +469,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 	  }
 	  
 	  // If the "none" semester option was chosen (the blank option), then show ALL courses regardless of semester
-	  if (selectedSemester == "any")
+	  if (selectedSemester == "any" || selectedSemester == "Any" || selectedSemester == "none")
 	  {
 		  console.log("option: any chosen.");
 		  
@@ -479,7 +487,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 			  courseEntry = `${coursecode} ${coursenum} : ${coursesec} - ${coursesem} - ${faclastname}`;
 			  
 			  // Only add the course entry into the dropdown menu if it is in the selected department
-			  if (coursecode == selectedDept || selectedDept == "any")
+			  if (coursecode == selectedDept || selectedDept == "any" || selectedDept == "Any")
 			  {
 				  // Add the course entry into the courses dropdown menu
 				  //courses_dropdown = document.getElementById("courses_dropdown"); // Get the courses dropdown menu
@@ -618,6 +626,88 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 			  });
 	  }
   }
+  
+
+// Gets the values from all of the input fields & dropdown menus on the "New Student" tab.
+// Finds the courseid of the course that matches this selected course. Then, inserts the student
+// into that course if the course exists.
+async function addStudentToRoster()
+{
+	// Get the input HTML elements. We already have the dropdown menus from earlier in code.
+	var id_input = document.getElementById('id_num');
+	var firstname_input = document.getElementById('first_name');
+	var lastname_input = document.getElementById('last_name');
+	
+	// Get the values from the inputs/dropdowns
+	var stuid = id_input.value;
+	var firstname = firstname_input.value;
+	var lastname = lastname_input.value;
+	var department = new_student_department_dropdown.value;
+	var semester = new_student_semester_dropdown.value;
+	var course = new_student_courses_dropdown.value;
+	
+	// Extract the course information from the course string. Current format: MATH 115 : 010 - Fall 2024 - Wong
+	var extraction_regex = /^([A-Z]+)\s+(\d+)\s+:\s+(\d+)\s+-\s+([A-Za-z]+\s+\d{4})\s+-\s+([A-Za-z]+)$/;
+	var match = course.match(extraction_regex);
+	
+	if (match) 
+	{
+		// Extract each element of the course
+		var course_dept = match[1];   // "MATH"
+		var course_num = parseInt(match[2]);  // 115 (as integer)
+		var course_sec = match[3];    // "010"
+		var course_sem = match[4];    // "Fall 2024"
+		var course_fac = match[5];    // "Wong"
+		
+		// Look for a course in the "courses" table that matches these specifications.
+		// Extract its courseid so we can add the student to this course roster.
+		const { data: returnData, error } = await supabasePublicClient
+			.from('courses')
+			.select('courseid')
+			.eq('dept', course_dept)
+			.eq('coursenum', course_num)
+			.eq('coursesec', course_sec)
+			.eq('coursesem', course_sem)
+			.eq('faclastname', course_fac)
+			.single();
+			
+		if (error)
+		{
+			console.error("Unable to find a course that meets the same specifications as the course that you are trying to add this new student to: ", error);
+		}
+		else
+		{
+			// Get the courseid of the course that you are trying to add this new student into the roster of
+			var courseId = returnData.courseid;
+			console.log("Found course with courseid: ", courseId);
+			
+			// Add this student to the rosters table with this courseid
+			const { data: insertData, error: insertError } = await supabasePublicClient
+				.from('roster')
+				.insert([
+					{
+						courseid: courseId,
+						stufirstname: firstname,
+						stulastname: lastname,
+						stuid: stuid
+					}
+				]);
+				
+			if (insertError)
+			{
+				console.log("Unable to insert student into roster table.");
+			}
+			else
+			{
+				console.log("Successfully insert student into roster table.");
+			}
+		}
+	} 
+	else 
+	{
+		console.log("in addStudentToRoster(): Course extraction regex failed.");
+	}
+}
   
   
   // Zaynin Sept 26 2024 (END)
