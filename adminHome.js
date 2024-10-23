@@ -404,6 +404,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 				  // Add each unique semester to the dropdown menu
 				  uniqueSemesters.forEach(unique_semester =>
 				  {
+					  console.log("SEM: current dropdown: ", dropdown_menu, " Current semester: ", unique_semester);
 					  newOption = document.createElement("option");
 					  newOption.value = unique_semester;
 					  newOption.text = unique_semester;
