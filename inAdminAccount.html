@@ -180,6 +180,14 @@
                     <option value="none"></option>
                 </select>
              </div>
+			<!-- Semester Dropdown -->
+			<div>
+				<label for="new_student_semester_dropdown">Select a Semester:</label>
+				<select id="new_student_semester_dropdown" name="options">
+					<option value="none">Any</option>
+				</select>
+			</div>
+			
             <!-- Course Dropdown Placeholder (unimplemented) -->
             <div>
                 <label for="new_student_courses_dropdown">Select a Course:</label>
@@ -188,7 +196,7 @@
                 </select>
             </div>
             <!-- Submit Button -->
-            <input type="submit" value="Submit">
+            <input type="submit" value="Submit" onclick="addStudentToRoster()">
         </form>
     </div>
 </section>
