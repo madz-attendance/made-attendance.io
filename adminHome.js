@@ -794,12 +794,12 @@ async function addStudentToRoster()
   
 
   add_student_button.addEventListener("mouseover", function() {
-	  if (currentTab != "classesTab") {
+	  if (currentTab != "newStudent") {
 		  add_student_button.style.filter = "brightness(150%)";
 	  }
   });
   add_student_button.addEventListener("mouseout", function() {
-	  if (currentTab != "classesTab") {
+	  if (currentTab != "newStudent") {
 		  add_student_button.style.filter = "brightness(100%)";
 	  }
   });
