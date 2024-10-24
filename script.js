@@ -61,11 +61,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Buttons highlighting logic
     var pageButtons = {
-        "home_button": "home",
-        "faq_button": "faq",
-        "about_button": "about",
-        "request_button": "request",
-        "sign_in_button": "sign_in"
+        "home_button"       : "home",
+        "faq_button"        : "faq",
+        "about_button"      : "about",
+        "request_button"    : "request",
+        "sign_in_button"    : "sign_in"
     };
     var currentTab = "home";
     document.getElementById("home_button").style.filter = "brightness(150%)";

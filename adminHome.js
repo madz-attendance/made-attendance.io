@@ -650,8 +650,7 @@ async function addStudentToRoster()
 	var extraction_regex = /^([A-Z]+)\s+(\d+)\s+:\s+(\d+)\s+-\s+([A-Za-z]+\s+\d{4})\s+-\s+([A-Za-z]+)$/;
 	var match = course.match(extraction_regex);
 	
-	if (match) 
-	{
+	if (match) {
 		// Extract each element of the course
 		var course_dept = match[1];   // "MATH"
 		var course_num = parseInt(match[2]);  // 115 (as integer)
@@ -671,12 +670,10 @@ async function addStudentToRoster()
 			.eq('faclastname', course_fac)
 			.single();
 			
-		if (error)
-		{
+		if (error) {
 			console.error("Unable to find a course that meets the same specifications as the course that you are trying to add this new student to: ", error);
 		}
-		else
-		{
+		else {
 			// Get the courseid of the course that you are trying to add this new student into the roster of
 			var courseId = returnData.courseid;
 			console.log("Found course with courseid: ", courseId);
@@ -693,18 +690,15 @@ async function addStudentToRoster()
 					}
 				]);
 				
-			if (insertError)
-			{
+			if (insertError) {
 				console.log("Unable to insert student into roster table.");
 			}
-			else
-			{
+			else {
 				console.log("Successfully insert student into roster table.");
 			}
 		}
 	} 
-	else 
-	{
+	else {
 		console.log("in addStudentToRoster(): Course extraction regex failed.");
 	}
 }

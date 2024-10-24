@@ -1,4 +1,3 @@
-// Function to check if the user is logged in
 async function checkAuth() {
   // Call to get the current session
   const { data: { session }, error } = await supabasePublicClient.auth.getSession();
@@ -22,10 +21,10 @@ window.addEventListener('DOMContentLoaded', checkAuth);
 
 // Clicking on MADZ logo will go to home page
 var madzLogoButton = document.getElementById("madz_logo");
-madzLogoButton.addEventListener("click", function() 
-{
+madzLogoButton.addEventListener("click", function() {
 	window.location.href = "inProfessorAccount.html";
 });
+
 // Function to show the home tab content on page load
 function showWelcomeTab() {
     // Hide all tab contents
@@ -60,8 +59,7 @@ function showWelcomeTab() {
 
 
 // Fetch the user data after signing in
-async function fetchProfessorData() 
-{
+async function fetchProfessorData() {
 	const { data: user, error: authError } = await supabasePublicClient.auth.getUser();
 
 	if (authError) {
@@ -105,14 +103,9 @@ async function fetchProfessorData()
 	return email // Zaynin 9/26/2024 - Returns professor email to then be used in fetchAllClasses()
 }
 
-// Log out functionality
-async function logOut() 
-{
+async function logOut() { // Log out and go back to sign in page
 	const { error } = await supabasePublicClient.auth.signOut();
-	if (!error) 
-	{
-		window.location.href = "index.html"; // Redirect to login page
-	}
+	if (!error) {window.location.href = "index.html";}
 }
 
 async function fetchRoster(courseId) {
@@ -199,7 +192,6 @@ function parseCSV(csvString) {
     });
 }
 
-
 function downloadCSV(csvData, filename) {
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -212,7 +204,6 @@ function downloadCSV(csvData, filename) {
     a.click();
     document.body.removeChild(a);
 }
-
 
 async function fetchNotificationsForCurrentUser() {
     // Get the current session and user details
@@ -325,16 +316,8 @@ async function handleApprove(event) {
         .eq('coursenum', courseNum)   // Assuming you have this column in your courses table
         .eq('coursesec', courseSec)    // Assuming you have this column in your courses table
         .single();
-
-    if (courseError) {
-        console.error('Error fetching course ID:', courseError);
-        return;
-    }
-
-    if (!courseData) {
-        console.error('No course found for code:', courseFullCode);
-        return;
-    }
+    if (courseError) {console.error('Error fetching course ID:', courseError); return;}
+    if (!courseData) {console.error('No course found for code:', courseFullCode); return;}
 
     // Update the attendance table
     const { error: attendanceError } = await supabasePublicClient
@@ -349,9 +332,8 @@ async function handleApprove(event) {
             }
         ]);
 
-    if (attendanceError) {
-        console.error('Error updating attendance table:', attendanceError);
-    } else {
+    if (attendanceError) {console.error('Error updating attendance table:', attendanceError);} 
+    else {
         console.log('Attendance approved successfully!');
         // Display success message on the screen
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
@@ -401,11 +383,7 @@ async function getProfessorCourses() {
         .from('courses')
         .select('coursecode, coursenum, coursesem, coursesec')
         .eq('facemail', email);
-
-    if (error) {
-        console.error('Error fetching professor courses:', error);
-        return [];
-    }
+    if (error) {console.error('Error fetching professor courses:', error); return [];}
     return data;
 }
 
@@ -494,20 +472,13 @@ document.getElementById('backButton').addEventListener('click', function() {
 });
 
 async function updateAttendanceTable(semester, course) {
-    code = course.slice(0,4);
-    nums = course.slice(4);
-
     const { data, error } = await supabasePublicClient
     .from('courses')
     .select('*')
     .eq('coursesem', semester)
-    .eq('coursecode', code)
-    .eq('coursenum', nums);
-
-    if (error) {
-        console.error('Error fetching data:', error);
-        return;
-    }
+    .eq('coursecode', course.slice(0,4))
+    .eq('coursenum', course.slice(4));
+    if (error) {console.error('Error fetching data:', error); return;}
 
     const tableBody = document.querySelector('tbody');
     tableBody.innerHTML = '';
