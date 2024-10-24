@@ -58,21 +58,6 @@ function showWelcomeTab() {
     window.history.pushState({}, '', '?tab=' + tabName);
 }
 
-//added for faq functionality 
-document.addEventListener('DOMContentLoaded', function() {
-        const buttons = document.querySelectorAll('#helpTab .question button');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                const faq = button.nextElementSibling; // The <p> tag
-                const icon = button.querySelector('.d-arrow'); // The arrow icon
-
-                faq.classList.toggle('show'); // Toggle visibility
-                icon.classList.toggle('rotate'); // Toggle arrow rotation
-            });
-        });
-    });
-
 
 // Fetch the user data after signing in
 async function fetchProfessorData() 
@@ -547,135 +532,47 @@ async function updateAttendanceTable(semester, course) {
     });
 };
 
-// Styling for tabbing added by Anthony: 
-// Buttons for welcome, classes, create account, account, notifications, and log out
-var classes_button = document.getElementById("classes_button_PROFESSOR");
-var help_button = document.getElementById("help_button_PROFESSOR");
-var account_button = document.getElementById("account_button_PROFESSOR");
-var notification_button = document.getElementById("notification_button_PROFESSOR");
-var log_out_button = document.getElementById("log_out_button_PROFESSOR");
-var welcome_button = document.getElementById("welcome_button_PROFESSOR");
-var currentTab = "welcomeTab"; // Default current tab
+// Buttons highlighting logic
+var pageButtons = {
+	"welcome_button_PROFESSOR"      : "welcome",
+	"classes_button_PROFESSOR"	    : "classes",
+	"account_button_PROFESSOR"	    : "account",
+    "help_button_PROFESSOR"         : "help",
+	"notification_button_PROFESSOR" : "notification",
+	"log_out_button_PROFESSOR"		: "log_out"
+};
+var currentTab = "welcome";
+document.getElementById("welcome_button_PROFESSOR").style.filter = "brightness(150%)";
 
 function resetButtonColors() {
-    welcome_button.style.filter = "brightness(100%)";
-    classes_button.style.filter = "brightness(100%)";
-    help_button.style.filter = "brightness(100%)";
-    account_button.style.filter = "brightness(100%)";
-    notification_button.style.filter = "brightness(100%)";
-    log_out_button.style.filter = "brightness(100%)";
+	Object.keys(pageButtons).forEach(function(buttonId) {
+		document.getElementById(buttonId).style.filter = "brightness(100%)";
+	});
 }
 
-welcome_button.style.filter = "brightness(150%)";
-welcome_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "welcomeTab") {
-        currentTab = "welcomeTab";
-        welcome_button.style.filter = "brightness(150%)";
-    }
-});
-welcome_button.addEventListener("mouseover", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(150%)";
-    }
-});
-welcome_button.addEventListener("mouseout", function() {
-    if (currentTab != "welcomeTab") {
-        welcome_button.style.filter = "brightness(100%)";
-    }
-});
+// Function to add event listeners to a button
+function handleButton(buttonId, tabName) {
+	var button = document.getElementById(buttonId);
 
-// Classes tab logic
-classes_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "classesTab") {
-        currentTab = "classesTab";
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseover", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(150%)";
-    }
-});
-classes_button.addEventListener("mouseout", function() {
-    if (currentTab != "classesTab") {
-        classes_button.style.filter = "brightness(100%)";
-    }
-});
+	button.addEventListener("click", function() {
+		resetButtonColors();
+		if (currentTab != tabName) {
+			currentTab = tabName;
+			button.style.filter = "brightness(150%)";
+		}
+	});
+	button.addEventListener("mouseover", function() {
+		if (currentTab != tabName) {
+			button.style.filter = "brightness(150%)";
+		}
+	});
+	button.addEventListener("mouseout", function() {
+		if (currentTab != tabName) {
+			button.style.filter = "brightness(100%)";
+		}
+	});
+}
 
-// Help tab logic
-help_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "helpTab") {
-        currentTab = "helpTab";
-        help_button.style.filter = "brightness(150%)";
-    }
-});
-help_button.addEventListener("mouseover", function() {
-    if (currentTab != "helpTab") {
-        help_button.style.filter = "brightness(150%)";
-    }
-});
-help_button.addEventListener("mouseout", function() {
-    if (currentTab != "helpTab") {
-        help_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Account tab logic
-account_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "accountTab") {
-        currentTab = "accountTab";
-        account_button.style.filter = "brightness(150%)";
-    }
-});
-account_button.addEventListener("mouseover", function() {
-    if (currentTab != "accountTab") {
-        account_button.style.filter = "brightness(150%)";
-    }
-});
-account_button.addEventListener("mouseout", function() {
-    if (currentTab != "accountTab") {
-        account_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Notification tab logic
-notification_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "notificationTab") {
-        currentTab = "notificationTab";
-        notification_button.style.filter = "brightness(150%)";
-    }
-});
-notification_button.addEventListener("mouseover", function() {
-    if (currentTab != "notificationTab") {
-        notification_button.style.filter = "brightness(150%)";
-    }
-});
-notification_button.addEventListener("mouseout", function() {
-    if (currentTab != "notificationTab") {
-        notification_button.style.filter = "brightness(100%)";
-    }
-});
-
-// Log Out button logic
-log_out_button.addEventListener("click", function() {
-    resetButtonColors();
-    if (currentTab != "log_out") {
-        currentTab = "log_out";
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseover", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(150%)";
-    }
-});
-log_out_button.addEventListener("mouseout", function() {
-    if (currentTab != "log_out") {
-        log_out_button.style.filter = "brightness(100%)";
-    }
+Object.keys(pageButtons).forEach(function(buttonId) {
+	handleButton(buttonId, pageButtons[buttonId]);
 });

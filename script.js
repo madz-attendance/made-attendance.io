@@ -60,112 +60,53 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Buttons highlighting logic
-    var home_button = document.getElementById("home_button");
-    var faq_button = document.getElementById("faq_button");
-    var about_button = document.getElementById("about_button");
-    var request_button = document.getElementById("request_button");
-    var sign_in_button = document.getElementById("sign_in_button");
+    var pageButtons = {
+        "home_button": "home",
+        "faq_button": "faq",
+        "about_button": "about",
+        "request_button": "request",
+        "sign_in_button": "sign_in"
+    };
     var currentTab = "home";
+    document.getElementById("home_button").style.filter = "brightness(150%)";
 
     function resetButtonColors() {
-        home_button.style.filter = "brightness(100%)";
-        faq_button.style.filter = "brightness(100%)";
-        about_button.style.filter = "brightness(100%)";
-        request_button.style.filter = "brightness(100%)";
-        sign_in_button.style.filter = "brightness(100%)";
+        Object.keys(pageButtons).forEach(function(buttonId) {
+            document.getElementById(buttonId).style.filter = "brightness(100%)";
+        });
     }
 
-    home_button.style.filter = "brightness(150%)";
+    // Function to add event listeners to a button
+    function handleButton(buttonId, tabName) {
+        var button = document.getElementById(buttonId);
 
-    home_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "home") {
-            currentTab = "home";
-            home_button.style.filter = "brightness(150%)";
-        }
-    });
-    home_button.addEventListener("mouseover", function() {
-        if (currentTab != "home") {
-            home_button.style.filter = "brightness(150%)";
-        }
-    });
-    home_button.addEventListener("mouseout", function() {
-        if (currentTab != "home") {
-            home_button.style.filter = "brightness(100%)";
-        }
-    });
+        // Click event
+        button.addEventListener("click", function() {
+            resetButtonColors();
+            if (currentTab != tabName) {
+                currentTab = tabName;
+                button.style.filter = "brightness(150%)";
+            }
+        });
 
-    faq_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "faq") {
-            currentTab = "faq";
-            console.log(currentTab);
-            faq_button.style.filter = "brightness(150%)";
-        }
-    });
-    faq_button.addEventListener("mouseover", function() {
-        if (currentTab != "faq") {
-            faq_button.style.filter = "brightness(150%)";
-        }
-    });
-    faq_button.addEventListener("mouseout", function() {
-        if (currentTab != "faq") {
-            faq_button.style.filter = "brightness(100%)";
-        }
-    });
+        // Mouseover event
+        button.addEventListener("mouseover", function() {
+            if (currentTab != tabName) {
+                button.style.filter = "brightness(150%)";
+            }
+        });
 
-    about_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "about") {
-            currentTab = "about";
-            about_button.style.filter = "brightness(150%)";
-        }
-    });
-    about_button.addEventListener("mouseover", function() {
-        if (currentTab != "about") {
-            about_button.style.filter = "brightness(150%)";
-        }
-    });
-    about_button.addEventListener("mouseout", function() {
-        if (currentTab != "about") {
-            about_button.style.filter = "brightness(100%)";
-        }
-    });
+        // Mouseout event
+        button.addEventListener("mouseout", function() {
+            if (currentTab != tabName) {
+                button.style.filter = "brightness(100%)";
+            }
+        });
+    }
 
-    request_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "request") {
-            currentTab = "request";
-            request_button.style.filter = "brightness(150%)";
-        }
-    });
-    request_button.addEventListener("mouseover", function() {
-        if (currentTab != "request") {
-            request_button.style.filter = "brightness(150%)";
-        }
-    });
-    request_button.addEventListener("mouseout", function() {
-        if (currentTab != "request") {
-            request_button.style.filter = "brightness(100%)";
-        }
-    });
-    
-    sign_in_button.addEventListener("click", function() {
-        resetButtonColors();
-        if (currentTab != "sign_in") {
-            currentTab = "sign_in";
-            sign_in_button.style.filter = "brightness(150%)";
-        }
-    });
-    sign_in_button.addEventListener("mouseover", function(){
-        if (currentTab != "sign_in") {
-            sign_in_button.style.filter = "brightness(150%)";
-        }
-    });
-    sign_in_button.addEventListener("mouseout", function(){
-        if (currentTab != "sign_in") {
-            sign_in_button.style.filter = "brightness(100%)";
-        }
+    // Initialize buttons with event listeners
+    Object.keys(pageButtons).forEach(function(buttonId) {
+        handleButton(buttonId, pageButtons[buttonId]);
     });
 });
 
