@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Click event
         button.addEventListener("click", function() {
-            resetButtonColors();
             if (currentTab != tabName) {
+                resetButtonColors();
                 currentTab = tabName;
                 button.style.filter = "brightness(150%)";
             }
