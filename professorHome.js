@@ -447,6 +447,19 @@ async function populateCourseDropdown(semester) {
     }
 }
 
+//added for faq functionality 
+document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('#helpTab .question button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const faq = button.nextElementSibling; // The <p> tag
+                const icon = button.querySelector('.d-arrow'); // The arrow icon
+                faq.classList.toggle('show'); // Toggle visibility
+                icon.classList.toggle('rotate'); // Toggle arrow rotation
+            });
+        });
+    });
+
 // Initially, populate the semester dropdown when the page loads
 document.addEventListener('DOMContentLoaded', function() {
     this.getElementById('courseDropdown').disabled = true;
