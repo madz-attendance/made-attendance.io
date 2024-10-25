@@ -474,17 +474,88 @@ document.getElementById('semesterButtonContainer').addEventListener('click', fun
     const givenCourse = document.getElementById('courseDropdown').value;
 
     document.getElementById("form-section").style.display='none';
-    document.getElementById("table-section").style.display='block';
+    document.getElementById("calendar-section").style.display='block';
 
-    updateAttendanceTable(givenSemester, givenCourse);
+    updateCalendar(givenSemester, givenCourse);
+    //updateAttendanceTable(givenSemester, givenCourse);
+});
+
+document.getElementById('calendarBackButton').addEventListener('click', function() {
+    document.getElementById('calendar-section').style.display = 'none';
+    document.getElementById('form-section').style.display = 'block';
 });
 
 document.getElementById('backButton').addEventListener('click', function() {
     document.getElementById('table-section').style.display = 'none';
-    document.getElementById('form-section').style.display = 'block';
+    document.getElementById('calendar-section').style.display = 'block';
 });
 
-async function updateAttendanceTable(semester, course) {
+async function updateCalendar(semester, course) {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    
+    const day = document.querySelector(".calendar-dates");
+    const currdate = document.querySelector(".calendar-current-date");
+    const prenexIcons = document.querySelectorAll(".calendar-navigation span");
+    const months = [
+        "January","February","March","April","May","June","July",
+        "August","September","October","November","December"
+    ];
+    
+    const manipulate = () => { //Generate the calendar
+        let dayone = new Date(year, month, 1).getDay(); //First date of the month
+        let lastdate = new Date(year, month + 1, 0).getDate(); //Last date of the month
+        let dayend = new Date(year, month, lastdate).getDay(); //Get the day of the last date of the month
+        let monthlastdate = new Date(year, month, 0).getDate(); //Get the last date of the previous month
+        let lit = "";
+    
+        for (let i = dayone; i > 0; i--) { //Add the previous month's days
+            lit +=
+                `<li class="inactive">${monthlastdate - i + 1}</li>`;
+        }
+    
+        for (let i = 1; i <= lastdate; i++) { //Add the current month's days
+            let isToday = i === date.getDate()
+                && month === new Date().getMonth()
+                && year === new Date().getFullYear()
+                ? "active"
+                : "";
+            lit += `<li class="date ${isToday}" data-date="${year}-${month + 1}-${i}">${i}</li>`;
+        }
+
+        for (let i = dayend; i < 6; i++) { //Dates for following month's days
+            lit += `<li class="inactive">${i - dayend + 1}</li>`
+        }
+        currdate.innerText = `${months[month]} ${year}`;
+        day.innerHTML = lit;
+        document.querySelectorAll('.date').forEach(dateElement => {
+            dateElement.addEventListener('click', (e) => {
+                let selectedDate = e.target.getAttribute('data-date');
+                document.getElementById("calendar-section").style.display='none';
+                document.getElementById("table-section").style.display='block';
+                updateAttendanceTable(semester, course, selectedDate); // Call the table update with the selected date
+            });
+        });
+    }
+    manipulate();
+    
+    prenexIcons.forEach(icon => { //Click listener for chevrons
+        icon.addEventListener("click", () => { //When an icon is clicked
+            month = icon.id === "calendar-prev" ? month - 1 : month + 1;
+            if (month < 0 || month > 11) { //Check if month is out of range
+                date = new Date(year, month, new Date().getDate());
+                year = date.getFullYear();
+                month = date.getMonth();
+            }
+            else {date = new Date();} //In range, grab the date
+            manipulate();
+        });
+    });
+}
+
+async function updateAttendanceTable(semester, course, selectedDate) {
+    console.log(selectedDate);
     const { data, error } = await supabasePublicClient
     .from('courses')
     .select('*')
