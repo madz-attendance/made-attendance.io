@@ -390,6 +390,7 @@ input[type="button"]:hover {
 }
 
 #calendarBackButton,
+#semBackButton,
 #backButton,
 #semesterSubmit {
     font-size: 20px;
@@ -404,6 +405,7 @@ input[type="button"]:hover {
 }
 
 #calendarBackButton:hover,
+#semBackButton:hover,
 #backButton:hover,
 #semesterSubmit:hover {
     background-color: #0056b3;

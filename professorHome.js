@@ -490,6 +490,11 @@ document.getElementById('backButton').addEventListener('click', function() {
     document.getElementById('calendar-section').style.display = 'block';
 });
 
+document.getElementById('semBackButton').addEventListener('click', function() {
+    document.getElementById('table-section').style.display = 'none';
+    document.getElementById('form-section').style.display = 'block';
+});
+
 async function updateCalendar(semester, course) {
     let date = new Date();
     let year = date.getFullYear();
@@ -555,7 +560,7 @@ async function updateCalendar(semester, course) {
 }
 
 async function updateAttendanceTable(semester, course, selectedDate) {
-    console.log(selectedDate);
+    // console.log(selectedDate);
     const { data, error } = await supabasePublicClient
     .from('courses')
     .select('*')
