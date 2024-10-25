@@ -432,7 +432,7 @@ async function populateCourseDropdown(semester) {
     courseDropdown.innerHTML = '';  // Clear previous options
     semesterCourses.forEach(course => {
         const option = document.createElement('option');
-        option.value = `${course.coursecode}${course.coursenum}`;
+        option.value = `${course.coursecode}${course.coursenum}-${course.coursesec}`;
         option.textContent = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
         courseDropdown.appendChild(option);
     });
@@ -477,7 +477,6 @@ document.getElementById('semesterButtonContainer').addEventListener('click', fun
     document.getElementById("calendar-section").style.display='block';
 
     updateCalendar(givenSemester, givenCourse);
-    //updateAttendanceTable(givenSemester, givenCourse);
 });
 
 document.getElementById('calendarBackButton').addEventListener('click', function() {
@@ -537,6 +536,10 @@ async function updateCalendar(semester, course) {
         document.querySelectorAll('.date').forEach(dateElement => {
             dateElement.addEventListener('click', (e) => {
                 let selectedDate = e.target.getAttribute('data-date');
+                // const { data, error } = await supabasePublicClient
+                // .from('attendance')
+                // .select
+                // console.log(selectedDate);
                 document.getElementById("calendar-section").style.display='none';
                 document.getElementById("table-section").style.display='block';
                 updateAttendanceTable(semester, course, selectedDate); // Call the table update with the selected date
@@ -560,7 +563,6 @@ async function updateCalendar(semester, course) {
 }
 
 async function updateAttendanceTable(semester, course, selectedDate) {
-    // console.log(selectedDate);
     const { data, error } = await supabasePublicClient
     .from('courses')
     .select('*')
