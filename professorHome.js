@@ -537,9 +537,12 @@ async function updateCalendar(semester, course) {
             dateElement.addEventListener('click', (e) => {
                 let selectedDate = e.target.getAttribute('data-date');
                 // const { data, error } = await supabasePublicClient
-                // .from('attendance')
-                // .select
-                // console.log(selectedDate);
+                // .from('courses')
+                // .select('*')
+                // .eq('coursesem', semester)
+                // .eq('coursecode', course.slice(0,4));
+                console.log(course);
+                console.log(selectedDate);
                 document.getElementById("calendar-section").style.display='none';
                 document.getElementById("table-section").style.display='block';
                 updateAttendanceTable(semester, course, selectedDate); // Call the table update with the selected date
