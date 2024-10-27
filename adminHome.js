@@ -15,6 +15,20 @@ document.addEventListener('DOMContentLoaded', function()
   
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+    const faqButtons = document.querySelectorAll('.question button');
+
+    faqButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const answer = button.nextElementSibling;
+            const icon = button.querySelector('.d-arrow');
+
+            answer.classList.toggle('show'); // Toggle visibility
+            icon.classList.toggle('rotate'); // Toggle icon rotation
+        });
+    });
+});
+
 
 // Function to check if the user is logged in
 async function checkAuth() 
