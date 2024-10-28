@@ -685,34 +685,32 @@ async function loadAccountInfo() {
         if (classesError) {
             console.error("Error fetching class history:", classesError.message);
         } else if (classesData.length) {
-            // Create table structure with bold headers and a thick outer border
+            // Create table structure with bold headers and black borders
             let classesTable = `
-                <div style="border: 2px solid #333; padding: 8px; border-radius: 8px; display: inline-block;">
-                    <table style="width:100%; border-collapse: collapse;">
-                        <thead>
-                            <tr>
-                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Semester</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Course Taught</th>
-                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Course Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
+                <table style="width:100%; border-collapse: collapse; border: 2px solid black;">
+                    <thead>
+                        <tr>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Semester</th>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Course Taught</th>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Course Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
 
             // Populate table rows with class data
             classesData.forEach(course => {
                 const courseTaught = `${course.coursecode} ${course.coursenum} ${course.coursesec}`;
                 classesTable += `
                     <tr>
-                        <td style="border: 1px solid #ddd; padding: 8px;">${course.coursesem}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">${courseTaught}</td>
-                        <td style="border: 1px solid #ddd; padding: 8px;">${course.coursename}</td>
+                        <td style="border: 2px solid black; padding: 8px;">${course.coursesem}</td>
+                        <td style="border: 2px solid black; padding: 8px;">${courseTaught}</td>
+                        <td style="border: 2px solid black; padding: 8px;">${course.coursename}</td>
                     </tr>`;
             });
 
             classesTable += `
-                        </tbody>
-                    </table>
-                </div>`;
+                    </tbody>
+                </table>`;
 
             // Insert the table after the third h4 in the account container
             document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesTable);
@@ -724,3 +722,4 @@ async function loadAccountInfo() {
 
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
