@@ -645,12 +645,20 @@ Object.keys(pageButtons).forEach(function(buttonId) {
 
 async function loadAccountInfo() {
     try {
-        // Get authenticated user data
-        const user = supabasePublicClient.auth.user();
+        // Get session data
+        const { data: sessionData, error: sessionError } = await supabasePublicClient.auth.getSession();
 
+        if (sessionError) {
+            console.error("Error getting session:", sessionError.message);
+            return;
+        }
+
+        const user = sessionData?.session?.user;
+
+        // Check if user is authenticated
         if (!user) {
             console.error("User is not authenticated.");
-            return; // Stop execution if no authenticated user
+            return;
         }
 
         // Display email
@@ -665,11 +673,8 @@ async function loadAccountInfo() {
 
         if (deptError) {
             console.error("Error fetching department:", deptError.message);
-        } else {
-            console.log("Department Data:", deptData);
-            if (deptData.length) {
-                document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
-            }
+        } else if (deptData.length) {
+            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
         }
 
         // Fetch user's class history
@@ -681,7 +686,6 @@ async function loadAccountInfo() {
         if (classesError) {
             console.error("Error fetching class history:", classesError.message);
         } else {
-            console.log("Classes Data:", classesData);
             let classesList = "<ul>";
             classesData.forEach(course => {
                 classesList += `<li>${course.courseCode} ${course.coursenum} ${course.coursename}</li>`;
@@ -697,6 +701,7 @@ async function loadAccountInfo() {
 
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
 
 
 
