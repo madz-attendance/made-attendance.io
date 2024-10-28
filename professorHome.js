@@ -679,7 +679,7 @@ async function loadAccountInfo() {
         // Fetch user's class history
         const { data: classesData, error: classesError } = await supabasePublicClient
             .from('courses')
-            .select('coursecode', 'coursenum', 'coursename')
+            .select('coursesem, coursecode, coursenum, coursesec, coursename')
             .eq('facemail', user.email);
 
         if (classesError) {
