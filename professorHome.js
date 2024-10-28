@@ -642,7 +642,6 @@ Object.keys(pageButtons).forEach(function(buttonId) {
 	handleButton(buttonId, pageButtons[buttonId]);
 });
 
-
 async function loadAccountInfo() {
     try {
         // Get session data
@@ -661,8 +660,8 @@ async function loadAccountInfo() {
             return;
         }
 
-        // Display email
-        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<p>${user.email}</p>`);
+        // Display email inline
+        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<span> ${user.email}</span>`);
 
         // Fetch user's department
         const { data: deptData, error: deptError } = await supabasePublicClient
@@ -674,7 +673,7 @@ async function loadAccountInfo() {
         if (deptError) {
             console.error("Error fetching department:", deptError.message);
         } else if (deptData.length) {
-            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
+            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<span> ${deptData[0].dept}</span>`);
         }
 
         // Fetch user's class history
@@ -686,9 +685,9 @@ async function loadAccountInfo() {
         if (classesError) {
             console.error("Error fetching class history:", classesError.message);
         } else {
-            let classesList = "<ul>";
+            let classesList = "<ul style='display:inline; list-style-type:none; padding:0; margin:0;'>";
             classesData.forEach(course => {
-                classesList += `<li>${course.courseCode} ${course.coursenum} ${course.coursename}</li>`;
+                classesList += `<li style='display:inline; margin-right:10px;'>${course.coursesem} - ${course.coursecode} ${course.coursenum} ${course.coursesec} - ${course.coursename}</li>`;
             });
             classesList += "</ul>";
             document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesList);
@@ -701,7 +700,4 @@ async function loadAccountInfo() {
 
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
-
-
-
 
