@@ -643,18 +643,20 @@ Object.keys(pageButtons).forEach(function(buttonId) {
 });
 
 
-//Function to pull info needed for Account info Tab. 
 async function loadAccountInfo() {
     try {
         // Get authenticated user data
         const user = supabasePublicClient.auth.user();
 
-        // Display email if available
-        if (user) {
-            document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<p>${user.email}</p>`);
+        if (!user) {
+            console.error("User is not authenticated.");
+            return; // Stop execution if no authenticated user
         }
 
-        // Fetch user's department from the database
+        // Display email
+        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<p>${user.email}</p>`);
+
+        // Fetch user's department
         const { data: deptData, error: deptError } = await supabasePublicClient
             .from('courses')
             .select('dept')
@@ -663,8 +665,11 @@ async function loadAccountInfo() {
 
         if (deptError) {
             console.error("Error fetching department:", deptError.message);
-        } else if (deptData.length) {
-            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
+        } else {
+            console.log("Department Data:", deptData);
+            if (deptData.length) {
+                document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
+            }
         }
 
         // Fetch user's class history
@@ -676,9 +681,10 @@ async function loadAccountInfo() {
         if (classesError) {
             console.error("Error fetching class history:", classesError.message);
         } else {
+            console.log("Classes Data:", classesData);
             let classesList = "<ul>";
             classesData.forEach(course => {
-                classesList += `<li>${course.courseCode} ${course.coursenum} ${course.coursename} </li>`;
+                classesList += `<li>${course.courseCode} ${course.coursenum} ${course.coursename}</li>`;
             });
             classesList += "</ul>";
             document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesList);
