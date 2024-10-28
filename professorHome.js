@@ -685,17 +685,18 @@ async function loadAccountInfo() {
         if (classesError) {
             console.error("Error fetching class history:", classesError.message);
         } else if (classesData.length) {
-            // Create table structure
+            // Create table structure with bold headers and a thick outer border
             let classesTable = `
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr>
-                            <th style="border: 1px solid #ddd; padding: 8px;">Semester</th>
-                            <th style="border: 1px solid #ddd; padding: 8px;">Course Code</th>
-                            <th style="border: 1px solid #ddd; padding: 8px;">Course Name</th>
-                        </tr>
-                    </thead>
-                    <tbody>`;
+                <div style="border: 2px solid #333; padding: 8px; border-radius: 8px; display: inline-block;">
+                    <table style="width:100%; border-collapse: collapse;">
+                        <thead>
+                            <tr>
+                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Semester</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Course Taught</th>
+                                <th style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Course Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
 
             // Populate table rows with class data
             classesData.forEach(course => {
@@ -709,8 +710,9 @@ async function loadAccountInfo() {
             });
 
             classesTable += `
-                    </tbody>
-                </table>`;
+                        </tbody>
+                    </table>
+                </div>`;
 
             // Insert the table after the third h4 in the account container
             document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesTable);
