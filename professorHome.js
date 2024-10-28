@@ -641,3 +641,56 @@ function handleButton(buttonId, tabName) {
 Object.keys(pageButtons).forEach(function(buttonId) {
 	handleButton(buttonId, pageButtons[buttonId]);
 });
+
+
+//Function to pull info needed for Account info Tab. 
+async function loadAccountInfo() {
+    try {
+        // Get authenticated user data
+        const user = supabasePublicClient.auth.user();
+
+        // Display email if available
+        if (user) {
+            document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<p>${user.email}</p>`);
+        }
+
+        // Fetch user's department from the database
+        const { data: deptData, error: deptError } = await supabasePublicClient
+            .from('courses')
+            .select('dept')
+            .eq('facemail', user.email)
+            .limit(1);
+
+        if (deptError) {
+            console.error("Error fetching department:", deptError.message);
+        } else if (deptData.length) {
+            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<p>${deptData[0].dept}</p>`);
+        }
+
+        // Fetch user's class history
+        const { data: classesData, error: classesError } = await supabasePublicClient
+            .from('courses')
+            .select('courseCode', 'coursenum', 'coursename')
+            .eq('facemail', user.email);
+
+        if (classesError) {
+            console.error("Error fetching class history:", classesError.message);
+        } else {
+            let classesList = "<ul>";
+            classesData.forEach(course => {
+                classesList += `<li>${course.courseCode} ${course.coursenum} ${course.coursename} </li>`;
+            });
+            classesList += "</ul>";
+            document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesList);
+        }
+
+    } catch (error) {
+        console.error("Error loading account info:", error.message);
+    }
+}
+
+// Call the function to load account info on page load
+document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
+
+
