@@ -675,24 +675,22 @@ async function loadAccountInfo() {
         } else if (deptData.length) {
             document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<span> ${deptData[0].dept}</span>`);
         }
+      // Fetch user's class history
+	const { data: classesData, error: classesError } = await supabasePublicClient
+    		.from('courses')
+    		.select('coursesem, coursecode, coursenum, coursesec, coursename')
+    		.eq('facemail', user.email);
 
-        // Fetch user's class history
-        const { data: classesData, error: classesError } = await supabasePublicClient
-            .from('courses')
-            .select('coursesem, coursecode, coursenum, coursesec, coursename')
-            .eq('facemail', user.email);
-
-        if (classesError) {
-            console.error("Error fetching class history:", classesError.message);
-        } else {
-            let classesList = "<ul style='display:inline; list-style-type:none; padding:0; margin:0;'>";
-            classesData.forEach(course => {
-                classesList += `<li style='display:inline; margin-right:10px;'>${course.coursesem} - ${course.coursecode} ${course.coursenum} ${course.coursesec} - ${course.coursename}</li>`;
-            });
-            classesList += "</ul>";
-            document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesList);
-        }
-
+	if (classesError) {
+    		console.error("Error fetching class history:", classesError.message);
+	} else {
+    	   let classesList = "<ul style='list-style-type:none; padding:0; margin:0;'>";
+    	   classesData.forEach(course => {
+        	classesList += `<li>${course.coursesem} - ${course.coursecode} ${course.coursenum} ${course.coursesec} - ${course.coursename}</li>`;
+    	});
+    	classesList += "</ul>";
+    	document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesList);
+	}
     } catch (error) {
         console.error("Error loading account info:", error.message);
     }
