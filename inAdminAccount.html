@@ -30,10 +30,13 @@
 					Classes
 				</div>
 				<div class="header-button" id="create_account_button_ADMIN" onclick="openTab('create_account')">
-					Create Account
+					Create<br>Account
 				</div>
 				<div class="header-button" id="add_student_button" onclick="openTab('newStudent')" title="New Student">
-    					New Student
+    				Roster<br>Entry
+				</div>
+				<div class="header-button" id="remove_student_button" onclick="openTab('removeStudent')" title="Remove Student">
+					Roster<br>Removal
 				</div>
 			</div>
 		</div>
@@ -195,8 +198,11 @@
                 </select>
             </div>
             <!-- Submit Button -->
-            <input type="submit" value="Submit" onclick="addStudentToRoster()">
+            <input type="submit" value="Submit" onclick="addStudentToRoster(event)">
         </form>
+		<div class="manual_submission_feedback_container" id="new_student_manual_submission_feedback_container">
+			
+		</div>
 		<h2>Upload Students Into Rosters</h2>
 		<p>
 			Upload a .txt or .csv file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
@@ -226,6 +232,85 @@
 				</div>
 		</div>
     </div>
+</section>
+
+<!-- Roster Removal Tab -->
+<section id="removeStudent" class="tab-content">
+	<div class="account-container">
+		<h2>Manually Remove Student From Roster</h2>
+        <form id="student_removal_form">
+            <!-- Student ID Input -->
+            <div class="input-container">
+                <label for="removal_id_num">Student ID Number:</label>
+                <input type="text" id="removal_id_num" name="removal_id_num" required>
+            </div>
+			<!-- Department Dropdown Place holder-->
+             <div>
+                <label for="remove_student_department_dropdown">Select a Department:</label>
+                <select id="remove_student_department_dropdown" name="options">
+                    <option value="none"></option>
+                </select>
+             </div>
+            <!-- First Name Input -->
+            <div class="input-container">
+                <label for="removal_first_name">Student First Name:</label>
+                <input type="text" id="removal_first_name" name="removal_first_name" required>
+            </div>
+			<!-- Semester Dropdown -->
+			<div>
+				<label for="remove_student_semester_dropdown">Select a Semester:</label>
+				<select id="remove_student_semester_dropdown" name="options">
+					<option value="none">Any</option>
+				</select>
+			</div>
+            <!-- Last Name Input -->
+            <div class="input-container">
+                <label for="removal_last_name">Student Last Name:</label>
+                <input type="text" id="removal_last_name" name="removal_last_name" required>
+            </div>
+            <!-- Course Dropdown Placeholder-->
+            <div>
+                <label for="remove_student_courses_dropdown">Select a Course:</label>
+                <select id="remove_student_courses_dropdown" name="options">
+                    <option value="none"></option>
+                </select>
+            </div>
+            <!-- Submit Button -->
+            <input type="submit" value="Submit" onclick="removeStudentFromRoster(event)">
+        </form>
+		<div class="manual_submission_feedback_container" id="remove_student_manual_submission_feedback_container">
+			
+		</div>
+		<h2>Upload Student Removals from Rosters</h2>
+		<p>
+			Upload a .txt or .csv file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
+		</p>
+		<div class="upload_remove_student_csv_container" id="upload_remove_student_csv_container1">
+			<div class="remove_student_csv_col" id="left_remove_student_csv_col">
+				<label class="remove_student_csv_choose_file_button" id="remove_student_csv_choose_file_button">
+					<input type="file" id="remove_student_csv_file_input" accept=".txt, .csv" onchange="handleRemoveStudentCSVChooseFile()"/>
+						Choose File
+				</label>
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_file_name_col">
+				<span id="remove_student_csv_file_name">No file chosen</span>
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_midspace_col">
+			
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_upload_col">
+				<div class="remove_student_csv_upload_button" id="remove_student_csv_upload_button" onclick="handleRemoveStudentCSVUpload()">
+					Upload
+				</div>
+			</div>
+		</div>
+		<div class="upload_remove_student_csv_container" id="upload_remove_student_csv_container2">
+			<div class="remove_student_csv_col" id="remove_student_csv_feedback_col">
+					
+				</div>
+		</div>
+	
+	</div>
 </section>
 	    
 <section id="helpTab" class="tab-content">
