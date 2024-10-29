@@ -199,12 +199,12 @@
         </form>
 		<h2>Upload Students Into Rosters</h2>
 		<p>
-			Upload a .txt file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
+			Upload a .txt or .csv file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
 		</p>
 		<div class="upload_new_student_csv_container" id="upload_new_student_csv_container1">
 			<div class="new_student_csv_col" id="left_new_student_csv_col">
-				<label class="new_student_csv_choose_file_button">
-					<input type="file" id="new_student_csv_file_input" accept=".txt" onchange="handleNewStudentCSVChooseFile()"/>
+				<label class="new_student_csv_choose_file_button" id="new_student_csv_choose_file_button">
+					<input type="file" id="new_student_csv_file_input" accept=".txt, .csv" onchange="handleNewStudentCSVChooseFile()"/>
 						Choose File
 				</label>
 			</div>
@@ -265,9 +265,12 @@
 					<span>How do I upload a file of students to course rosters?</span>
 					<i class="fas fa-chevron-down d-arrow"></i>
 				</button>
-				<p class="answer">Upload a .txt file containing student information in the following format on each line:<br><small><b>
-					&lt;Student ID&gt;,&lt;First Name&gt;,&lt;Last Name&gt;,&lt;Department Code&gt;,<br>&lt;Course Number&gt;,&lt;Section&gt;,&lt;Semester&gt;,&lt;Professor Last Name&gt;</b></small>
+				<p class="answer">Upload a .txt or .csv file containing student information in the following format on each line:<br><small><b>
+					&lt;Student ID&gt;,&lt;First Name&gt;,&lt;Last Name&gt;,&lt;Department Code&gt;,<br>&lt;Course Number&gt;,&lt;Section&gt;,&lt;Semester&gt;,&lt;Professor Last Name&gt;</b>
 					<br><br>
+					Example:<br><b>
+					123456789,John,Smith,CPSC,135,010,Fall 2024,Lastname<br>
+					234567890,Mary,Smith,ARTH,24,020,Spring 2025,Lastname<br><br></b></small>
 					Then, click the Upload button. This will attempt to read through your file and insert the students into their respective rosters as designated in the file.
 					If a student is already registered in that course, they will be skipped. If any students fail to be inserted into a roster, a list of failed attempts will
 					be provided so you can investigate.
