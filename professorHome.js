@@ -660,10 +660,10 @@ async function loadAccountInfo() {
             return;
         }
 
-        // Display email inline as a <p> next to the first <h4>
+        // Display email as an <h4> right after the "Your Email" heading
         document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML(
             'afterend',
-            `<p style="display: inline-block; margin-left: 10px;">${user.email}</p>`
+            `<h4 style="display: inline; font-weight: normal; margin-left: 5px;">${user.email}</h4>`
         );
 
         // Fetch user's department
@@ -678,7 +678,7 @@ async function loadAccountInfo() {
         } else if (deptData.length) {
             document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML(
                 'afterend',
-                `<p style="display: inline-block; margin-left: 10px;">${deptData[0].dept}</p>`
+                `<h4 style="display: inline; font-weight: normal; margin-left: 5px;">${deptData[0].dept}</h4>`
             );
         }
 
