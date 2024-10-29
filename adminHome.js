@@ -723,11 +723,22 @@ function handleNewStudentCSVChooseFile()
 {
 	var fileInput = document.getElementById("new_student_csv_file_input");
 	var fileNameDisplay = document.getElementById("new_student_csv_file_name");
+	var uploadButton = document.getElementById("new_student_csv_upload_button");
 	
+	// If a valid file was selected, update the fileNameDisplay and make the "Upload" button visually active
 	if (fileInput.files.length > 0)
-	{ fileNameDisplay.textContent = fileInput.files[0].name; }
+	{ 
+		fileNameDisplay.textContent = fileInput.files[0].name;
+		uploadButton.style.backgroundColor = "#2A4C6B";
+		uploadButton.style.cursor = "pointer";
+	}
+	// If no file was chosen, update the fileNameDisplay and make the "Uploadd" button visually inactive
 	else
-	{ fileNameDisplay.textContent = "No file chosen"; }	
+	{ 
+		fileNameDisplay.textContent = "No file chosen"; 
+		uploadButton.style.backgroundColor = "gray";
+		uploadButton.style.cursor = "default";
+	}	
 }
 
 // Upload student information to rosters database and update the feedback on the page
@@ -810,7 +821,7 @@ async function parseNewStudentCSV(file)
 						// If a valid course was not found, return false
 						if (courseLookupError)
 						{
-							console.error("In parseNewStudentCSV: Unable to find course that a student is attempting to be inserted into the roster of.", courseLookupError);
+							console.log("In parseNewStudentCSV: Unable to find course that a student is attempting to be inserted into the roster of.", courseLookupError);
 							counterObj.successStatus = false;
 							counterObj.invalidLines.push(line.trim());
 						}
@@ -829,7 +840,7 @@ async function parseNewStudentCSV(file)
 								.ilike('stuid', stuId);
 							
 							if (checkError) // If there was an error doing the query
-							{ console.error("Error checking roster for duplicate entry: ", checkError); counterObj.successStatus = false; }//return false; }//return [false, lineCounter, totalLines]}
+							{ console.log("Error checking roster for duplicate entry: ", checkError); counterObj.successStatus = false; }//return false; }//return [false, lineCounter, totalLines]}
 							else if (checkData.length == 0) // If an entry was not found, meaning that the student is not yet in this course roster, then add them to the roster. Otherwise, skip this student
 							{
 								// Add the student to this course roster
@@ -848,7 +859,7 @@ async function parseNewStudentCSV(file)
 								// If there was an error inserting into the roster table
 								if (insertError)
 								{
-									console.error("Error inserting student into roster table.", insertError);
+									console.log("Error inserting student into roster table.", insertError);
 									counterObj.successStatus = false;
 								}
 								// If student was successfully inserted into the roster table
@@ -875,6 +886,18 @@ async function parseNewStudentCSV(file)
 	}
 }
 
+// Button highlights for New Student CSV "Choose file" and "Upload" - Upload only highlightable if a file has been selected
+var new_student_choose_file_button = document.getElementById("new_student_csv_choose_file_button");
+new_student_choose_file_button.addEventListener("mouseover", function () { new_student_choose_file_button.style.filter = "brightness(150%)"; });
+new_student_choose_file_button.addEventListener("mouseout", function () { new_student_choose_file_button.style.filter = "brightness(100%)"; });
+
+var new_student_upload_button = document.getElementById("new_student_csv_upload_button");
+new_student_upload_button.addEventListener("mouseover", function ()
+{ var fileInput = document.getElementById("new_student_csv_file_input");
+  if (fileInput.files.length > 0) { new_student_upload_button.style.filter = "brightness(150%)"; } });
+new_student_upload_button.addEventListener("mouseout", function ()
+{ var fileInput = document.getElementById("new_student_csv_file_input");
+  if (fileInput.files.length > 0) { new_student_upload_button.style.filter = "brightness(100%)"; } });
 
  
 // Buttons highlighting logic
