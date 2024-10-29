@@ -156,30 +156,25 @@
 <!-- New Student Tab Content -->
 <section id="newStudent" class="tab-content">
     <div class="account-container">
-        <h2>Add Students</h2>
+        <h2>Manually Add Student Into Roster</h2>
         <form id="student_creation_form">
             <!-- Student ID Input -->
             <div class="input-container">
                 <label for="id_num">Student ID Number:</label>
                 <input type="text" id="id_num" name="id_num" required>
             </div>
-            <!-- First Name Input -->
-            <div class="input-container">
-                <label for="first_name">Student First Name:</label>
-                <input type="text" id="first_name" name="first_name" required>
-            </div>
-            <!-- Last Name Input -->
-            <div class="input-container">
-                <label for="last_name">Student Last Name:</label>
-                <input type="text" id="last_name" name="last_name" required>
-            </div>
-            <!-- Department Dropdown Place holder (unimplemented)-->
+			<!-- Department Dropdown Place holder-->
              <div>
                 <label for="new_student_department_dropdown">Select a Department:</label>
                 <select id="new_student_department_dropdown" name="options">
                     <option value="none"></option>
                 </select>
              </div>
+            <!-- First Name Input -->
+            <div class="input-container">
+                <label for="first_name">Student First Name:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
 			<!-- Semester Dropdown -->
 			<div>
 				<label for="new_student_semester_dropdown">Select a Semester:</label>
@@ -187,8 +182,12 @@
 					<option value="none">Any</option>
 				</select>
 			</div>
-			
-            <!-- Course Dropdown Placeholder (unimplemented) -->
+            <!-- Last Name Input -->
+            <div class="input-container">
+                <label for="last_name">Student Last Name:</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            <!-- Course Dropdown Placeholder-->
             <div>
                 <label for="new_student_courses_dropdown">Select a Course:</label>
                 <select id="new_student_courses_dropdown" name="options">
@@ -198,6 +197,34 @@
             <!-- Submit Button -->
             <input type="submit" value="Submit" onclick="addStudentToRoster()">
         </form>
+		<h2>Upload Students Into Rosters</h2>
+		<p>
+			Upload a .txt file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
+		</p>
+		<div class="upload_new_student_csv_container" id="upload_new_student_csv_container1">
+			<div class="new_student_csv_col" id="left_new_student_csv_col">
+				<label class="new_student_csv_choose_file_button">
+					<input type="file" id="new_student_csv_file_input" accept=".txt" onchange="handleNewStudentCSVChooseFile()"/>
+						Choose File
+				</label>
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_file_name_col">
+				<span id="new_student_csv_file_name">No file chosen</span>
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_midspace_col">
+			
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_upload_col">
+				<div class="new_student_csv_upload_button" id="new_student_csv_upload_button" onclick="handleNewStudentCSVUpload()">
+					Upload
+				</div>
+			</div>
+		</div>
+		<div class="upload_new_student_csv_container" id="upload_new_student_csv_container2">
+			<div class="new_student_csv_col" id="new_student_csv_feedback_col">
+					
+				</div>
+		</div>
     </div>
 </section>
 	    
@@ -205,37 +232,47 @@
     <div class="account-container">
         <h2>FAQ / Help for Administrators:</h2>
         <div class="questions-container">
-            <div class="question">
-                <button>
-                    <span>How do I add a student to a class?</span>
-                    <i class="fas fa-chevron-down d-arrow"></i>
-                </button>
-                <p class="answer">Go to the New Student tab and input the required information for the student and use the dropdown boxes to select the class, semester, and department the class is in.</p>
-            </div>
-
-            <div class="question">
-                <button>
-                    <span>How can I add people into the database?</span>
-                    <i class="fas fa-chevron-down d-arrow"></i>
-                </button>
-                <p class="answer">Select the Create Account tab and enter the professor's information using the dropdown menus to select rank and the department.</p>
-            </div>
-
-            <div class="question">
+			<div class="question">
                 <button>
                     <span>What permissions do admins have?</span>
                     <i class="fas fa-chevron-down d-arrow"></i>
                 </button>
                 <p class="answer">Admins have full access to all features, including managing users, classes, and viewing reports.</p>
             </div>
-
-            <div class="question">
+			<div class="question">
                 <button>
                     <span>Can admins reset user passwords?</span>
                     <i class="fas fa-chevron-down d-arrow"></i>
                 </button>
                 <p class="answer">Admins can guide users through the password reset process, but users must reset their passwords through the provided "Forgot Password" feature.</p>
             </div>
+			<div class="question">
+                <button>
+                    <span>How can I create a professor account?</span>
+                    <i class="fas fa-chevron-down d-arrow"></i>
+                </button>
+                <p class="answer">Select the Create Account tab and enter the professor's information using the dropdown menus to select rank and the department.</p>
+            </div>
+            <div class="question">
+                <button>
+                    <span>How do I add a student to a course roster?</span>
+                    <i class="fas fa-chevron-down d-arrow"></i>
+                </button>
+                <p class="answer">Go to the New Student tab and input the required information for the student and use the dropdown boxes to select the class, semester, and department the class is in.</p>
+            </div>
+			<div class="question">
+				<button>
+					<span>How do I upload a file of students to course rosters?</span>
+					<i class="fas fa-chevron-down d-arrow"></i>
+				</button>
+				<p class="answer">Upload a .txt file containing student information in the following format on each line:<br><small><b>
+					&lt;Student ID&gt;,&lt;First Name&gt;,&lt;Last Name&gt;,&lt;Department Code&gt;,<br>&lt;Course Number&gt;,&lt;Section&gt;,&lt;Semester&gt;,&lt;Professor Last Name&gt;</b></small>
+					<br><br>
+					Then, click the Upload button. This will attempt to read through your file and insert the students into their respective rosters as designated in the file.
+					If a student is already registered in that course, they will be skipped. If any students fail to be inserted into a roster, a list of failed attempts will
+					be provided so you can investigate.
+				</p>
+			</div>
         </div>
     </div>
 </section>
