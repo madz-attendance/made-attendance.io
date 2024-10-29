@@ -413,7 +413,7 @@ input[type="button"]:hover {
 #semBackButton:hover,
 #backButton:hover,
 #semesterSubmit:hover,
-#resetPasswordButton {
+#resetPasswordButton:hover {
     background-color: #0056b3;
 }
 
