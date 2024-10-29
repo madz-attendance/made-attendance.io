@@ -396,7 +396,8 @@ input[type="button"]:hover {
 #calendarBackButton,
 #semBackButton,
 #backButton,
-#semesterSubmit {
+#semesterSubmit,
+#resetPasswordButton {
     font-size: 20px;
     color: white;
     background-color: #2A4C6B;
@@ -411,7 +412,8 @@ input[type="button"]:hover {
 #calendarBackButton:hover,
 #semBackButton:hover,
 #backButton:hover,
-#semesterSubmit:hover {
+#semesterSubmit:hover,
+#resetPasswordButton {
     background-color: #0056b3;
 }
 
