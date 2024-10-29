@@ -319,6 +319,9 @@ input[type="button"]:hover {
 #new_student_department_dropdown,
 #new_student_semester_dropdown,
 #new_student_courses_dropdown,
+#remove_student_department_dropdown,
+#remove_student_semester_dropdown,
+#remove_student_courses_dropdown,
 #department_dropdown,
 #semester_dropdown,
 #courses_dropdown{
@@ -575,17 +578,18 @@ th > * {
 
 /* ================== */
 /* ADMIN PAGE */
-#header-col2-left-gap-ADMIN { width: 22%; }
-#header-col3-tab-buttons-ADMIN {width: 30%;}
-#header-col4-right-gap-ADMIN { width: 21%; }
+#header-col2-left-gap-ADMIN { width: 17%; }
+#header-col3-tab-buttons-ADMIN {width: 40%;}
+#header-col4-right-gap-ADMIN { width: 14%; }
 #header-col5-extra-buttons-ADMIN { width: 15%; }
 
 /* Make each tab button take up an equal portion of the header-col-sub */
 /* If we add a button in the future, make the widths equal 100% */
-#welcome_button_ADMIN { width: 25%; padding-top: 5%; }
-#classes_button_ADMIN { width: 25%; padding-top: 5%; }
-#create_account_button_ADMIN { width: 25%; padding-top: 2%; }
-#add_student_button { width: 25%; padding-top: 2%; }
+#welcome_button_ADMIN { width: 20%; padding-top: 5%; }
+#classes_button_ADMIN { width: 20%; padding-top: 5%; }
+#create_account_button_ADMIN { width: 20%; padding-top: 2%; }
+#add_student_button { width: 20%; padding-top: 2%; }
+#remove_student_button { width: 20%; padding-top: 2%; }
 
 #help_button_ADMIN { width: 25%; padding-top: 10%; }
 #account_button_ADMIN { width: 25%; padding-top: 10%; }
@@ -621,6 +625,39 @@ th > * {
 	cursor: pointer;
 }
 */
+
+/* Student Removal Form */
+#student_removal_form input,
+#student_removal_form select 
+{
+	width: 90%;
+	max-width: 90%;
+	padding: 10px;
+	margin-bottom: 20px;
+	box-sizing: border-box;
+}
+
+#student_removal_form label
+{
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.manual_submission_feedback_container
+{
+	display: flex;
+	align-items: center;
+	/*border: 2px solid green;*/
+	flex-direction: row;	
+	font-family: 'Calibri', sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	color: #2A4C6B;
+	align-items: center;
+    justify-content: center;
+}
+
+
 
 /* New Student CSV Stuff */
 .upload_new_student_csv_container
@@ -714,6 +751,102 @@ th > * {
 {
 	width: 15%;
 }
+
+/* Remove Student Stuff */
+.upload_remove_student_csv_container
+{
+	display: flex;
+	align-items: center;
+	/*border: 2px solid green;*/
+	flex-direction: row;
+}
+
+.remove_student_csv_col
+{
+	display: flex;
+	flex-direction: column;
+	width: 50%;
+	/*border: 2px solid orange;*/
+	height: 100%;
+}
+
+.remove_student_csv_choose_file_button
+{
+	font-family: 'Calibri', sans-serif;       /* Calibri Font */
+	font-weight: bold;                       /* Bold font */
+	/*font-size: calc(10% + 0.75vw);*/
+	font-size: 16px;
+	color: white;
+	background-color: #2A4C6B;
+	border-radius: 5px;
+	padding: 10px;
+	text-align: center;
+	cursor: pointer;
+}
+
+.remove_student_csv_choose_file_button input[type="file"]
+{
+	display: none;
+}
+
+#remove_student_csv_file_name
+{
+	font-family: 'Calibri', sans-serif;  
+	font-weight: bold;      
+	font-size: 16px;
+	color: #2A4C6B;
+	padding: 10px;
+}
+
+.remove_student_csv_upload_button
+{
+	font-family: 'Calibri', sans-serif;
+	font-weight: bold;  
+	font-size: 16px;
+	color: white;
+	/*background-color: #2A4C6B;*/
+	background-color: gray;
+	border-radius: 5px;
+	padding: 10px;
+	text-align: center;
+	/*cursor: pointer;*/
+	cursor: default;
+}
+
+#left_remove_student_csv_col
+{
+	width: 15%;
+}
+
+#remove_student_csv_file_name_col
+{
+	width: 40%;
+}
+
+#remove_student_csv_midspace_col
+{
+	width: 30%;
+}
+
+#remove_student_csv_feedback_col
+{
+	width: 100%;
+	font-family: 'Calibri', sans-serif;
+	font-weight: bold;               
+	font-size: 16px;
+	color: #2A4C6B;
+	padding-left: 20px;
+	padding-right: 20px;
+	text-align: center;
+}
+
+#remove_student_csv_upload_col
+{
+	width: 15%;
+}
+
+
+
 
 /* Calendar Stuff */
 .calendar-container {
