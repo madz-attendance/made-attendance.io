@@ -275,14 +275,15 @@ input[type="text"] {
 
 /* Inputs style */
 input[type="email_text"], input[type="pass_text"] {
-  width: 100%; /* Ensure the input takes full width */
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  margin-top: 5px; /* Space between label and input */
-  box-sizing: border-box; /* Ensure padding is included in width */
+    width: 100%; /* Ensure the input takes full width */
+    padding: 15px; /* Increased padding for height */
+    font-size: 18px; /* Larger font for better readability */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px; /* Space between label and input */
+    box-sizing: border-box; /* Ensure padding is included in width */
 }
+
 
 /* Labels style */
 label {
