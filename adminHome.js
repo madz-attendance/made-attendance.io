@@ -716,6 +716,166 @@ async function addStudentToRoster()
 		console.log("in addStudentToRoster(): Course extraction regex failed.");
 	}
 }
+
+
+// Upload a file to the New Student tab
+function handleNewStudentCSVChooseFile()
+{
+	var fileInput = document.getElementById("new_student_csv_file_input");
+	var fileNameDisplay = document.getElementById("new_student_csv_file_name");
+	
+	if (fileInput.files.length > 0)
+	{ fileNameDisplay.textContent = fileInput.files[0].name; }
+	else
+	{ fileNameDisplay.textContent = "No file chosen"; }	
+}
+
+// Upload student information to rosters database and update the feedback on the page
+async function handleNewStudentCSVUpload()
+{
+	var fileInput = document.getElementById("new_student_csv_file_input");
+	var fileItself = fileInput.files[0];
+	var fileNameDisplay = document.getElementById("new_student_csv_file_name");
+	var feedback = document.getElementById("new_student_csv_feedback_col");
+
+	// If a file was uploaded (it is guaranteed to be a .txt file)
+	if (fileInput.files.length > 0)
+	{ 
+		// Attempt to parse the file
+		var parseResult = await parseNewStudentCSV(fileItself);
+		console.log("parseResult: ", parseResult);
+		var parseResultStatus = parseResult[0];
+		var parseResultNumSuccess = parseResult[1];
+		var parseResultTotalAttempted = parseResult[2];
+		var parseResultInvalidLines = parseResult[3];
+		
+		// If parsing was successful
+		if (parseResultStatus == true)
+		{ feedback.innerHTML = `<span style="color: green;">Successfully uploaded ${parseResultNumSuccess}/${parseResultTotalAttempted} students to rosters.</span>`; }
+		else // If parsing failed
+		{
+			feedback.innerHTML = `<span style="color: red;">${parseResultNumSuccess}/${parseResultTotalAttempted} students uploaded. Check file format for errors.</span>`;
+			
+			if (parseResultInvalidLines.length != 0)
+			{
+				feedback.innerHTML += `<br>Error lines in file:<br>`;
+				for (const errorLine of parseResultInvalidLines)
+				{ feedback.innerHTML += `<span style="color: black; font-weight: normal;">${errorLine}<br></span>`; }
+			}
+		}
+	}
+	// If no file was uploaded, provide feedback demanding file
+	else
+	{ feedback.innerHTML = '<span style="color: red;">Please provide a valid .txt file.</span>'; }	
+}
+
+// Parse student info file and upload to rosters. 
+// Returns [status (bool), numSuccess, total] where status is t/f based on success/fail, numSuccess is the number of 
+// students successfully added to courses, and total is the total number of students trying to be added to courses
+async function parseNewStudentCSV(file)
+{
+	if (file)
+	{
+		return new Promise((resolve) => {
+			var counterObj = { successStatus: true, lineCounter: 0, totalLines: 0, invalidLines: []};
+			var reader = new FileReader();
+			reader.onload = async function(event)
+			{
+				var fileContent = event.target.result;		// The file content in its entirety
+				var lines = fileContent.trim().split("\n"); // Split file content by lines
+				counterObj.totalLines = lines.length;
+				
+				for (const line of lines) {
+					
+					var studentData = line.split(",").map(item => item.trim());		// Get each element split up by commas. Trim any return characters
+					
+					if (studentData.length === 8)
+					{
+						// Store this specific student's information
+						var stuId = studentData[0]; firstName = studentData[1]; var lastName = studentData[2]; var deptCode = studentData[3];
+						var courseNum = studentData[4]; var section = studentData[5]; var semester = studentData[6]; var profLastName = studentData[7];
+						
+						// Query the "courses" table to see if a course exists that meets this information. ilike is case-insensitive comparison
+						const { data: courseInfo, error: courseLookupError } = await supabasePublicClient
+							.from('courses')
+							.select('courseid')
+							.ilike('dept', deptCode)
+							.eq('coursenum', parseInt(courseNum, 10))
+							.ilike('coursesec', section)
+							.ilike('coursesem', semester)
+							.ilike('faclastname', profLastName)
+							.limit(1)
+							.single();
+							
+						// If a valid course was not found, return false
+						if (courseLookupError)
+						{
+							console.error("In parseNewStudentCSV: Unable to find course that a student is attempting to be inserted into the roster of.", courseLookupError);
+							counterObj.successStatus = false;
+							counterObj.invalidLines.push(line.trim());
+						}
+						// If a valid course was found, check to see if that student is already in that roster. If not, insert the student into that roster
+						else
+						{
+							var foundCourseId = courseInfo.courseid;
+							
+							// Determine if this student is already in this roster
+							const { data: checkData, error: checkError } = await supabasePublicClient
+								.from('roster')
+								.select('courseid')
+								.eq('courseid', foundCourseId)
+								.ilike('stufirstname', firstName)
+								.ilike('stulastname', lastName)
+								.ilike('stuid', stuId);
+							
+							if (checkError) // If there was an error doing the query
+							{ console.error("Error checking roster for duplicate entry: ", checkError); counterObj.successStatus = false; }//return false; }//return [false, lineCounter, totalLines]}
+							else if (checkData.length == 0) // If an entry was not found, meaning that the student is not yet in this course roster, then add them to the roster. Otherwise, skip this student
+							{
+								// Add the student to this course roster
+								var rosterEntryInfo = {
+									courseid: foundCourseId,
+									stufirstname: firstName,
+									stulastname: lastName,
+									stuid: stuId
+								}
+
+								// Attempt to insert student into the roster table
+								const { data: insert, error: insertError } = await supabasePublicClient
+									.from('roster')
+									.insert(rosterEntryInfo);
+									
+								// If there was an error inserting into the roster table
+								if (insertError)
+								{
+									console.error("Error inserting student into roster table.", insertError);
+									counterObj.successStatus = false;
+								}
+								// If student was successfully inserted into the roster table
+								else
+								{ console.log("Successfully inserted student into roster table: ", rosterEntryInfo) }
+							}
+							else
+							{ console.log("checkData:", checkData); console.log("Student: ", firstName, lastName, "already in roster."); }
+							counterObj.lineCounter += 1;
+						}
+					}
+					else
+					{ counterObj.successStatus = false; }
+				}
+				resolve([counterObj.successStatus, counterObj.lineCounter, counterObj.totalLines, counterObj.invalidLines]);
+			};
+			reader.readAsText(file);
+		});
+	}
+	else
+	{
+		// File was unable to be read
+		return [false, 0, 0, [""]];
+	}
+}
+
+
  
 // Buttons highlighting logic
 var pageButtons = {
