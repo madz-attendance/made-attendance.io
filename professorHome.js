@@ -660,8 +660,11 @@ async function loadAccountInfo() {
             return;
         }
 
-        // Display email inline
-        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<span> ${user.email}</span>`);
+        // Display email inline as a <p> next to the first <h4>
+        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML(
+            'afterend',
+            `<p style="display: inline-block; margin-left: 10px;">${user.email}</p>`
+        );
 
         // Fetch user's department
         const { data: deptData, error: deptError } = await supabasePublicClient
@@ -673,7 +676,10 @@ async function loadAccountInfo() {
         if (deptError) {
             console.error("Error fetching department:", deptError.message);
         } else if (deptData.length) {
-            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<span> ${deptData[0].dept}</span>`);
+            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML(
+                'afterend',
+                `<p style="display: inline-block; margin-left: 10px;">${deptData[0].dept}</p>`
+            );
         }
 
         // Fetch user's class history
@@ -722,4 +728,5 @@ async function loadAccountInfo() {
 
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
 
