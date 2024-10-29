@@ -1,7 +1,7 @@
 // Declare the variables that will store the dropdown menus. These are for all of the dropdown menus on each tab of the page.
 // These must be declared outside of the DOMContentLoaded so that they are global, however, must be initialized inside of DOMContentLoaded.
 // Otherwise, this will not work, just trust me.
-var semester_dropdown, new_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown;
+var semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
 
 
@@ -57,16 +57,19 @@ async function checkAuth()
 	  // Get the dropdown menus for each tab. Any future added dropdown menu must be added here
 	  semester_dropdown = document.getElementById('semester_dropdown');
 	  new_student_semester_dropdown = document.getElementById('new_student_semester_dropdown');
+	  remove_student_semester_dropdown = document.getElementById('remove_student_semester_dropdown');
 	  courses_dropdown = document.getElementById('courses_dropdown');
       new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
+	  remove_student_courses_dropdown = document.getElementById('remove_student_courses_dropdown');
 	  department_dropdown = document.getElementById('department_dropdown');
 	  create_account_department_dropdown = document.getElementById('create_department_dropdown');
 	  new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
+	  remove_student_department_dropdown = document.getElementById('remove_student_department_dropdown');
 	  
 	  // Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
-	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown];
-	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown];
-	  semesters_dropdown_menus = [semester_dropdown, new_student_semester_dropdown];
+	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown];
+	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown];
+	  semesters_dropdown_menus = [semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown];
   }  
 
 
@@ -457,6 +460,13 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		  updateCoursesDropdown(professor_courses, new_student_courses_dropdown, selectedDept, selectedSemester);
 	  });
 	  
+	  remove_student_semester_dropdown.addEventListener('change', function ()
+	  {
+		 const selectedDept = remove_student_department_dropdown.value;
+		 const selectedSemester = remove_student_semester_dropdown.value;
+		 updateCoursesDropdown(professor_courses, remove_student_courses_dropdown, selectedDept, selectedSemester);
+	  });
+	  
   }
   
   
@@ -570,6 +580,11 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		 // Do whatever you want with this selected course
 	  });
 	  
+	  remove_student_courses_dropdown.addEventListener('change', function ()
+	  {
+		 const selectedCourse = remove_student_courses_dropdown.value;
+		 // Do whatever you want with this selected course
+	  });
 
   }
   
@@ -596,8 +611,15 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		  console.log("Selecting new student department");
 		  // Update the new student courses table to only show courses in this department
 		  const selectedDept = new_student_department_dropdown.value;
-		  const selectedSemester = "any";
+		  const selectedSemester = new_student_semester_dropdown.value;
 		  updateCoursesDropdown(professor_courses, new_student_courses_dropdown, selectedDept, selectedSemester);
+	  });
+	  
+	  remove_student_department_dropdown.addEventListener('change', function ()
+	  {
+		  const selectedDept = remove_student_department_dropdown.value;
+		  const selectedSemester = remove_student_semester_dropdown.value;
+		  updateCoursesDropdown(professor_courses, remove_student_courses_dropdown, selectedDept, selectedSemester);
 	  });
   }
   
@@ -645,8 +667,10 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 // Gets the values from all of the input fields & dropdown menus on the "New Student" tab.
 // Finds the courseid of the course that matches this selected course. Then, inserts the student
 // into that course if the course exists.
-async function addStudentToRoster()
+async function addStudentToRoster(event)
 {
+	event.preventDefault(); // Prevent page from reloading upon submit
+	var feedback_container = document.getElementById('new_student_manual_submission_feedback_container');
 	// Get the input HTML elements. We already have the dropdown menus from earlier in code.
 	var id_input = document.getElementById('id_num');
 	var firstname_input = document.getElementById('first_name');
@@ -686,34 +710,57 @@ async function addStudentToRoster()
 			
 		if (error) {
 			console.error("Unable to find a course that meets the same specifications as the course that you are trying to add this new student to: ", error);
+			feedback_container.innerHTML = '<span style="color: red;">Unable to find course that you are trying to add this student to.</span>';
 		}
 		else {
 			// Get the courseid of the course that you are trying to add this new student into the roster of
 			var courseId = returnData.courseid;
 			console.log("Found course with courseid: ", courseId);
 			
-			// Add this student to the rosters table with this courseid
-			const { data: insertData, error: insertError } = await supabasePublicClient
+			// Check to see if this student is already in the roster. If so, skip over. If not, add them to the roster.
+			const { data: checkInData, error: checkInError } = await supabasePublicClient
 				.from('roster')
-				.insert([
-					{
-						courseid: courseId,
-						stufirstname: firstname,
-						stulastname: lastname,
-						stuid: stuid
-					}
-				]);
+				.select('courseid')
+				.eq('courseid', courseId)
+				.ilike('stufirstname', firstname)
+				.ilike('stulastname', lastname)
+				.ilike('stuid', stuid);
 				
-			if (insertError) {
-				console.log("Unable to insert student into roster table.");
+			if (checkInError) // If there was an error doing the query
+			{ console.log("Error checking roster for duplicate entry: ", checkInError); }
+			else if (checkInData.length == 0) // If an entry was not found, meaning that the student is not yet in this course roster, then add them to the roster. Otherwise, skip this student
+			{
+				// Add this student to the rosters table with this courseid
+				const { data: insertData, error: insertError } = await supabasePublicClient
+					.from('roster')
+					.insert([
+						{
+							courseid: courseId,
+							stufirstname: firstname,
+							stulastname: lastname,
+							stuid: stuid
+						}
+					]);
+					
+				if (insertError) {
+					console.log("Unable to insert student into roster table.");
+					feedback_container.innerHTML = '<span style="color: red;">Unable to add student to roster.</span>';
+				}
+				else {
+					console.log("Successfully insert student into roster table.");
+					feedback_container.innerHTML = '<span style="color: green;">Successfully added student to roster.</span>';
+				}
 			}
-			else {
-				console.log("Successfully insert student into roster table.");
+			// If an entry was found, meaning that the student is already in the course, then output this in the feedback and skip over them
+			else
+			{
+				feedback_container.innerHTML = '<span style="color: orange;">Student is already in the course roster.</span>';
 			}
 		}
 	} 
 	else {
 		console.log("in addStudentToRoster(): Course extraction regex failed.");
+		feedback_container.innerHTML = '<span style="color: red;">Unable to extract course information for the course. Please contact an admin.</span>';
 	}
 }
 
@@ -898,6 +945,288 @@ new_student_upload_button.addEventListener("mouseover", function ()
 new_student_upload_button.addEventListener("mouseout", function ()
 { var fileInput = document.getElementById("new_student_csv_file_input");
   if (fileInput.files.length > 0) { new_student_upload_button.style.filter = "brightness(100%)"; } });
+  
+  
+
+
+// Gets the values from all of the input fields & dropdown menus on the "Remove Student" tab.
+// Finds the courseid of the course that matches this selected course. Then, check to see if the student
+// is in that course. Then, removes the student from that course if the course exists and the student is in that course.
+async function removeStudentFromRoster(event)
+{
+	event.preventDefault(); // Prevent page from reloading upon submission
+	var feedback_container = document.getElementById('remove_student_manual_submission_feedback_container');
+	console.log("In removeStudentFromRoster()");
+	// Get the input HTML elements. We already have the dropdown menus from earlier in code.
+	var id_input = document.getElementById('removal_id_num');
+	var firstname_input = document.getElementById('removal_first_name');
+	var lastname_input = document.getElementById('removal_last_name');
+	
+	// Get the values from the inputs/dropdowns
+	var stuid = id_input.value;
+	var firstname = firstname_input.value;
+	var lastname = lastname_input.value;
+	var department = remove_student_department_dropdown.value;
+	var semester = remove_student_semester_dropdown.value;
+	var course = remove_student_courses_dropdown.value;
+	
+	// Extract the course information from the course string. Current format: MATH 115 : 010 - Fall 2024 - Wong
+	var extraction_regex = /^([A-Z]+)\s+(\d+)\s+:\s+(\d+)\s+-\s+([A-Za-z]+\s+\d{4})\s+-\s+([A-Za-z]+)$/;
+	var match = course.match(extraction_regex);
+	
+	if (match) {
+		// Extract each element of the course
+		var course_dept = match[1];   // "MATH"
+		var course_num = parseInt(match[2]);  // 115 (as integer)
+		var course_sec = match[3];    // "010"
+		var course_sem = match[4];    // "Fall 2024"
+		var course_fac = match[5];    // "Wong"
+		
+		// Look for a course in the "courses" table that matches these specifications.
+		// Extract its courseid so we can add the student to this course roster.
+		const { data: returnData, error } = await supabasePublicClient
+			.from('courses')
+			.select('courseid')
+			.eq('dept', course_dept)
+			.eq('coursenum', course_num)
+			.eq('coursesec', course_sec)
+			.eq('coursesem', course_sem)
+			.eq('faclastname', course_fac)
+			.single();
+			
+		if (error) {
+			console.error("Unable to find a course that meets the same specifications as the course that you are trying to add this new student to: ", error);
+			feedback_container.innerHTML  = '<span style="color: red;">Unable to find course that you are attempting to remove student from.</span>';
+		}
+		else {
+			// Get the courseid of the course that you are trying to add this new student into the roster of
+			var courseId = returnData.courseid;
+			console.log("Found course with courseid: ", courseId);
+			
+			// Check to see if the student is in the "roster" table under this course id
+			const { data: rosterCheckData, error: rosterCheckError } = await supabasePublicClient
+				.from('roster')
+				.select('rosterentryid')
+				.eq('courseid', courseId)
+				.eq('stufirstname', firstname)
+				.eq('stulastname', lastname)
+				.eq('stuid', stuid)
+				.single();
+				
+			// The student is not in this class' roster. Do not remove student
+			if (rosterCheckError)
+			{ console.log("In removeStudentFromRoster, this student is not in the course roster. ", rosterCheckError); 
+			  feedback_container.innerHTML = '<span style="color: orange;">Student is not in the course roster.</span>';
+			}
+			// The student is in the course roster. Remove the student
+			else
+			{
+				// Remove this student from the 'roster' table. Get the primary key for this student's entry in the roster table
+				var rosterentryId = rosterCheckData.rosterentryid;
+				
+				const { error: removalError } = await supabasePublicClient
+					.from('roster')
+					.delete()
+					.eq('rosterentryid', rosterentryId);
+					
+				// If there was an error removing the student from the roster
+				if (removalError)
+				{ console.log("In removeStudentFromRoster, error removing student from roster table. ", removalError); 
+				  feedback_container.innerHTML = '<span style="color: red;">Error removing student from roster.</span>';
+				}
+				// Student successfully removed from roster
+				else
+				{
+					console.log("Removed Student from roster.");
+					feedback_container.innerHTML = '<span style="color: green;">Successfully removed student from roster.</span>'
+				}
+				
+			}
+		}
+	} 
+	else {
+		console.log("in removeStudentFromRoster(): Course extraction regex failed.");
+		feedback_container.innerHTML = '<span style="color: red;">Unable to extract course information. Please contact an admin.</span>';
+	}
+}
+
+
+// ROSTER REMOVAL PAGE
+// Upload a file to the Remove Student tab
+function handleRemoveStudentCSVChooseFile()
+{
+	var fileInput = document.getElementById("remove_student_csv_file_input");
+	var fileNameDisplay = document.getElementById("remove_student_csv_file_name");
+	var uploadButton = document.getElementById("remove_student_csv_upload_button");
+	
+	// If a valid file was selected, update the fileNameDisplay and make the "Upload" button visually active
+	if (fileInput.files.length > 0)
+	{ 
+		fileNameDisplay.textContent = fileInput.files[0].name;
+		uploadButton.style.backgroundColor = "#2A4C6B";
+		uploadButton.style.cursor = "pointer";
+	}
+	// If no file was chosen, update the fileNameDisplay and make the "Uploadd" button visually inactive
+	else
+	{ 
+		fileNameDisplay.textContent = "No file chosen"; 
+		uploadButton.style.backgroundColor = "gray";
+		uploadButton.style.cursor = "default";
+	}	
+}
+
+// Upload student information to rosters database and update the feedback on the page
+async function handleRemoveStudentCSVUpload()
+{
+	var fileInput = document.getElementById("remove_student_csv_file_input");
+	var fileItself = fileInput.files[0];
+	var fileNameDisplay = document.getElementById("remove_student_csv_file_name");
+	var feedback = document.getElementById("remove_student_csv_feedback_col");
+
+	// If a file was uploaded (it is guaranteed to be a .txt file)
+	if (fileInput.files.length > 0)
+	{ 
+		// Attempt to parse the file
+		var parseResult = await parseRemoveStudentCSV(fileItself);
+		console.log("parseResult: ", parseResult);
+		var parseResultStatus = parseResult[0];
+		var parseResultNumSuccess = parseResult[1];
+		var parseResultTotalAttempted = parseResult[2];
+		var parseResultInvalidLines = parseResult[3];
+		
+		// If parsing was successful
+		if (parseResultStatus == true)
+		{ feedback.innerHTML = `<span style="color: green;">Successfully removed ${parseResultNumSuccess}/${parseResultTotalAttempted} students from rosters.</span>`; }
+		else // If parsing failed
+		{
+			feedback.innerHTML = `<span style="color: red;">${parseResultNumSuccess}/${parseResultTotalAttempted} students removed. Check file format for errors.</span>`;
+			
+			if (parseResultInvalidLines.length != 0)
+			{
+				feedback.innerHTML += `<br>Error lines in file:<br>`;
+				for (const errorLine of parseResultInvalidLines)
+				{ feedback.innerHTML += `<span style="color: black; font-weight: normal;">${errorLine}<br></span>`; }
+			}
+		}
+	}
+	// If no file was uploaded, provide feedback demanding file
+	else
+	{ feedback.innerHTML = '<span style="color: red;">Please provide a valid .txt file.</span>'; }	
+}
+
+
+
+// Parse student info file and remove from rosters. 
+// Returns [status (bool), numSuccess, total] where status is t/f based on success/fail, numSuccess is the number of 
+// students successfully removed from courses, and total is the total number of students trying to be removed from courses
+async function parseRemoveStudentCSV(file)
+{
+	if (file)
+	{
+		return new Promise((resolve) => {
+			var counterObj = { successStatus: true, lineCounter: 0, totalLines: 0, invalidLines: []};
+			var reader = new FileReader();
+			reader.onload = async function(event)
+			{
+				var fileContent = event.target.result;		// The file content in its entirety
+				var lines = fileContent.trim().split("\n"); // Split file content by lines
+				counterObj.totalLines = lines.length;
+				
+				for (const line of lines) {
+					
+					var studentData = line.split(",").map(item => item.trim());		// Get each element split up by commas. Trim any return characters
+					
+					if (studentData.length === 8)
+					{
+						// Store this specific student's information
+						var stuId = studentData[0]; firstName = studentData[1]; var lastName = studentData[2]; var deptCode = studentData[3];
+						var courseNum = studentData[4]; var section = studentData[5]; var semester = studentData[6]; var profLastName = studentData[7];
+						
+						// Query the "courses" table to see if a course exists that meets this information. ilike is case-insensitive comparison
+						const { data: courseInfo, error: courseLookupError } = await supabasePublicClient
+							.from('courses')
+							.select('courseid')
+							.ilike('dept', deptCode)
+							.eq('coursenum', parseInt(courseNum, 10))
+							.ilike('coursesec', section)
+							.ilike('coursesem', semester)
+							.ilike('faclastname', profLastName)
+							.limit(1)
+							.single();
+							
+						// If a valid course was not found, return false
+						if (courseLookupError)
+						{
+							console.log("In parseNewStudentCSV: Unable to find course that a student is attempting to be removed from the roster of.", courseLookupError);
+							counterObj.successStatus = false;
+							counterObj.invalidLines.push(line.trim());
+						}
+						// If a valid course was found, check to see if that student is already in that roster. If not, insert the student into that roster
+						else
+						{
+							var foundCourseId = courseInfo.courseid;
+							console.log("foundCourseId: ", foundCourseId);
+							
+							// Determine if this student is already in this roster
+							const { data: checkData, error: checkError } = await supabasePublicClient
+								.from('roster')
+								.select('rosterentryid')
+								.eq('courseid', foundCourseId)
+								.ilike('stufirstname', firstName)
+								.ilike('stulastname', lastName)
+								.ilike('stuid', stuId);
+							
+							if (checkError) // If there was an error doing the query
+							{ console.log("Error checking roster for duplicate entry: ", checkError); counterObj.successStatus = false; }//return false; }//return [false, lineCounter, totalLines]}
+							
+							// If an entry was not found, meaning that the student is not in this roster, then let feedback say that student is already not in
+							if (!checkError && checkData.length == 0) 
+							{
+								console.log("checkData:", checkData); console.log("Student: ", firstName, lastName, "is not in the roster."); 
+							}
+							// If the student is in the roster, then remove them from it
+							else
+							{ 
+								// Remove the student from this course roster
+								var rosterentryId = checkData[0].rosterentryid;
+								console.log("checkData !: ", checkData);
+								console.log("rosterentryId: ", rosterentryId);
+								
+								const { error: removalError } = await supabasePublicClient
+									.from('roster')
+									.delete()
+									.eq('rosterentryid', rosterentryId);
+									
+								// If there was an error removing the student from the roster
+								if (removalError)
+								{
+									console.log("Error removing student from roster (CSV)");
+									counterObj.successStatus = false;
+								}
+								// Student successfully removed from the roster
+								else
+								{
+									console.log("Successfully removed student from roster (CSV)");
+								}
+							}
+							counterObj.lineCounter += 1;
+						}
+					}
+					else
+					{ counterObj.successStatus = false; }
+				}
+				resolve([counterObj.successStatus, counterObj.lineCounter, counterObj.totalLines, counterObj.invalidLines]);
+			};
+			reader.readAsText(file);
+		});
+	}
+	else
+	{
+		// File was unable to be read
+		return [false, 0, 0, [""]];
+	}
+}
+
 
  
 // Buttons highlighting logic
@@ -909,7 +1238,8 @@ var pageButtons = {
 	"help_button_ADMIN"				: "help",
 	"account_button_ADMIN"			: "account",
 	"notification_button_ADMIN"		: "notification",
-	"log_out_button_ADMIN"			: "log_out"
+	"log_out_button_ADMIN"			: "log_out",
+	"remove_student_button"			: "remove_student"
 };
 var currentTab = "welcome";
 document.getElementById("welcome_button_ADMIN").style.filter = "brightness(150%)";
