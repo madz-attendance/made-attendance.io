@@ -848,16 +848,40 @@ function populateRosterTable(rosterData, courseName) {
     // Update the header with course name
     document.getElementById('rosterHeader').textContent = `Class Roster for ${courseName}`;
 
+    // Hide the calendar section
+    document.getElementById('calendarSection').style.display = 'none';
+
+    // Create table structure with bold headers and black borders
+    let rosterTable = `
+        <table style="width:100%; border-collapse: collapse; border: 2px solid black;">
+            <thead>
+                <tr>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">First Name</th>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Last Name</th>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Student ID</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
     // Add rows to the roster table
     rosterData.forEach(student => {
-        const row = document.createElement('tr');
-        row.innerHTML = `<td>${student.stufirstname} ${student.stulastname}</td>
-                         <td>${student.stuid}</td>`;
-        rosterTableBody.appendChild(row);
+        rosterTable += `
+            <tr>
+                <td style="border: 2px solid black; padding: 8px;">${student.stufirstname}</td>
+                <td style="border: 2px solid black; padding: 8px;">${student.stulastname}</td>
+                <td style="border: 2px solid black; padding: 8px;">${student.stuid}</td>
+            </tr>`;
     });
 
+    rosterTable += '</tbody></table>'; // Close the tbody and table tags
+
+    // Insert the populated table HTML into the rosterTableBody
+    rosterTableBody.innerHTML = rosterTable;
+
+    // Show the roster table section
     document.getElementById('rosterTableSection').style.display = 'block';
 }
+
 
 
 
