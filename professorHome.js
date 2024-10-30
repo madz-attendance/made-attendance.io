@@ -504,20 +504,26 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCalendar(givenSemester, givenCourse);
     });
 
-
-    document.getElementById('calendarBackButton').addEventListener('click', function() {
+	// Function to handle going back to the form section
+function goToFormSection() {
     // Hide all sections
     const sections = ['calendar-section', 'rosterTableSection', 'form-section'];
     sections.forEach(sectionId => {
         const section = document.getElementById(sectionId);
         if (section) {
-            section.style.display = 'none';
+            section.style.display = 'none'; // Hide each section
         }
     });
 
     // Show the form section
-    document.getElementById('form-section').style.display = 'block';
-});
+    document.getElementById('form-section').style.display = 'block'; // Display the form section
+}
+
+// Add event listeners to both Back buttons
+document.getElementById('calendarBackButton').addEventListener('click', goToFormSection);
+document.getElementById('rosterBackButton').addEventListener('click', goToFormSection);
+
+   
 
 
     document.getElementById('backButton').addEventListener('click', function() {
