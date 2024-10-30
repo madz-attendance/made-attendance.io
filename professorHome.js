@@ -806,4 +806,3 @@ function populateRosterTable(rosterData, courseName) {
 
 
 
-
