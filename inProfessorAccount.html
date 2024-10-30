@@ -88,8 +88,27 @@
 				</div>
 				<div id="semesterButtonContainer">
     				<button id="semesterSubmit">Submit</button>
+				<button id=fetchRosterButton"> Fetch Roster </button>
 				</div>
    			</div>
+
+			<!-- Roster Table Section (Initially Hidden) --> 
+			<div id="rosterTableSection" style="display: none;">
+    			<h2 id="rosterHeader">Class Roster</h2>
+    			<table id="roster-table">
+        			<thead>
+            			  <tr>
+                			<th>Name</th>
+               				<th>Student ID</th>
+                			<th>Email</th>
+            				</tr>
+        		</thead>
+       		 	<tbody>
+            <!-- Rows will be dynamically generated here -->
+        	</tbody>
+    		</table>
+		</div>
+
 
 			<!-- Attendance Table Section (Initially Hidden) -->
 			<div id="table-section" style="display: none;">
