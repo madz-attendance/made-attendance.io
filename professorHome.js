@@ -768,9 +768,27 @@ const courseDropdown = document.getElementById('courseDropdown'); // This holds 
 function parseCourseDetails(courseString) {
     // Assuming format: "CPSC 135-010"
     const [codeNum, section] = courseString.split("-");
+    
+    if (!codeNum || !section) {
+        throw new Error("Invalid course string format");
+    }
+    
     const [courseCode, courseNum] = codeNum.trim().split(" ");
-    return { courseCode, courseNum: parseInt(courseNum), courseSec: section };
+    
+    // Check if courseNum is a valid number
+    const parsedCourseNum = parseInt(courseNum);
+    
+    if (isNaN(parsedCourseNum)) {
+        throw new Error(`Invalid course number: ${courseNum}`);
+    }
+
+    return { 
+        courseCode, 
+        courseNum: parsedCourseNum, 
+        courseSec: section.trim() // Ensure to trim any whitespace
+    };
 }
+
 
 // Function to fetch courseId and then roster data
 async function fetchAndDisplayRoster() {
