@@ -460,38 +460,64 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-// Initially, populate the semester dropdown when the page loads
+
+// Added today
 document.addEventListener('DOMContentLoaded', function() {
-    this.getElementById('courseDropdown').disabled = true;
-    this.getElementById('semesterSubmit').disabled = true;
+    // Disable elements initially
+    document.getElementById('courseDropdown').disabled = true;
+    document.getElementById('semesterSubmit').disabled = true;
+
+    // Populate semester dropdown on load
     populateSemesterDropdown();
-});
 
-document.getElementById('semesterButtonContainer').addEventListener('click', function(event) {
-    event.preventDefault();
+    // Add event listener for Fetch Roster button
+    const fetchRosterButton = document.getElementById('fetchRosterButton');
+    if (fetchRosterButton) {
+        fetchRosterButton.addEventListener('click', async function () {
+            const selectedSemester = document.getElementById('semesterDropdown').value;
+            const selectedCourse = document.getElementById('courseDropdown').value;
 
-    const givenSemester = document.getElementById('semesterDropdown').value;
-    const givenCourse = document.getElementById('courseDropdown').value;
+            // Split the selected course code into course code and section
+            const [courseCode, section] = selectedCourse.split('-');
 
-    document.getElementById("form-section").style.display='none';
-    document.getElementById("calendar-section").style.display='block';
+            // Fetch and display roster data
+            await fetchAndDisplayRoster(selectedSemester, courseCode, section);
+        });
+    }
 
-    updateCalendar(givenSemester, givenCourse);
-});
+    // Semester selection handling
+    document.getElementById('semesterDropdown').addEventListener('change', function() {
+        const selectedSemester = this.value;
+        populateCourseDropdown(selectedSemester);
+    });
 
-document.getElementById('calendarBackButton').addEventListener('click', function() {
-    document.getElementById('calendar-section').style.display = 'none';
-    document.getElementById('form-section').style.display = 'block';
-});
+    // Other existing event listeners
+    document.getElementById('semesterButtonContainer').addEventListener('click', function(event) {
+        event.preventDefault();
 
-document.getElementById('backButton').addEventListener('click', function() {
-    document.getElementById('table-section').style.display = 'none';
-    document.getElementById('calendar-section').style.display = 'block';
-});
+        const givenSemester = document.getElementById('semesterDropdown').value;
+        const givenCourse = document.getElementById('courseDropdown').value;
 
-document.getElementById('semBackButton').addEventListener('click', function() {
-    document.getElementById('table-section').style.display = 'none';
-    document.getElementById('form-section').style.display = 'block';
+        document.getElementById("form-section").style.display = 'none';
+        document.getElementById("calendar-section").style.display = 'block';
+
+        updateCalendar(givenSemester, givenCourse);
+    });
+
+    document.getElementById('calendarBackButton').addEventListener('click', function() {
+        document.getElementById('calendar-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+    });
+
+    document.getElementById('backButton').addEventListener('click', function() {
+        document.getElementById('table-section').style.display = 'none';
+        document.getElementById('calendar-section').style.display = 'block';
+    });
+
+    document.getElementById('semBackButton').addEventListener('click', function() {
+        document.getElementById('table-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+    });
 });
 
 async function updateCalendar(semester, course) {
@@ -723,23 +749,6 @@ async function loadAccountInfo() {
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
 
-
-
-
-
-
-
-
-document.getElementById('fetchRosterButton').addEventListener('click', async function () {
-    const selectedSemester = document.getElementById('semesterDropdown').value;
-    const selectedCourse = document.getElementById('courseDropdown').value;
-
-    // Split the selected course code into course code and section
-    const [courseCode, section] = selectedCourse.split('-');
-
-    // Fetch and display roster data
-    await fetchAndDisplayRoster(selectedSemester, courseCode, section);
-});
 
 
 
