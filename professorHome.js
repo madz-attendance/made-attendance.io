@@ -432,7 +432,7 @@ async function populateCourseDropdown(semester) {
     courseDropdown.innerHTML = '';  // Clear previous options
     semesterCourses.forEach(course => {
         const option = document.createElement('option');
-        option.value = `${course.coursecode}${course.coursenum}-${course.coursesec}`;
+        option.value = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
         option.textContent = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
         courseDropdown.appendChild(option);
     });
