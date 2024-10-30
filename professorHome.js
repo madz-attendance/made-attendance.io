@@ -849,7 +849,7 @@ function populateRosterTable(rosterData, courseName) {
     document.getElementById('rosterHeader').textContent = `Class Roster for ${courseName}`;
 
     // Hide the calendar section
-    document.getElementById('calendarSection').style.display = 'none';
+    document.getElementById('calendar-section').style.display = 'none';
 
     // Create table structure with bold headers and black borders
     let rosterTable = `
