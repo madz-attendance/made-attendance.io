@@ -506,6 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('calendarBackButton').addEventListener('click', function() {
         document.getElementById('calendar-section').style.display = 'none';
+	document.getElementById('rosterTableSection').style.display = 'none';
         document.getElementById('form-section').style.display = 'block';
     });
 
