@@ -754,37 +754,75 @@ document.addEventListener("DOMContentLoaded", loadAccountInfo);
 
 
 
+// References to dropdowns, button, and roster table section
+const fetchRosterButton = document.getElementById('fetchRosterButton');
+const rosterTableSection = document.getElementById('rosterTableSection');
+const rosterTableBody = document.getElementById('roster-table').getElementsByTagName('tbody')[0];
+const calendarSection = document.getElementById('calendar-section');
 
-async function fetchAndDisplayRoster(semester, courseCode, section) {
+// Dropdowns for selecting course and semester
+const semesterDropdown = document.getElementById('semesterDropdown');
+const courseDropdown = document.getElementById('courseDropdown'); // This holds code, number, and section
+
+// Function to parse course details from dropdown selection
+function parseCourseDetails(courseString) {
+    // Assuming format: "CPSC 135-010"
+    const [codeNum, section] = courseString.split("-");
+    const [courseCode, courseNum] = codeNum.trim().split(" ");
+    return { courseCode, courseNum: parseInt(courseNum), courseSec: section };
+}
+
+// Function to fetch courseId and then roster data
+async function fetchAndDisplayRoster() {
     try {
-        // Fetch the courseID based on semester, course code, and section
+        const selectedSemester = semesterDropdown.value;
+        const selectedCourse = courseDropdown.value;
+        
+        if (!selectedSemester || !selectedCourse) {
+            console.warn('Please select both a semester and a course.');
+            return;
+        }
+
+        const { courseCode, courseNum, courseSec } = parseCourseDetails(selectedCourse);
+
+        // Step 1: Find the matching courseId in the courses table
         const { data: courseData, error: courseError } = await supabasePublicClient
             .from('courses')
             .select('courseid, coursename')
-            .eq('coursesem', semester)
+            .eq('coursesem', selectedSemester)
             .eq('coursecode', courseCode)
-            .eq('coursesec', section)
+            .eq('coursenum', courseNum)
+            .eq('coursesec', courseSec)
             .single();
 
-        if (courseError) throw courseError;
+        if (courseError || !courseData) {
+            console.error('Error finding course:', courseError || 'Course not found');
+            return;
+        }
 
-        const courseID = courseData.courseid;
+        const courseId = courseData.courseid;
+        const courseName = courseData.coursename; // Get course name for display
 
-        // Fetch roster data for the given courseID
+        // Step 2: Fetch roster data by matching courseid in the roster table
         const { data: rosterData, error: rosterError } = await supabasePublicClient
             .from('roster')
             .select('stufirstname, stulastname, stuid')
-            .eq('courseid', courseID);
+            .eq('courseid', courseId);
 
-        if (rosterError) throw rosterError;
+        if (rosterError) {
+            console.error('Error fetching roster data:', rosterError);
+            return;
+        }
 
-        // Populate the roster table
-        populateRosterTable(rosterData, courseData.coursename);
+        // Use populateRosterTable to display the fetched roster data
+        populateRosterTable(rosterData, courseName);
+
     } catch (error) {
-        console.error("Error fetching roster:", error.message);
+        console.error('Error displaying roster data:', error);
     }
 }
 
+// Function to populate the roster table with provided data and course name
 function populateRosterTable(rosterData, courseName) {
     const rosterTableBody = document.querySelector('#roster-table tbody');
     rosterTableBody.innerHTML = ''; // Clear previous data
@@ -802,6 +840,7 @@ function populateRosterTable(rosterData, courseName) {
 
     document.getElementById('rosterTableSection').style.display = 'block';
 }
+
 
 
 
