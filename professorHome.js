@@ -504,11 +504,21 @@ document.addEventListener('DOMContentLoaded', function() {
         updateCalendar(givenSemester, givenCourse);
     });
 
+
     document.getElementById('calendarBackButton').addEventListener('click', function() {
-        document.getElementById('calendar-section').style.display = 'none';
-	document.getElementById('rosterTableSection').style.display = 'none';
-        document.getElementById('form-section').style.display = 'block';
+    // Hide all sections
+    const sections = ['calendar-section', 'rosterTableSection', 'form-section'];
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.style.display = 'none';
+        }
     });
+
+    // Show the form section
+    document.getElementById('form-section').style.display = 'block';
+});
+
 
     document.getElementById('backButton').addEventListener('click', function() {
         document.getElementById('table-section').style.display = 'none';
