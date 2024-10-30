@@ -723,52 +723,77 @@ async function loadAccountInfo() {
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
 
-async function fetchRosterData(semester, courseCode) {
+
+
+
+
+
+
+
+document.getElementById('fetchRosterButton').addEventListener('click', async function () {
+    const selectedSemester = document.getElementById('semesterDropdown').value;
+    const selectedCourse = document.getElementById('courseDropdown').value;
+
+    // Split the selected course code into course code and section
+    const [courseCode, section] = selectedCourse.split('-');
+
+    // Fetch and display roster data
+    await fetchAndDisplayRoster(selectedSemester, courseCode, section);
+});
+
+
+
+
+
+
+async function fetchAndDisplayRoster(semester, courseCode, section) {
     try {
-        // Fetch course details to get the courseID
-        const { data: courseData, error: courseError } = await supabase
+        // Fetch the courseID based on semester, course code, and section
+        const { data: courseData, error: courseError } = await supabasePublicClient
             .from('courses')
-            .select('courseID, coursename, courseCode')
+            .select('courseid, coursename')
             .eq('coursesem', semester)
-            .eq('courseCode', courseCode)
+            .eq('coursecode', courseCode)
+            .eq('coursesec', section)
             .single();
 
         if (courseError) throw courseError;
-        const courseID = courseData.courseID;
 
-        // Fetch roster data using the courseID
-        const { data: rosterData, error: rosterError } = await supabase
+        const courseID = courseData.courseid;
+
+        // Fetch roster data for the given courseID
+        const { data: rosterData, error: rosterError } = await supabasePublicClient
             .from('roster')
             .select('stufirstname, stulastname, stuid')
             .eq('courseid', courseID);
 
         if (rosterError) throw rosterError;
-        return { rosterData, courseData };
+
+        // Populate the roster table
+        populateRosterTable(rosterData, courseData.coursename);
     } catch (error) {
         console.error("Error fetching roster:", error.message);
     }
 }
 
-
-function populateRosterTable({ rosterData, courseData }) {
+function populateRosterTable(rosterData, courseName) {
     const rosterTableBody = document.querySelector('#roster-table tbody');
     rosterTableBody.innerHTML = ''; // Clear previous data
 
-    // Update header with course details
-    const rosterHeader = document.getElementById('rosterHeader');
-    rosterHeader.textContent = `Class Roster for ${courseData.coursename} (${courseData.courseCode})`;
+    // Update the header with course name
+    document.getElementById('rosterHeader').textContent = `Class Roster for ${courseName}`;
 
-    // Populate table rows with student data
+    // Add rows to the roster table
     rosterData.forEach(student => {
         const row = document.createElement('tr');
         row.innerHTML = `<td>${student.stufirstname} ${student.stulastname}</td>
-                         <td>${student.stuid}</td>
-                         <td>${student.email || ''}</td>`; // Placeholder for email if not provided
+                         <td>${student.stuid}</td>`;
         rosterTableBody.appendChild(row);
     });
 
     document.getElementById('rosterTableSection').style.display = 'block';
 }
+
 
 
 
