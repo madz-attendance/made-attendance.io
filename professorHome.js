@@ -608,6 +608,8 @@ async function updateAttendanceTable(semester, course, selectedDate) {
     const hyphenIndex = course.indexOf('-');
     const courseNum = course.slice(4,hyphenIndex);
     const courseSection = course.slice(hyphenIndex+1);
+
+    //Grab the courseid from courses table
     const { data:courseData, error:courseError } = await supabasePublicClient
     .from('courses')
     .select('courseid')
@@ -617,17 +619,37 @@ async function updateAttendanceTable(semester, course, selectedDate) {
     .eq('coursesec', courseSection);
     if (courseError) {console.error('Error fetching data:', courseError); return;}
 
+    //Use courseid to grab class roster from roster table
+    const { data:rosterData, error:rosterError } = await supabasePublicClient
+    .from('roster')
+    .select('stufirstname, stulastname, stuid')
+    .eq('courseid', courseData[0].courseid);
+    if (rosterError) {console.error('Error fetching rosterData:', rosterError); return;}
+
+    //Use courseid and roster table to grab valid attendees
     const { data:attendanceData, error:attendanceError } = await supabasePublicClient
     .from('attendance')
-    .select('stufirstname, stulastname, stuid, attendancetime')
-    .eq('courseid', courseData[0].courseid);
+    .select('stuid, attendancetime')
+    .eq('courseid', courseData[0].courseid)
+    .in('stuid', rosterData.map(student => student.stuid));
     if (attendanceError) {console.error('Error fetching attendanceData:', attendanceError); return;}
+    console.log('Roster:', attendanceData);
 
+    //
     const filteredAttendance = attendanceData.filter(record => {
         const recordDate = record.attendancetime.split('T')[0]; // Get the YYYY-MM-DD part of attendancetime
         return recordDate === selectedDate;
     });
-    console.log(filteredAttendance);
+    console.log('Attendees today:', filteredAttendance);
+
+    const sortedAttendance = filteredAttendance.sort((a, b) => new Date(a.attendancetime) - new Date(b.attendancetime));
+    const uniqueIds = new Set();
+    const uniqueAttendance = sortedAttendance.filter(record => {
+        const isDuplicate = uniqueIds.has(record.stuid);
+        uniqueIds.add(record.stuid);
+        return !isDuplicate; // Only keep if it's the first occurrence (earliest time)
+    });
+    console.log('Duplicates removed:', uniqueAttendance);
 };
 
 // Buttons highlighting logic
