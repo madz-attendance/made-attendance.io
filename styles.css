@@ -223,6 +223,14 @@ input[type="text"] {
       color: #fff;
       font-size: 18px;
   }
+  input[type="reset"]
+  {
+	  grid-column: span 2;
+      padding: 10px 20px;
+      background-color: #2A4C6B; 
+      color: #fff;
+      font-size: 18px; 
+  }
   input[type="submit"]:hover { /*Added by David */
     background-color: #555; /* Change color on hover */
   }
@@ -494,6 +502,7 @@ th > * {
 	/*border: 2px solid #FF00DC; /* Uncomment this to see each header button bounding box on the screen */
 	height: 100%;
 	flex-direction: row;
+	gap: 2%;
 }
 
 /* Buttons in header */
@@ -582,18 +591,19 @@ th > * {
 
 /* ================== */
 /* ADMIN PAGE */
-#header-col2-left-gap-ADMIN { width: 17%; }
+#header-col2-left-gap-ADMIN { width: 18.5%; }
 #header-col3-tab-buttons-ADMIN {width: 40%;}
 #header-col4-right-gap-ADMIN { width: 14%; }
 #header-col5-extra-buttons-ADMIN { width: 15%; }
 
 /* Make each tab button take up an equal portion of the header-col-sub */
 /* If we add a button in the future, make the widths equal 100% */
-#welcome_button_ADMIN { width: 20%; padding-top: 5%; }
-#classes_button_ADMIN { width: 20%; padding-top: 5%; }
-#create_account_button_ADMIN { width: 20%; padding-top: 2%; }
-#add_student_button { width: 20%; padding-top: 2%; }
-#remove_student_button { width: 20%; padding-top: 2%; }
+#welcome_button_ADMIN { width: 16.6%; padding-top: 5%; }
+#classes_button_ADMIN { width: 16.6%; padding-top: 5%; }
+#create_account_button_ADMIN { width: 16.6%; padding-top: 2%; }
+#create_course_button_ADMIN { width: 16.6%; padding-top: 2%; }
+#add_student_button { width: 16.6%; padding-top: 2%; }
+#remove_student_button { width: 16.6%; padding-top: 2%; }
 
 #help_button_ADMIN { width: 25%; padding-top: 10%; }
 #account_button_ADMIN { width: 25%; padding-top: 10%; }
@@ -847,6 +857,52 @@ th > * {
 #remove_student_csv_upload_col
 {
 	width: 15%;
+}
+
+/* Create Course Page Stuff */
+
+.cc-input-master-container
+{
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	/*border: 2px solid green;*/
+	position: relative;
+	
+}
+
+/* Input containers: stack labels and inputs vertically */
+.cc-input-container {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  margin-bottom: 5px; /* Space between each label-input pair */
+  /*border: 2px solid orange;*/
+}
+
+/* Make the text input and the dropdown menus the same size */
+/* Gawd dayum this was difficult. By default, <input> is larger than <select>, */
+/* and you have to fight God himself in order to force these two input methods have the same appearance. */
+.cc-input-container input[type="text"],
+.cc-input-container select {
+    height: 20px;
+    padding: 8px 10px; 
+    font-size: 16px; 
+    line-height: normal; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    box-sizing: border-box;
+    margin: 0; 
+    width: 100%;
+}
+
+.cc-form
+{
+	  display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      font-size: 18px;
+      padding: 5px 5px;
 }
 
 
