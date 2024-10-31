@@ -581,8 +581,6 @@ async function updateCalendar(semester, course) {
                 // .select('*')
                 // .eq('coursesem', semester)
                 // .eq('coursecode', course.slice(0,4));
-                console.log(course);
-                console.log(selectedDate);
                 document.getElementById("calendar-section").style.display='none';
                 document.getElementById("table-section").style.display='block';
                 updateAttendanceTable(semester, course, selectedDate); // Call the table update with the selected date
@@ -606,35 +604,30 @@ async function updateCalendar(semester, course) {
 }
 
 async function updateAttendanceTable(semester, course, selectedDate) {
-    const { data, error } = await supabasePublicClient
+    const courseCode = course.slice(0,4);
+    const hyphenIndex = course.indexOf('-');
+    const courseNum = course.slice(4,hyphenIndex);
+    const courseSection = course.slice(hyphenIndex+1);
+    const { data:courseData, error:courseError } = await supabasePublicClient
     .from('courses')
-    .select('*')
+    .select('courseid')
     .eq('coursesem', semester)
-    .eq('coursecode', course.slice(0,4))
-    .eq('coursenum', course.slice(4));
-    if (error) {console.error('Error fetching data:', error); return;}
+    .eq('coursecode', courseCode)
+    .eq('coursenum', courseNum)
+    .eq('coursesec', courseSection);
+    if (courseError) {console.error('Error fetching data:', courseError); return;}
 
-    const tableBody = document.querySelector('tbody');
-    tableBody.innerHTML = '';
+    const { data:attendanceData, error:attendanceError } = await supabasePublicClient
+    .from('attendance')
+    .select('stufirstname, stulastname, stuid, attendancetime')
+    .eq('courseid', courseData[0].courseid);
+    if (attendanceError) {console.error('Error fetching attendanceData:', attendanceError); return;}
 
-    data.forEach(row => {
-        const tableRow = document.createElement('tr');
-
-        const nameCell = document.createElement('th');
-        nameCell.textContent = row.name;
-
-        const idCell = document.createElement('td');
-        idCell.textContent = row.student_id;
-
-        const attendanceCell = document.createElement('td');
-        attendanceCell.textContent = row.attended ? 'Yes' : 'No';
-
-        tableRow.appendChild(nameCell);
-        tableRow.appendChild(idCell);
-        tableRow.appendChild(attendanceCell);
-
-        tableBody.appendChild(tableRow);
+    const filteredAttendance = attendanceData.filter(record => {
+        const recordDate = record.attendancetime.split('T')[0]; // Get the YYYY-MM-DD part of attendancetime
+        return recordDate === selectedDate;
     });
+    console.log(filteredAttendance);
 };
 
 // Buttons highlighting logic
