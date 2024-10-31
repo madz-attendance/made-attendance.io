@@ -635,13 +635,14 @@ async function updateAttendanceTable(semester, course, selectedDate) {
     if (attendanceError) {console.error('Error fetching attendanceData:', attendanceError); return;}
     console.log('Roster:', attendanceData);
 
-    //
+    //Only grab the YYYY-MM-DD part of attendancetime since we want to see attendance for the whole day
     const filteredAttendance = attendanceData.filter(record => {
-        const recordDate = record.attendancetime.split('T')[0]; // Get the YYYY-MM-DD part of attendancetime
+        const recordDate = record.attendancetime.split('T')[0]; 
         return recordDate === selectedDate;
     });
     console.log('Attendees today:', filteredAttendance);
 
+    //Remove duplicates from the list of attendees and grab the earliest timestamp
     const sortedAttendance = filteredAttendance.sort((a, b) => new Date(a.attendancetime) - new Date(b.attendancetime));
     const uniqueIds = new Set();
     const uniqueAttendance = sortedAttendance.filter(record => {
@@ -650,7 +651,48 @@ async function updateAttendanceTable(semester, course, selectedDate) {
         return !isDuplicate; // Only keep if it's the first occurrence (earliest time)
     });
     console.log('Duplicates removed:', uniqueAttendance);
+    generateAttendanceTable(rosterData, uniqueAttendance)
 };
+
+function generateAttendanceTable(rosterData, uniqueAttendance) {
+    const tableSection = document.getElementById('table-section');
+    const tableBody = document.querySelector('#attendance-table tbody');
+    
+    tableBody.innerHTML = '';
+    tableSection.style.display = 'block';
+
+    rosterData.forEach(student => {
+        const row = document.createElement('tr');
+
+        // Find if the student has an attendance record
+        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid === student.stuid);
+
+        // Last Name
+        const lastNameCell = document.createElement('td');
+        lastNameCell.textContent = student.stulastname;
+        row.appendChild(lastNameCell);
+
+        // First Name
+        const firstNameCell = document.createElement('td');
+        firstNameCell.textContent = student.stufirstname;
+        row.appendChild(firstNameCell);
+
+        // Student ID
+        const idCell = document.createElement('td');
+        idCell.textContent = student.stuid;
+        row.appendChild(idCell);
+
+        // Attendance Status (display "Absent" if no attendance, else show time)
+        const attendanceCell = document.createElement('td');
+        if (studentAttendance) {
+            const timeOnly = studentAttendance.attendancetime.split('T')[1].split('.')[0];
+            attendanceCell.textContent = timeOnly;
+        } 
+        else {attendanceCell.textContent = 'Absent';}
+        row.appendChild(attendanceCell);
+        tableBody.appendChild(row);
+    });
+}
 
 // Buttons highlighting logic
 var pageButtons = {
