@@ -159,6 +159,8 @@
     </div>
   </section>
   
+
+  
 <!-- Create Course Tab Content -->
 <section id="create_course" class="tab-content">
 	<div class="account-container">
@@ -260,57 +262,78 @@
 				</div>
 			</form>
 		</div>
-
 	</div>
 
 </section>
 
-<!-- New Student Tab Content -->
+
+<!-- New Student / Roster Entry Tab Content -->
 <section id="newStudent" class="tab-content">
-    <div class="account-container">
-        <h2>Manually Add Student Into Roster</h2>
-        <form id="student_creation_form">
-            <!-- Student ID Input -->
-            <div class="input-container">
-                <label for="id_num">Student ID Number:</label>
-                <input type="text" id="id_num" name="id_num" required>
-            </div>
-			<!-- Department Dropdown Place holder-->
-             <div>
-                <label for="new_student_department_dropdown">Select a Department:</label>
-                <select id="new_student_department_dropdown" name="options">
-                    <option value="none"></option>
-                </select>
-             </div>
-            <!-- First Name Input -->
-            <div class="input-container">
-                <label for="first_name">Student First Name:</label>
-                <input type="text" id="first_name" name="first_name" required>
-            </div>
-			<!-- Semester Dropdown -->
-			<div>
-				<label for="new_student_semester_dropdown">Select a Semester:</label>
-				<select id="new_student_semester_dropdown" name="options">
-					<option value="none">Any</option>
-				</select>
-			</div>
-            <!-- Last Name Input -->
-            <div class="input-container">
-                <label for="last_name">Student Last Name:</label>
-                <input type="text" id="last_name" name="last_name" required>
-            </div>
-            <!-- Course Dropdown Placeholder-->
-            <div>
-                <label for="new_student_courses_dropdown">Select a Course:</label>
-                <select id="new_student_courses_dropdown" name="options">
-                    <option value="none"></option>
-                </select>
-            </div>
-            <!-- Submit Button -->
-            <input type="submit" value="Submit" onclick="addStudentToRoster(event)">
-        </form>
+	<div class="account-container">
+		<h2>Manually Add Student Into Roster</h2>
+		<h4>All fields are required</h4>
+		<div class="ns-input-master-container">
+			<form class = "rs-form" id="student_creation_form">
+				<!-- Student ID Number -->
+				<div class="ns-input-container" id="ns_stuid_prompt">
+					Student ID:
+				</div>
+				<div class="ns-input-container" id="ns_stuid_container">
+					<input type="text" id="id_num" name="id_num" required>
+				</div>
+				<!-- Student First Name -->
+				<div class="ns-input-container" id="ns_firstname_prompt">
+					First Name:
+				</div>
+				<div class="ns-input-container" id="ns_firstname_container">
+					<input type="text" id="first_name" name="first_name" required>
+				</div>
+				<!-- Student Last Name -->
+				<div class="ns-input-container" id="ns_lastname_prompt">
+					Last Name:
+				</div>
+				<div class="ns-input-container" id="ns_lastname_container">
+					<input type="text" id="last_name" name="last_name" required>
+				</div>
+				<!-- Department Dropdown -->
+				<div class="ns-input-container" id="ns_dept_prompt">
+					Select a Department:
+				</div>
+				<div class="ns-input-container" id="ns_dept_dropdown_container">
+					<select id="new_student_department_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="ns-input-container" id="ns_sem_prompt">
+					Select a Semester:
+				</div>
+				<div class="ns-input-container" id="ns_sem_dropdown_container">
+					<select id="new_student_semester_dropdown" name="options">
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Course Dropdown -->
+				<div class="ns-input-container" id="ns_course_propt">
+					Select a Course:
+				</div>
+				<div class="ns-input-container" id="ns_course_dropdown_container">
+					<select id="new_student_courses_dropdown" name="options" required>
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Submit Button -->
+				<div class="ns-input-container" id="ns_submit_button">
+					<input type="submit" value="Submit" onclick="addStudentToRoster(event)">
+				</div>
+				<!-- Clear Button -->
+				<div class="ns-input-container" id="ns_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
 		<div class="manual_submission_feedback_container" id="new_student_manual_submission_feedback_container">
-			
+		
 		</div>
 		<h2>Upload Students Into Rosters</h2>
 		<p>
@@ -340,8 +363,9 @@
 					
 				</div>
 		</div>
-    </div>
+	</div>
 </section>
+
 
 <!-- Roster Removal Tab -->
 <section id="removeStudent" class="tab-content">
