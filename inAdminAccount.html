@@ -273,7 +273,7 @@
 		<h2>Manually Add Student Into Roster</h2>
 		<h4>All fields are required</h4>
 		<div class="ns-input-master-container">
-			<form class = "rs-form" id="student_creation_form">
+			<form class = "ns-form" id="student_creation_form">
 				<!-- Student ID Number -->
 				<div class="ns-input-container" id="ns_stuid_prompt">
 					Student ID:
@@ -367,50 +367,72 @@
 </section>
 
 
+
 <!-- Roster Removal Tab -->
 <section id="removeStudent" class="tab-content">
 	<div class="account-container">
-		<h2>Manually Remove Student From Roster</h2>
-        <form id="student_removal_form">
-            <!-- Student ID Input -->
-            <div class="input-container">
-                <label for="removal_id_num">Student ID Number:</label>
-                <input type="text" id="removal_id_num" name="removal_id_num" required>
-            </div>
-			<!-- Department Dropdown Place holder-->
-             <div>
-                <label for="remove_student_department_dropdown">Select a Department:</label>
-                <select id="remove_student_department_dropdown" name="options">
-                    <option value="none"></option>
-                </select>
-             </div>
-            <!-- First Name Input -->
-            <div class="input-container">
-                <label for="removal_first_name">Student First Name:</label>
-                <input type="text" id="removal_first_name" name="removal_first_name" required>
-            </div>
-			<!-- Semester Dropdown -->
-			<div>
-				<label for="remove_student_semester_dropdown">Select a Semester:</label>
-				<select id="remove_student_semester_dropdown" name="options">
-					<option value="none">Any</option>
-				</select>
-			</div>
-            <!-- Last Name Input -->
-            <div class="input-container">
-                <label for="removal_last_name">Student Last Name:</label>
-                <input type="text" id="removal_last_name" name="removal_last_name" required>
-            </div>
-            <!-- Course Dropdown Placeholder-->
-            <div>
-                <label for="remove_student_courses_dropdown">Select a Course:</label>
-                <select id="remove_student_courses_dropdown" name="options">
-                    <option value="none"></option>
-                </select>
-            </div>
-            <!-- Submit Button -->
-            <input type="submit" value="Submit" onclick="removeStudentFromRoster(event)">
-        </form>
+		<h2>Manually Remove Student from Roster</h2>
+		<h4>All fields are required.</h4>
+		<div class="rs-input-master-container">
+			<form class="rs-form" id="student_removal_form">
+				<!-- Student ID Number -->
+				<div class="rs-input-container" id="rs_stuid_prompt">
+					Student ID:
+				</div>
+				<div class="rs-input-container" id="rs_stuid_container">
+					<input type="text" id="removal_id_num" name="removal_id_num" required>
+				</div>
+				<!-- Student First Name -->
+				<div class="rs-input-container" id="rs_firstname_prompt">
+					First Name:
+				</div>
+				<div class="rs-input-container" id="rs_firstname_container">
+					<input type="text" id="removal_first_name" name="removal_first_name" required>
+				</div>
+				<!-- Student Last Name -->
+				<div class="rs-input-container" id="rs_lastname_prompt">
+					Last Name:
+				</div>
+				<div class="rs-input-container" id="rs_lastname_container">
+					<input type="text" id="removal_last_name" name="removal_last_name" required>
+				</div>
+				<!-- Department Dropdown -->
+				<div class="rs-input-container" id="rs_dept_prompt">
+					Select a Department:
+				</div>
+				<div class="rs-input-container" id="rs_dept_dropdown_container">
+					<select id="remove_student_department_dropdown" name="options" required>
+						<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="rs-input-container" id="rs_sem_prompt">
+					Select a Semester:
+				</div>
+				<div class="rs-input-container" id="rs_sem_dropdown_container">
+					<select id="remove_student_semester_dropdown" name="options">
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Course Dropdown -->
+				<div class="rs-input-container" id="rs_course_propt">
+					Select a Course:
+				</div>
+				<div class="rs-input-container" id="rs_course_dropdown_container">
+					<select id="remove_student_courses_dropdown" name="options" required>
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Submit Button -->
+				<div class="rs-input-container" id="rs_submit_button">
+					<input type="submit" value="Submit" onclick="removeStudentFromRoster(event)">
+				</div>
+				<!-- Clear Button -->
+				<div class="rs-input-container" id="rs_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
 		<div class="manual_submission_feedback_container" id="remove_student_manual_submission_feedback_container">
 			
 		</div>
@@ -442,9 +464,10 @@
 					
 				</div>
 		</div>
-	
 	</div>
 </section>
+
+
 	    
 <section id="helpTab" class="tab-content">
     <div class="account-container">
