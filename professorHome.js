@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Other existing event listeners
-    document.getElementById('semesterButtonContainer').addEventListener('click', function(event) {
+    document.getElementById('semesterSubmit').addEventListener('click', function(event) {
         event.preventDefault();
 
         const givenSemester = document.getElementById('semesterDropdown').value;
@@ -522,9 +522,6 @@ function goToFormSection() {
 // Add event listeners to both Back buttons
 document.getElementById('calendarBackButton').addEventListener('click', goToFormSection);
 document.getElementById('rosterBackButton').addEventListener('click', goToFormSection);
-
-   
-
 
     document.getElementById('backButton').addEventListener('click', function() {
         document.getElementById('table-section').style.display = 'none';
@@ -766,11 +763,6 @@ async function loadAccountInfo() {
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
 
-
-
-
-
-
 // References to dropdowns, button, and roster table section
 const fetchRosterButton = document.getElementById('fetchRosterButton');
 const rosterTableSection = document.getElementById('rosterTableSection');
@@ -860,13 +852,14 @@ async function fetchAndDisplayRoster() {
 // Function to populate the roster table with provided data and course name
 function populateRosterTable(rosterData, courseName) {
     const rosterTableBody = document.querySelector('#roster-table tbody');
+    document.getElementById('form-section').style.display = 'none';
     rosterTableBody.innerHTML = ''; // Clear previous data
 
     // Update the header with course name
     document.getElementById('rosterHeader').textContent = `Class Roster for ${courseName}`;
 
     // Hide the calendar section
-    document.getElementById('calendar-section').style.display = 'none';
+
 
     // Create table structure with bold headers and black borders
     let rosterTable = `
@@ -898,9 +891,3 @@ function populateRosterTable(rosterData, courseName) {
     // Show the roster table section
     document.getElementById('rosterTableSection').style.display = 'block';
 }
-
-
-
-
-
-
