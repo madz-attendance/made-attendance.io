@@ -32,6 +32,9 @@
 				<div class="header-button" id="create_account_button_ADMIN" onclick="openTab('create_account')">
 					Create<br>Account
 				</div>
+				<div class="header-button" id="create_course_button_ADMIN" onclick="openTab('create_course')">
+					Create<br>Course
+				</div>
 				<div class="header-button" id="add_student_button" onclick="openTab('newStudent')" title="New Student">
     				Roster<br>Entry
 				</div>
@@ -155,6 +158,112 @@
       <div id="signupMessage"></div>
     </div>
   </section>
+  
+<!-- Create Course Tab Content -->
+<section id="create_course" class="tab-content">
+	<div class="account-container">
+		<h2>Create Course</h2>
+		<h4>All fields are required.</h4>
+		<div class="cc-input-master-container">
+			<form class = "cc-form" id="course_creation_form_ADMIN">
+				<!-- Department Dropdown -->
+				<div class="cc-input-container" id="cc_dept_prompt">
+					Department:
+				</div>
+				<div class="cc-input-container" id="cc_dept_dropdown_container">
+					<select id="course_creation_department_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="cc-input-container" id="cc_sem_prompt">
+					Semester:
+				</div>
+				<div class="cc-input-container" id="cc_sem_dropdown_container">
+					<select id="course_creation_semester_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Course Number -->
+				<div class="cc-input-container" id="cc_coursenum_prompt">
+					Course Number:
+				</div>
+				<div class="cc-input-container" id="cc_coursenum_container">
+					<input type="text" id="cc_coursenum_input" name="cc_coursenum_input" required>
+				</div>
+				<!-- Course Name -->
+				<div class="cc-input-container" id="cc_coursename_prompt">
+					Course Name:
+				</div>
+				<div class="cc-input-container" id="cc_coursename_container">
+					<input type="text" id="cc_coursename_input" name="cc_coursename_input" required>
+				</div>
+				<!-- Section -->
+				<div class="cc-input-container" id="cc_coursesection_prompt">
+					Section:
+				</div>
+				<div class="cc-input-container" id="cc_coursesection_container">
+					<input type="text" id="cc_coursesection_input" name="cc_coursesection_input" required>
+				</div>
+				<!-- Building Dropdown -->
+				<div class="cc-input-container" id="cc_building_prompt">
+					Building:
+				</div>
+				<div class="cc-input-container" id="cc_building_dropdown_container">
+					<select id="course_creation_building_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Room -->
+				<div class="cc-input-container" id="cc_courseroom_prompt">
+					Room Number:
+				</div>
+				<div class="cc-input-container" id="cc_courseroom_container">
+					<input type="text" id="cc_courseroom_input" name="cc_courseroom_input" required>
+				</div>
+				<!-- Start Time. CONVERT THIS TO MILITARY TIME BEFORE ENTERING INTO 'COURSES' TABLE IN DB -->
+				<div class="cc-input-container" id="cc_start_time_prompt">
+					Start Time:
+				</div>
+				<div class="cc-input-container" id="cc_start_time_container">
+					<input type="time" id="cc_start_time_input" name="cc_start_time_input" required>
+				</div>
+				<!-- End Time. CONVERT THIS TO MILITARY TIME BEFORE ENTERING INTO 'COURSES' TABLE IN DB -->
+				<div class="cc-input-container" id="cc_end_time_prompt">
+					End Time:
+				</div>
+				<div class="cc-input-container" id="cc_end_time_container">
+					<input type="time" id="cc_end_time_input" name="cc_end_time_input" required>
+				</div>
+				<!-- Professor -->
+				<div class="cc-input-container" id="cc_prof_prompt">
+					Professor:
+				</div>
+				<div class="cc-input-container" id="cc_prof_dropdown_container">
+					<select id="course_creation_professor_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Empty space between professor input and buttons -->
+				<div class="cc-input-container" id="cc_empty_space_left">
+					&nbsp;
+				</div>
+				<div class="cc-input-container" id="cc_empty_space_right">
+					&nbsp;
+				</div>
+				<!-- Submit Button and Clear Button -->
+				<div class="cc-input-container" id="cc_submit_button">
+					<input type="submit" value="Submit" onclick="createCourse()">
+				</div>
+				<div class="cc-input-container" id="cc_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
+
+	</div>
+
+</section>
 
 <!-- New Student Tab Content -->
 <section id="newStudent" class="tab-content">
