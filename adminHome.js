@@ -1234,12 +1234,13 @@ var pageButtons = {
 	"welcome_button_ADMIN"			: "welcome",
 	"classes_button_ADMIN"			: "classes",
 	"add_student_button"			: "add",
-	"create_account_button_ADMIN"	: "create",
-	"help_button_ADMIN"				: "help",
+	"create_account_button_ADMIN"		: "create",
+	"help_button_ADMIN"			: "help",
 	"account_button_ADMIN"			: "account",
 	"notification_button_ADMIN"		: "notification",
 	"log_out_button_ADMIN"			: "log_out",
-	"remove_student_button"			: "remove_student"
+	"remove_student_button"			: "remove_student",
+	"create_course_button_ADMIN"		: "create_course"
 };
 var currentTab = "welcome";
 document.getElementById("welcome_button_ADMIN").style.filter = "brightness(150%)";
