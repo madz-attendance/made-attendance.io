@@ -119,46 +119,77 @@
             </div>
         </section>
     
-       <!-- Create Account Section -->
-  <section id="create_account" class="tab-content">
-    <h2>Create Account</h2>
-    <div class="create-container">
-      <form id="creation_form">
-        <div class="input-container">
-          <label for="lastName">Faculty Last Name</label>
-          <input type="text" id="faclastname" name="faclastname" required>
-        </div>
-        <div class="input-container">
-        <label for="facrank">Faculty Rank</label>
-        <select id="facrank" name="facrank" required>
-          <option value="Professor">Professor</option>
-          <option value="Chair">Chair</option>
-          <option value="Admin">Admin</option>
-        </select>
-      </div>
-      <!-- Updated Create Account Section -->
-<div class="input-container">
-    <label for="create_department_dropdown">Select a Department:</label>
-    <select id="create_department_dropdown" name="options">
-        <option value="any">Any</option> <!-- The Any option -->
-    </select>
-</div>
+<!-- (NEWEST) Create Account Section -->
+<section id="create_account" class="tab-content">
+	<div class="account-container">
+		<h2>Create Account</h2>
+		<h4>All fields are required.</h4>
+		<div class="ca-input-master-container">
+			<form class="ca-form" id="creation_form">
+				<!-- Last Name -->
+				<div class="ca-input-container" id="ca_faclastname_prompt">
+					Last Name:
+				</div>
+				<div class="ca-input-container" id="ca_faclastname_container">
+					<input type="text" id="faclastname" name="faclastname" required>
+				</div>
+				<!-- Email -->
+				<div class="ca-input-container" id="ca_email_prompt">
+					Email:
+				</div>
+				<div class="ca-input-container" id="ca_email_container">
+					<input type="email" id="facemail" name="email" required>
+				</div>
+				<!-- Password -->
+				<div class="ca-input-container" id="ca_password_prompt">
+					Password:
+				</div>
+				<div class="ca-input-container" id="ca_password_container">
+					<input type="password" id="password" name="password" required>
+				</div>
+				<!-- Rank -->
+				<div class="ca-input-container" id="ca_rank_prompt">
+					Rank:
+				</div>
+				<div class="ca-input-container" id="ca_rank_container">
+					<select id="facrank" name="facrank" required>
+						<option value="Professor">Professor</option>
+						<option value="Chair">Chair</option>
+						<option value="Admin">Admin</option>
+					</select>
+				</div>
+				<!-- Department -->
+				<div class="ca-input-container" id="ca_department_prompt">
+					Department:
+				</div>
+				<div class="ca-input-container" id="ca_department_container">
+					<select id="create_department_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Empty space between department input and buttons -->
+				<div class="ca-input-container" id="ca_empty_space_left">
+					&nbsp;
+				</div>
+				<div class="ca-input-container" id="ca_empty_space_right">
+					&nbsp;
+				</div>
+				<!-- Submit Button -->
+				<div class="ca-input-container" id="ca_submit_button">
+					<input type="button" value="Submit" onclick="createUser(event)">
+				</div>
+				<!-- Clear Button -->
+				<div class="ca-input-container" id="ca_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
+		<!-- Sign up message -->
+		<div id="signupMessage"></div>
+	</div>
+</section>
+	
 
-				
-        <div class="input-container">
-          <label for="email">Email</label>
-          <input type="email" id="facemail" name="email" required>
-        </div>
-        <div class="input-container">
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required>
-        </div>
-        <input type="button" value="Create Account" onclick="createUser()">
-      </form>
-      <div id="signupMessage"></div>
-    </div>
-  </section>
-  
 
   
 <!-- Create Course Tab Content -->
@@ -271,7 +302,7 @@
 <section id="newStudent" class="tab-content">
 	<div class="account-container">
 		<h2>Manually Add Student Into Roster</h2>
-		<h4>All fields are required</h4>
+		<h4>All fields are required.</h4>
 		<div class="ns-input-master-container">
 			<form class = "ns-form" id="student_creation_form">
 				<!-- Student ID Number -->
