@@ -119,7 +119,7 @@
             </div>
         </section>
     
-<!-- (NEWEST) Create Account Section -->
+<!-- Create Account Section -->
 <section id="create_account" class="tab-content">
 	<div class="account-container">
 		<h2>Create Account</h2>
@@ -193,6 +193,7 @@
 
   
 <!-- Create Course Tab Content -->
+<!-- Note: The dropdown menu options must not be "none", but instead "", or else the validity check in createCourse() won't work. It will count "none" as a valid value. -->
 <section id="create_course" class="tab-content">
 	<div class="account-container">
 		<h2>Create Course</h2>
@@ -205,7 +206,7 @@
 				</div>
 				<div class="cc-input-container" id="cc_dept_dropdown_container">
 					<select id="course_creation_department_dropdown" name="options" required>
-						<option value="none"></option>
+						<option value=""></option>
 					</select>
 				</div>
 				<!-- Semester Dropdown -->
@@ -214,7 +215,7 @@
 				</div>
 				<div class="cc-input-container" id="cc_sem_dropdown_container">
 					<select id="course_creation_semester_dropdown" name="options" required>
-						<option value="none"></option>
+						<option value=""></option>
 					</select>
 				</div>
 				<!-- Course Number -->
@@ -222,7 +223,7 @@
 					Course Number:
 				</div>
 				<div class="cc-input-container" id="cc_coursenum_container">
-					<input type="text" id="cc_coursenum_input" name="cc_coursenum_input" required>
+					<input type="number" id="cc_coursenum_input" name="cc_coursenum_input" required>
 				</div>
 				<!-- Course Name -->
 				<div class="cc-input-container" id="cc_coursename_prompt">
@@ -244,7 +245,7 @@
 				</div>
 				<div class="cc-input-container" id="cc_building_dropdown_container">
 					<select id="course_creation_building_dropdown" name="options" required>
-						<option value="none"></option>
+						<option value=""></option>
 					</select>
 				</div>
 				<!-- Room -->
@@ -254,14 +255,29 @@
 				<div class="cc-input-container" id="cc_courseroom_container">
 					<input type="text" id="cc_courseroom_input" name="cc_courseroom_input" required>
 				</div>
-				<!-- Start Time. CONVERT THIS TO MILITARY TIME BEFORE ENTERING INTO 'COURSES' TABLE IN DB -->
+				<!-- Days -->
+				<div class="cc-input-container" id="cc_coursedays_prompt">
+					Days:
+				</div>
+				<div class="cc-input-container" id="cc_coursedays_container">
+					<div class="days-of-week">
+						<div class="day"> <label for="monday">M</label> <input type="checkbox" id="monday" name="days" value="M"> </div>
+						<div class="day"> <label for="tuesday">Tu</label> <input type="checkbox" id="tuesday" name="days" value="Tu"> </div>
+						<div class="day"> <label for="wednesday">W</label> <input type="checkbox" id="wednesday" name="days" value="W"> </div>
+						<div class="day"> <label for="thursday">Th</label> <input type="checkbox" id="thursday" name="days" value="Th"> </div>
+						<div class="day"> <label for="friday">F</label> <input type="checkbox" id="friday" name="days" value="F"> </div>
+						<div class="day"> <label for="saturday">Sa</label> <input type="checkbox" id="saturday" name="days" value="Sa"> </div>
+						<div class="day"> <label for="sunday">Su</label> <input type="checkbox" id="sunday" name="days" value="Su"> </div>
+					</div>
+				</div>
+				<!-- Start Time. NOTE: Takes it as 12-hour time but seems to automatically convert it to military time in javascript -->
 				<div class="cc-input-container" id="cc_start_time_prompt">
 					Start Time:
 				</div>
 				<div class="cc-input-container" id="cc_start_time_container">
 					<input type="time" id="cc_start_time_input" name="cc_start_time_input" required>
 				</div>
-				<!-- End Time. CONVERT THIS TO MILITARY TIME BEFORE ENTERING INTO 'COURSES' TABLE IN DB -->
+				<!-- End Time. NOTE: Takes it as 12-hour time but seems to automatically convert it to military time in javascript -->
 				<div class="cc-input-container" id="cc_end_time_prompt">
 					End Time:
 				</div>
@@ -274,7 +290,7 @@
 				</div>
 				<div class="cc-input-container" id="cc_prof_dropdown_container">
 					<select id="course_creation_professor_dropdown" name="options" required>
-						<option value="none"></option>
+						<option value=""></option>
 					</select>
 				</div>
 				<!-- Empty space between professor input and buttons -->
@@ -286,12 +302,15 @@
 				</div>
 				<!-- Submit Button and Clear Button -->
 				<div class="cc-input-container" id="cc_submit_button">
-					<input type="submit" value="Submit" onclick="createCourse()">
+					<input type="submit" value="Submit" onclick="createCourse(event)">
 				</div>
 				<div class="cc-input-container" id="cc_clear_button">
 					<input type="reset" value="Clear">
 				</div>
 			</form>
+		</div>
+		<div class="manual_submission_feedback_container" id="create_course_manual_submission_feedback_container">
+		
 		</div>
 	</div>
 
