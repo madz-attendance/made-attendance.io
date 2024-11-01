@@ -325,9 +325,6 @@ input[type="button"]:hover {
 /*Makes dropdown look good*/
 
 
-#remove_student_department_dropdown,
-#remove_student_semester_dropdown,
-#remove_student_courses_dropdown,
 #department_dropdown,
 #semester_dropdown,
 #courses_dropdown{
@@ -344,7 +341,9 @@ input[type="button"]:hover {
 #new_student_courses_dropdown,
 #remove_student_department_dropdown,
 #remove_student_semester_dropdown,
-#remove_student_courses_dropdown
+#remove_student_courses_dropdown,
+#facrank,
+#create_department_dropdown
 {
   background-color: #2A4C6B; 
   text-align: left; 
@@ -871,10 +870,11 @@ th > * {
 	width: 15%;
 }
 
-/* Create Course, New Student, Remove Student Page Stuff */
+/* Create Course, New Student, Remove Student, Create Account Page Stuff */
 .cc-input-master-container,
 .ns-input-master-container,
-.rs-input-master-container
+.rs-input-master-container,
+.ca-input-master-container
 {
 	display: flex;
 	width: 100%;
@@ -887,7 +887,8 @@ th > * {
 /* Input containers: stack labels and inputs vertically */
 .cc-input-container,
 .ns-input-container,
-.rs-input-container
+.rs-input-container,
+.ca-input-container
 {
   display: flex;
   width: 100%;
@@ -902,18 +903,26 @@ th > * {
 .cc-input-container input[type="text"],
 .ns-input-container input[type="text"],
 .rs-input-container input[type="text"],
+.ca-input-container input[type="text"],
 .cc-input-container input[type="time"],
 .ns-input-container input[type="time"],
 .rs-input-container input[type="time"],
+.ca-input-container input[type="time"],
 .cc-input-container input[type="submit"],
 .ns-input-container input[type="submit"],
 .rs-input-container input[type="submit"],
+.ca-input-container input[type="submit"],
 .cc-input-container input[type="reset"],
 .ns-input-container input[type="reset"],
 .rs-input-container input[type="reset"],
+.ca-input-container input[type="reset"],
 .cc-input-container select,
 .ns-input-container select,
-.rs-input-container select
+.rs-input-container select,
+.ca-input-container select,
+.ca-input-container input[type="email"],
+.ca-input-container input[type="password"],
+.ca-input-container input[type="button"]
 {
     height: 40px;
     padding: 8px 10px;
@@ -929,7 +938,8 @@ th > * {
 
 .cc-form,
 .ns-form,
-.rs-form
+.rs-form,
+.ca-form
 {
 	  display: grid;
       grid-template-columns: repeat(2, 1fr);
