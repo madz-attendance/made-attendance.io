@@ -1,7 +1,7 @@
 // Declare the variables that will store the dropdown menus. These are for all of the dropdown menus on each tab of the page.
 // These must be declared outside of the DOMContentLoaded so that they are global, however, must be initialized inside of DOMContentLoaded.
 // Otherwise, this will not work, just trust me.
-var semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown;
+var semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
 
 
@@ -65,9 +65,10 @@ async function checkAuth()
 	  create_account_department_dropdown = document.getElementById('create_department_dropdown');
 	  new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
 	  remove_student_department_dropdown = document.getElementById('remove_student_department_dropdown');
+	  course_creation_department_dropdown = document.getElementById('course_creation_department_dropdown');
 	  
 	  // Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
-	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown];
+	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown];
 	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown];
 	  semesters_dropdown_menus = [semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown];
   }  
@@ -89,8 +90,14 @@ async function checkAuth()
 	  attachSemesterDropdownListener(professor_courses); // Attach various semester dropdown menus to their update event listeners.
 	  attachCoursesDropdownListener();	// Attach various courses dropdown menus to their update event listeners
 	  await populateDepartmentsDropdown();
+	  
+	  // For the "Create Course" tab, set the options for "Semester" and "Building". These are different from the other semester dropdowns and does not impact any other dropdown options.
+	  setCreateCourseIsolatedDropdownOptions();
   }
-  
+
+
+
+
   
   // ===================================================
   // ===================================================
@@ -466,6 +473,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		 const selectedSemester = remove_student_semester_dropdown.value;
 		 updateCoursesDropdown(professor_courses, remove_student_courses_dropdown, selectedDept, selectedSemester);
 	  });
+	  
 	  
   }
   
@@ -1226,6 +1234,195 @@ async function parseRemoveStudentCSV(file)
 		return [false, 0, 0, [""]];
 	}
 }
+
+
+
+async function setCreateCourseIsolatedDropdownOptions()
+{
+	var course_creation_semester_dropdown = document.getElementById('course_creation_semester_dropdown');
+	var course_creation_building_dropdown = document.getElementById('course_creation_building_dropdown');
+	var course_creation_professor_dropdown = document.getElementById('course_creation_professor_dropdown');
+	
+	// SEMESTER DROPDOWN
+	// Query supabase for all valid semesters. This is needed because we aren't just doing the semesters that a prof/chair/admin has courses in, we are doing ALL semesters.
+	// Important distinction from normal method because we are including semesters that may not even have any courses made for them yet.
+	const {data: semesterResult, error: semesterError} = await supabasePublicClient
+		.from('semesters')
+		.select('semester');
+		
+	if (semesterError)
+	{ console.log("Error fetching semesters from 'semesters' table: ", semesterError); }
+	else
+	{
+		var semestersArray = semesterResult.map(item => item.semester); // Convert supabase data object to an array
+		semestersArray.forEach(semester => {
+			var option = document.createElement("option");
+			option.value = semester;
+			option.text = semester;
+			course_creation_semester_dropdown.appendChild(option);
+		});
+	}
+	
+	// BUILDING DROPDOWN
+	const {data: buildingResult, error: buildingError} = await supabasePublicClient
+		.from('buildings')
+		.select('building');
+		
+	if (buildingError)
+	{ console.log("Error fetching buildings from 'buildings' table: ", buildingError); }
+	else
+	{
+		var buildingsArray = buildingResult.map(item => item.building); // Convert supabase data object to an array
+		buildingsArray.forEach(building => {
+			var option = document.createElement("option");
+			option.value = building;
+			option.text = building;
+			course_creation_building_dropdown.appendChild(option);
+		});
+	}
+	
+	// PROFESSOR DROPDOWN
+	const {data: profResult, error: profError} = await supabasePublicClient
+		.from('users')
+		.select('faclastname')
+		
+	if (profError)
+	{ console.log("Error fetching professors from 'users' table: ", profError); }
+	else
+	{
+		var profArray = profResult.map(item => item.faclastname); // Convert supabase data object to an array
+		profArray.forEach(prof => {
+			var option = document.createElement("option");
+			option.value = prof;
+			option.text = prof;
+			course_creation_professor_dropdown.appendChild(option);
+		});
+	}
+}
+
+
+// Creates a course, is the "Submit" button for Create Course.
+async function createCourse(event)
+{
+	event.preventDefault(); // Prevent page from reloading upon submission
+	console.log('In createCourse()');
+	// Get all of the fields
+	// DROPDOWN MENUS - IF NOT SELECTED, .value == "none"
+	// INPUT FIELDS   - IF NOT SELECTED, .value == ""
+	// CHECKBOXES     - IF NOT SELECTED, .checked == false
+	var course_creation_form_ADMIN = document.getElementById("course_creation_form_ADMIN"); // The form itself
+	var course_creation_department_dropdown = document.getElementById("course_creation_department_dropdown");
+	var course_creation_semester_dropdown = document.getElementById("course_creation_semester_dropdown");
+	var cc_coursenum_input = document.getElementById("cc_coursenum_input");
+	var cc_coursename_input = document.getElementById("cc_coursename_input");
+	var cc_coursesection_input = document.getElementById("cc_coursesection_input");
+	var course_creation_building_dropdown = document.getElementById("course_creation_building_dropdown");
+	var cc_courseroom_input = document.getElementById("cc_courseroom_input");
+	var mondayCheckbox = document.getElementById("monday");
+	var tuesdayCheckbox = document.getElementById("tuesday");
+	var wednesdayCheckbox = document.getElementById("wednesday");
+	var thursdayCheckbox = document.getElementById("thursday");
+	var fridayCheckbox = document.getElementById("friday");
+	var saturdayCheckbox = document.getElementById("saturday");
+	var sundayCheckbox = document.getElementById("sunday");
+	var daysArray = [mondayCheckbox, tuesdayCheckbox, wednesdayCheckbox, thursdayCheckbox, fridayCheckbox, saturdayCheckbox, sundayCheckbox];
+	var any_day_selected = false;
+	var days_selected_string = "";
+	var cc_start_time_input = document.getElementById("cc_start_time_input");
+	var cc_end_time_input = document.getElementById("cc_end_time_input");
+	var course_creation_professor_dropdown = document.getElementById("course_creation_professor_dropdown");
+	var feedback_container = document.getElementById("create_course_manual_submission_feedback_container");
+	var facemail = "emailNotFound@error.com";
+	
+	// Check to see if at least one day was selected. Iterates through all of the days and sets 'any_day_selected' to true if a day is checked
+	// Also, will combine the strings of all of the selected days. For example, if "M", "W", and "F" are selected, will store "MWF" in 'days_selected_string'
+	daysArray.forEach(function(thisDay) {
+		if (thisDay.checked) {
+			any_day_selected = true;
+			days_selected_string += thisDay.value;
+		}
+	});
+	
+	// Make sure that at least one day was selected AND make sure that all of the TEXT fields are not empty. This does not check for the dropdown fields, because they always technically have a default value of 'none'
+	if (any_day_selected == false || !course_creation_form_ADMIN.checkValidity()) // If all of the fields are provided (EXCEPT FOR DAYS, WHICH ARE OPTIONAL)
+	{
+		alert("Please fill out all the required fields.");
+		return; // Stop further execution
+	}
+	else
+	{
+		// Check to see if a course with this department, semester, course number, and section already exists.
+		// A course with the same department, semester, course number, and semester are allowed to exist, but must have different section numbers.
+		const { data: dupData, error: dupError } = await supabasePublicClient
+			.from('courses')
+			.select('courseid')
+			.eq('dept', course_creation_department_dropdown.value)
+			.eq('coursesem', course_creation_semester_dropdown.value)
+			.eq('coursenum', parseInt(cc_coursenum_input.value, 10)) // Convert to integer probably
+			.eq('coursesec', cc_coursesection_input.value);
+			
+		if (dupError)
+		{
+			console.log("In createCourse(), unable to check for duplicate section: ", dupError);
+			feedback_container.innerHTML = '<span style="color: red;">There was a database error, apologies for the inconvenience.</span>';
+		}
+		else
+		{
+			console.log("DUPDATA: ", dupData);
+			// If there is at least one class with this section, alert the user to try again with a new section number
+			if (dupData.length > 0)
+			{
+				console.log("In createCourse(), section already exists.");
+				feedback_container.innerHTML = '<span style="color: red;">Error: A course with these fields under the same section already exists. Please create the course with a new section, or resolve any field issues.</span>';
+			}
+			// If there is no course with this section, then create the course and alert of success
+			else
+			{
+				// Retreive the faculty email of the selected professor from the 'users' table
+				const { data: feData, error: feError } = await supabasePublicClient
+					.from('users')
+					.select('facemail')
+					.eq('faclastname', course_creation_professor_dropdown.value);
+					
+				if (feError)
+				{
+					console.log("In createCourse(), unable to get faculty email: ", feError);
+					feedback_container.innerHTML = '<span style="color: red;">There was a database error, apologies for the inconvenience.</span>';
+				}
+				else
+				{
+					if (feData.length > 0)
+					{ facemail = feData[0].facemail; console.log("faculty email: ", facemail); }
+				}
+				
+				// Create the new course in the database
+				const { data: ccData, error: ccError } = await supabasePublicClient
+					.from('courses')
+					.insert([
+						{
+							dept: course_creation_department_dropdown.value,
+							coursecode: course_creation_department_dropdown.value,
+							coursenum: parseInt(cc_coursenum_input.value, 10),
+							coursename: cc_coursename_input.value,
+							coursesec: cc_coursesection_input.value,
+							coursesem: course_creation_semester_dropdown.value,
+							building: course_creation_building_dropdown.value,
+							room: cc_courseroom_input.value,
+							days: days_selected_string,
+							start: cc_start_time_input.value,
+							finish: cc_end_time_input.value,
+							facemail: facemail,
+							faclastname: course_creation_professor_dropdown.value,
+						}
+					]);
+					
+				console.log("Successfully created course.");
+				feedback_container.innerHTML = '<span style="color: green;">Successfully created course.</span>';
+			}
+		}
+	}
+}
+
 
 
  
