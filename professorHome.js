@@ -287,26 +287,17 @@ function attachButtonListeners(session) {
     });
 }
 
+
 async function handleApprove(event, session) {
-    const courseFullCode = event.target.getAttribute('data-course');
-    const deptCode = event.target.getAttribute('data-dept');
-    const courseNum = event.target.getAttribute('data-course-num');
-    const courseSec = event.target.getAttribute('data-course-sec');
+    // Extract data attributes from button
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
-    const stuid = event.target.getAttribute('data-student-id');
     const submissionDate = event.target.getAttribute('data-date');
     const submissionTime = event.target.getAttribute('data-time');
-    const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
 
-    console.log('Approving attendance for:', {
-        stufirstname,
-        stulastname,
-        submissionDate,
-        submissionTime,
-        facemail: session.user.email
-    });
+    console.log('Approving attendance for:', { stufirstname, stulastname, submissionDate, facemail: session.user.email });
 
+    // Get course ID
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses')
         .select('courseid')
@@ -320,38 +311,38 @@ async function handleApprove(event, session) {
         return;
     }
 
+    // Insert attendance
     const { error: attendanceError } = await supabasePublicClient
         .from('attendance')
-        .insert([
-            {
-                courseid: courseData.courseid,
-                stufirstname: stufirstname,
-                stulastname: stulastname,
-                stuid: stuid,
-                attendancetime: attendanceTime,
-            }
-        ]);
+        .insert([{ 
+            courseid: courseData.courseid, 
+            stufirstname, 
+            stulastname, 
+            stuid, 
+            attendancetime: new Date(`${submissionDate}T${submissionTime}`) 
+        }]);
 
     if (attendanceError) {
         console.error('Error updating attendance table:', attendanceError);
+        return; // Exit if there's an error
+    }
+
+    // Update status in the temptable
+    const { error } = await supabasePublicClient
+        .from('temptable')
+        .update({ status: 'approved' })
+        .eq('facemail', session.user.email)
+        .eq('insertdate', submissionDate)
+        .eq('studentfirstname', stufirstname)
+        .eq('studentlastname', stulastname);
+
+    if (error) {
+        console.error('Error updating notification status:', error);
     } else {
         console.log('Attendance approved successfully!');
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
-
-        // Update status in the temptable
-        const { error } = await supabasePublicClient
-            .from('temptable')
-            .update({ status: 'approved' })
-            .eq('facemail', session.user.email)
-            .eq('insertdate', submissionDate)
-            .eq('studentfirstname', stufirstname)
-            .eq('studentlastname', stulastname);
-
-        if (error) {
-            console.error('Error updating notification status:', error);
-        } else {
-            removeNotificationFromUI(`${stufirstname}-${stulastname}-${submissionDate}`);
-        }
+        removeNotificationFromUI(uniqueKey);
+        await fetchNotificationsForCurrentUser(); // Refresh notifications
     }
 }
 
@@ -359,12 +350,7 @@ async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
 
-    console.log('Denying attendance for:', {
-        stufirstname,
-        stulastname,
-        submissionDate,
-        facemail: session.user.email
-    });
+    console.log('Denying attendance for:', { stufirstname, stulastname, submissionDate, facemail: session.user.email });
 
     const { error } = await supabasePublicClient
         .from('temptable')
@@ -380,6 +366,7 @@ async function handleDeny(event, session) {
         console.log('Notification status updated to denied');
         removeNotificationFromUI(uniqueKey);
         displayDeniedMessage(stufirstname, stulastname, submissionDate);
+        await fetchNotificationsForCurrentUser(); // Refresh notifications
     }
 }
 
