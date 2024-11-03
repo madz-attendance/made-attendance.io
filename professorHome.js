@@ -217,13 +217,10 @@ async function fetchNotificationsForCurrentUser() {
     }
 
     const loggedInFacemail = session.user.email;
-
-    // Fetch only pending notifications
     const { data, error } = await supabasePublicClient
         .from('temptable')
         .select('*')
-        .eq('facemail', loggedInFacemail)
-        .eq('status', 'Pending'); // Only get notifications with 'pending' status
+        .eq('facemail', loggedInFacemail);
 
     if (error) {
         console.error('Error fetching notifications:', error);
@@ -231,7 +228,6 @@ async function fetchNotificationsForCurrentUser() {
     }
 
     const notificationsContainer = document.getElementById('notifications-container');
-
     if (data.length > 0) {
         notificationsContainer.innerHTML = ''; 
         data.forEach((notification) => {
@@ -272,26 +268,26 @@ async function fetchNotificationsForCurrentUser() {
             notificationsContainer.appendChild(notificationElement);
         });
 
-        attachButtonListeners();
+        attachButtonListeners(session);
     } else {
         notificationsContainer.innerHTML = '<p>No notifications found.</p>';
     }
 }
 
-function attachButtonListeners() {
+function attachButtonListeners(session) {
     const approveButtons = document.querySelectorAll('.approve-button');
     const denyButtons = document.querySelectorAll('.deny-button');
 
     approveButtons.forEach((button) => {
-        button.addEventListener('click', handleApprove);
+        button.addEventListener('click', (event) => handleApprove(event, session));
     });
 
     denyButtons.forEach((button) => {
-        button.addEventListener('click', handleDeny);
+        button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
 
-async function handleApprove(event) {
+async function handleApprove(event, session) {
     const courseFullCode = event.target.getAttribute('data-course');
     const deptCode = event.target.getAttribute('data-dept');
     const courseNum = event.target.getAttribute('data-course-num');
@@ -304,7 +300,6 @@ async function handleApprove(event) {
     const uniqueKey = `${stufirstname}-${stulastname}-${submissionDate}`;
 
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
-
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses')
         .select('courseid')
@@ -334,27 +329,16 @@ async function handleApprove(event) {
         console.error('Error updating attendance table:', attendanceError);
     } else {
         console.log('Attendance approved successfully!');
-        
-        // Update the notification status to 'approved'
-        await supabasePublicClient
-            .from('temptable')
-            .update({ status: 'approved' })
-            .eq('facemail', session.user.email)
-            .eq('insertdate', submissionDate)
-            .eq('studentfirstname', stufirstname)
-            .eq('studentlastname', stulastname);
-
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
         removeNotificationFromUI(uniqueKey);
     }
 }
 
-async function handleDeny(event) {
+async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
 
-    // Update the notification status to 'denied'
-    await supabasePublicClient
+    const { error } = await supabasePublicClient
         .from('temptable')
         .update({ status: 'denied' })
         .eq('facemail', session.user.email)
@@ -362,7 +346,27 @@ async function handleDeny(event) {
         .eq('studentfirstname', stufirstname)
         .eq('studentlastname', stulastname);
 
-    removeNotificationFromUI(uniqueKey);
+    if (error) {
+        console.error('Error updating notification status:', error);
+    } else {
+        removeNotificationFromUI(uniqueKey);
+    }
+}
+
+function displaySuccessMessage(firstName, lastName, date, time) {
+    const messageContainer = document.getElementById('message-container');
+    const message = `Added ${firstName} ${lastName}'s attendance for ${date} at ${time}.`;
+
+    const messageElement = document.createElement('div');
+    document.getElementById('message-container').style.backgroundColor = 'green';
+    messageElement.className = 'success-message';
+    messageElement.textContent = message;
+
+    messageContainer.appendChild(messageElement);
+
+    setTimeout(() => {
+        messageElement.remove();
+    }, 5000);
 }
 
 function removeNotificationFromUI(uniqueKey) {
