@@ -348,34 +348,31 @@ async function handleApprove(event, session) {
 
 async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
-    const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
+    const [stufirstname, stulastname] = uniqueKey.split('-');
 
     console.log('Attempting to deny attendance for:', {
         stufirstname,
         stulastname,
-        submissionDate,
         facemail: session.user.email
     });
 
-    // Delete the row from temptable instead of updating
+    // Update status to 'denied' instead of delete to keep records
     const { error } = await supabasePublicClient
         .from('temptable')
-        .delete()
+        .update({ status: 'denied' })
         .eq('facemail', session.user.email)
-        .eq('insertdate', submissionDate)
         .eq('studentfirstname', stufirstname)
         .eq('studentlastname', stulastname);
 
     if (error) {
-        console.error('Error deleting notification:', error);
-        displayErrorMessage('Could not delete notification. Please try again.');
+        console.error('Error updating notification to denied:', error);
+        displayErrorMessage('Could not deny notification. Please try again.');
     } else {
-        console.log('Notification deleted successfully');
+        console.log('Notification denied successfully');
         removeNotificationFromUI(uniqueKey);
         displayDeniedMessage(stufirstname, stulastname);
     }
 }
-
 
 
 
@@ -388,6 +385,7 @@ function removeNotificationFromUI(uniqueKey) {
         console.log("Notification element not found for key:", uniqueKey);
     }
 }
+
 
 function displaySuccessMessage(firstName, lastName) {
     const messageContainer = document.getElementById('message-container');
