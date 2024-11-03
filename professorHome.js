@@ -349,7 +349,7 @@ async function handleApprove(event) {
     }
 }
 
-function handleDeny(event) {
+async function handleDeny(event) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
 
