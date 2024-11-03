@@ -327,6 +327,9 @@ async function handleApprove(event, session) {
     console.log('Attendance approved successfully!');
     displaySuccessMessage(stufirstname, stulastname);
 
+    // Create a unique key for identifying the record
+    const uniqueKey = `${stufirstname}-${stulastname}-${attendanceTime.toISOString().split('T')[0]}`;
+
     // Update status in the temptable
     const { error: updateError } = await supabasePublicClient
         .from('temptable')
@@ -340,8 +343,7 @@ async function handleApprove(event, session) {
         console.error('Error updating notification status:', updateError);
         displayErrorMessage('Could not update notification status. Please try again.');
     } else {
-        // Remove notification from UI
-        const uniqueKey = `${stufirstname}-${stulastname}-${attendanceTime.toISOString().split('T')[0]}`;
+        // Remove notification from UI using the unique key
         removeNotificationFromUI(uniqueKey);
     }
 }
