@@ -217,7 +217,8 @@ async function fetchNotificationsForCurrentUser() {
     const { data, error } = await supabasePublicClient
         .from('temptable')
         .select('*')
-        .eq('facemail', loggedInFacemail);
+        .eq('facemail', loggedInFacemail)
+	.eq('status', 'Pending');
 
     if (error) {
         console.error('Error fetching notifications:', error);
