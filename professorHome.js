@@ -335,8 +335,14 @@ async function handleApprove(event, session) {
 }
 
 async function handleDeny(event, session) {
+    if (!session || !session.user) {
+        console.error('Session data is missing or invalid');
+        return;
+    }
+
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
+    console.log("Attempting to deny notification with key:", uniqueKey);
 
     const { error } = await supabasePublicClient
         .from('temptable')
@@ -349,7 +355,19 @@ async function handleDeny(event, session) {
     if (error) {
         console.error('Error updating notification status:', error);
     } else {
+        console.log("Notification status updated to 'denied'. Removing from UI:", uniqueKey);
+	displayDenyMessage(stufirstname, stulastname, submissionDate, submissionTime);
         removeNotificationFromUI(uniqueKey);
+    }
+}
+
+function removeNotificationFromUI(uniqueKey) {
+    const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
+    if (notificationElement) {
+        notificationElement.remove();
+        console.log("Notification removed from UI for key:", uniqueKey);
+    } else {
+        console.log("Notification element not found for key:", uniqueKey);
     }
 }
 
@@ -369,12 +387,23 @@ function displaySuccessMessage(firstName, lastName, date, time) {
     }, 5000);
 }
 
-function removeNotificationFromUI(uniqueKey) {
-    const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
-    if (notificationElement) {
-        notificationElement.remove();
-    }
+function displayDeniedMessage(firstName, lastName, date, time) {
+    const messageContainer = document.getElementById('message-container');
+    const message = `Denied ${firstName} ${lastName}'s attendance request for ${date}.`;
+
+    const messageElement = document.createElement('div');
+    messageContainer.style.backgroundColor = 'red'; // Set background color to red
+    messageElement.className = 'denied-message'; // Class for custom styling if needed
+    messageElement.textContent = message;
+
+    messageContainer.appendChild(messageElement);
+
+    // Auto-remove the message after a few seconds
+    setTimeout(() => {
+        messageElement.remove();
+    }, 5000);
 }
+
 
 fetchNotificationsForCurrentUser();
 
