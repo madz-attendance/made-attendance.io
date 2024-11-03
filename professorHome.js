@@ -205,7 +205,6 @@ function downloadCSV(csvData, filename) {
     document.body.removeChild(a);
 }
 
-
 async function fetchNotificationsForCurrentUser() {
     const { data: { session }, error: authError } = await supabasePublicClient.auth.getSession();
 
@@ -267,11 +266,14 @@ async function fetchNotificationsForCurrentUser() {
 }
 
 function attachButtonListeners(session) {
-    document.querySelectorAll('.approve-button').forEach((button) => {
+    const approveButtons = document.querySelectorAll('.approve-button');
+    const denyButtons = document.querySelectorAll('.deny-button');
+
+    approveButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleApprove(event, session));
     });
 
-    document.querySelectorAll('.deny-button').forEach((button) => {
+    denyButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
@@ -340,6 +342,13 @@ async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
 
+    console.log('Attempting to deny attendance for:', {
+        stufirstname,
+        stulastname,
+        submissionDate,
+        facemail: session.user.email
+    });
+
     const { error } = await supabasePublicClient
         .from('temptable')
         .update({ status: 'denied' })
@@ -401,7 +410,6 @@ function displayDeniedMessage(firstName, lastName) {
 
 // Initial call to fetch notifications
 fetchNotificationsForCurrentUser();
-
 
 
 
