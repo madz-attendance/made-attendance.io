@@ -218,10 +218,12 @@ async function fetchNotificationsForCurrentUser() {
 
     const loggedInFacemail = session.user.email;
 
+    // Fetch only pending notifications
     const { data, error } = await supabasePublicClient
         .from('temptable')
         .select('*')
-        .eq('facemail', loggedInFacemail);
+        .eq('facemail', loggedInFacemail)
+        .eq('status', 'Pending'); // Only get notifications with 'pending' status
 
     if (error) {
         console.error('Error fetching notifications:', error);
@@ -332,29 +334,34 @@ async function handleApprove(event) {
         console.error('Error updating attendance table:', attendanceError);
     } else {
         console.log('Attendance approved successfully!');
+        
+        // Update the notification status to 'approved'
+        await supabasePublicClient
+            .from('temptable')
+            .update({ status: 'approved' })
+            .eq('facemail', session.user.email)
+            .eq('insertdate', submissionDate)
+            .eq('studentfirstname', stufirstname)
+            .eq('studentlastname', stulastname);
+
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
         removeNotificationFromUI(uniqueKey);
     }
 }
 
-function displaySuccessMessage(firstName, lastName, date, time) {
-    const messageContainer = document.getElementById('message-container');
-    const message = `Added ${firstName} ${lastName}'s attendance for ${date} at ${time}.`;
-
-    const messageElement = document.createElement('div');
-    document.getElementById('message-container').style.backgroundColor = 'green';
-    messageElement.className = 'success-message';
-    messageElement.textContent = message;
-
-    messageContainer.appendChild(messageElement);
-
-    setTimeout(() => {
-        messageElement.remove();
-    }, 5000);
-}
-
 function handleDeny(event) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
+    const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
+
+    // Update the notification status to 'denied'
+    await supabasePublicClient
+        .from('temptable')
+        .update({ status: 'denied' })
+        .eq('facemail', session.user.email)
+        .eq('insertdate', submissionDate)
+        .eq('studentfirstname', stufirstname)
+        .eq('studentlastname', stulastname);
+
     removeNotificationFromUI(uniqueKey);
 }
 
@@ -366,6 +373,8 @@ function removeNotificationFromUI(uniqueKey) {
 }
 
 fetchNotificationsForCurrentUser();
+
+
 
 
 async function getProfessorCourses() {
