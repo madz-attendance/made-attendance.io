@@ -327,15 +327,31 @@ async function handleApprove(event, session) {
     console.log('Attendance approved successfully!');
     displaySuccessMessage(stufirstname, stulastname);
 
-    // Create a unique key for identifying the record
-    const uniqueKey = `${stufirstname}-${stulastname}-${attendanceTime.toISOString().split('T')[0]}`;
+    // Fetch the insertdate for the selected student
+    const { data: notificationData, error: notificationError } = await supabasePublicClient
+        .from('temptable')
+        .select('insertdate')
+        .eq('facemail', session.user.email)
+        .eq('studentfirstname', stufirstname)
+        .eq('studentlastname', stulastname)
+        .eq('status', 'Pending')
+        .single();
+
+    if (notificationError || !notificationData) {
+        console.error('Error fetching notification data:', notificationError || 'Notification not found');
+        displayErrorMessage('Could not find notification data. Please try again.');
+        return;
+    }
+
+    const insertdate = notificationData.insertdate; // Get the insertdate from the fetched notification
+    const uniqueKey = `${stufirstname}-${stulastname}-${insertdate}`; // Construct the unique key using insertdate
 
     // Update status in the temptable
     const { error: updateError } = await supabasePublicClient
         .from('temptable')
         .update({ status: 'approved' })
         .eq('facemail', session.user.email)
-        .eq('insertdate', attendanceTime.toISOString().split('T')[0])
+        .eq('insertdate', insertdate)
         .eq('studentfirstname', stufirstname)
         .eq('studentlastname', stulastname);
 
