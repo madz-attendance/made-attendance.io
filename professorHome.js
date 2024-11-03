@@ -297,9 +297,16 @@ async function handleApprove(event, session) {
     const stuid = event.target.getAttribute('data-student-id');
     const submissionDate = event.target.getAttribute('data-date');
     const submissionTime = event.target.getAttribute('data-time');
-    const uniqueKey = `${stufirstname}-${stulastname}-${submissionDate}`;
-
     const attendanceTime = new Date(`${submissionDate}T${submissionTime}`);
+
+    console.log('Approving attendance for:', {
+        stufirstname,
+        stulastname,
+        submissionDate,
+        submissionTime,
+        facemail: session.user.email
+    });
+
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses')
         .select('courseid')
@@ -307,7 +314,7 @@ async function handleApprove(event, session) {
         .eq('coursenum', courseNum)
         .eq('coursesec', courseSec)
         .single();
-    
+
     if (courseError || !courseData) {
         console.error('Error fetching course ID:', courseError || 'Course not found');
         return;
@@ -330,19 +337,34 @@ async function handleApprove(event, session) {
     } else {
         console.log('Attendance approved successfully!');
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
-        removeNotificationFromUI(uniqueKey);
+
+        // Update status in the temptable
+        const { error } = await supabasePublicClient
+            .from('temptable')
+            .update({ status: 'approved' })
+            .eq('facemail', session.user.email)
+            .eq('insertdate', submissionDate)
+            .eq('studentfirstname', stufirstname)
+            .eq('studentlastname', stulastname);
+
+        if (error) {
+            console.error('Error updating notification status:', error);
+        } else {
+            removeNotificationFromUI(`${stufirstname}-${stulastname}-${submissionDate}`);
+        }
     }
 }
 
 async function handleDeny(event, session) {
-    if (!session || !session.user) {
-        console.error('Session data is missing or invalid');
-        return;
-    }
-
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
-    console.log("Attempting to deny notification with key:", uniqueKey);
+
+    console.log('Denying attendance for:', {
+        stufirstname,
+        stulastname,
+        submissionDate,
+        facemail: session.user.email
+    });
 
     const { error } = await supabasePublicClient
         .from('temptable')
@@ -355,11 +377,13 @@ async function handleDeny(event, session) {
     if (error) {
         console.error('Error updating notification status:', error);
     } else {
-        console.log("Notification status updated to 'denied'. Removing from UI:", uniqueKey);
-	displayDenyMessage(stufirstname, stulastname, submissionDate, submissionTime);
+        console.log('Notification status updated to denied');
         removeNotificationFromUI(uniqueKey);
+        displayDeniedMessage(stufirstname, stulastname, submissionDate);
     }
 }
+
+
 
 function removeNotificationFromUI(uniqueKey) {
     const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
