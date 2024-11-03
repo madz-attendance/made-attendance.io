@@ -659,3 +659,85 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     });
+
+
+async function loadAccountInfo() {
+    try {
+        // Get session data
+        const { data: sessionData, error: sessionError } = await supabasePublicClient.auth.getSession();
+
+        if (sessionError) {
+            console.error("Error getting session:", sessionError.message);
+            return;
+        }
+
+        const user = sessionData?.session?.user;
+
+        // Check if user is authenticated
+        if (!user) {
+            console.error("User is not authenticated.");
+            return;
+        }
+
+        // Display email inline
+        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<span> ${user.email}</span>`);
+
+        // Fetch user's department
+        const { data: deptData, error: deptError } = await supabasePublicClient
+            .from('courses')
+            .select('dept')
+            .eq('facemail', user.email)
+            .limit(1);
+
+        if (deptError) {
+            console.error("Error fetching department:", deptError.message);
+        } else if (deptData.length) {
+            document.querySelector("#accountTab .account-container h4:nth-of-type(2)").insertAdjacentHTML('afterend', `<span> ${deptData[0].dept}</span>`);
+        }
+
+        // Fetch user's class history
+        const { data: classesData, error: classesError } = await supabasePublicClient
+            .from('courses')
+            .select('coursesem, coursecode, coursenum, coursesec, coursename')
+            .eq('facemail', user.email);
+
+        if (classesError) {
+            console.error("Error fetching class history:", classesError.message);
+        } else if (classesData.length) {
+            // Create table structure with bold headers and black borders
+            let classesTable = `
+                <table style="width:100%; border-collapse: collapse; border: 2px solid black;">
+                    <thead>
+                        <tr>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Semester</th>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Course Taught</th>
+                            <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Course Name</th>
+                        </tr>
+                    </thead>
+                    <tbody>`;
+
+            // Populate table rows with class data
+            classesData.forEach(course => {
+                const courseTaught = `${course.coursecode} ${course.coursenum} ${course.coursesec}`;
+                classesTable += `
+                    <tr>
+                        <td style="border: 2px solid black; padding: 8px;">${course.coursesem}</td>
+                        <td style="border: 2px solid black; padding: 8px;">${courseTaught}</td>
+                        <td style="border: 2px solid black; padding: 8px;">${course.coursename}</td>
+                    </tr>`;
+            });
+
+            classesTable += `
+                    </tbody>
+                </table>`;
+
+            // Insert the table after the third h4 in the account container
+            document.querySelector("#accountTab .account-container h4:nth-of-type(3)").insertAdjacentHTML('afterend', classesTable);
+        }
+    } catch (error) {
+        console.error("Error loading account info:", error.message);
+    }
+}
+
+// Call the function to load account info on page load
+document.addEventListener("DOMContentLoaded", loadAccountInfo);
