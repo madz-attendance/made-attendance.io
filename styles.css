@@ -1087,3 +1087,26 @@ header .calendar-current-date {
 .calendar-dates li:not(.active):hover::before {
   background: #e4e1e1;
 }
+
+
+.notification-actions button {
+    font-size: 20px;
+    color: white;
+    background-color: #2A4C6B; /* Main button color */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 12px;
+    padding: 12px 25px;
+    width: 48%; /* Adjust width to allow both buttons to sit side by side */
+    margin-right: 4%; /* Add some space between buttons */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+.notification-actions button:last-child {
+    margin-right: 0; /* Remove right margin for the last button */
+}
+
+.notification-actions button:hover {
+    background-color: #0056b3; /* Hover color */
+}
