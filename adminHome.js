@@ -1474,3 +1474,34 @@ function handleButton(buttonId, tabName) {
 Object.keys(pageButtons).forEach(function(buttonId) {
 	handleButton(buttonId, pageButtons[buttonId]);
 });
+
+
+async function loadAccountInfo() {
+    try {
+        // Get session data
+        const { data: sessionData, error: sessionError } = await supabasePublicClient.auth.getSession();
+
+        if (sessionError) {
+            console.error("Error getting session:", sessionError.message);
+            return;
+        }
+
+        const user = sessionData?.session?.user;
+
+        // Check if user is authenticated
+        if (!user) {
+            console.error("User is not authenticated.");
+            return;
+        }
+
+        // Display email inline
+        document.querySelector("#accountTab .account-container h4:nth-of-type(1)").insertAdjacentHTML('afterend', `<span> ${user.email}</span>`);
+
+
+	} catch (error) {
+        console.error("Error loading account info:", error.message);
+    }
+}
+
+// Call the function to load account info on page load
+document.addEventListener("DOMContentLoaded", loadAccountInfo);
