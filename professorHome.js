@@ -357,19 +357,20 @@ async function handleDeny(event, session) {
         facemail: session.user.email
     });
 
+    // Delete the row from temptable instead of updating
     const { error } = await supabasePublicClient
         .from('temptable')
-        .update({ status: 'denied' })
+        .delete()
         .eq('facemail', session.user.email)
         .eq('insertdate', submissionDate)
         .eq('studentfirstname', stufirstname)
         .eq('studentlastname', stulastname);
 
     if (error) {
-        console.error('Error updating notification status:', error);
-        displayErrorMessage('Could not update notification status. Please try again.');
+        console.error('Error deleting notification:', error);
+        displayErrorMessage('Could not delete notification. Please try again.');
     } else {
-        console.log('Notification status updated to denied');
+        console.log('Notification deleted successfully');
         removeNotificationFromUI(uniqueKey);
         displayDeniedMessage(stufirstname, stulastname);
     }
