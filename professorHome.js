@@ -205,11 +205,9 @@ function downloadCSV(csvData, filename) {
     document.body.removeChild(a);
 }
 
+
 async function fetchNotificationsForCurrentUser() {
-    const {
-        data: { session },
-        error: authError,
-    } = await supabasePublicClient.auth.getSession();
+    const { data: { session }, error: authError } = await supabasePublicClient.auth.getSession();
 
     if (authError || !session) {
         console.error('Error fetching user session:', authError || 'No active session');
@@ -228,75 +226,67 @@ async function fetchNotificationsForCurrentUser() {
     }
 
     const notificationsContainer = document.getElementById('notifications-container');
-    if (data.length > 0) {
-        notificationsContainer.innerHTML = ''; 
-        data.forEach((notification) => {
-            const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`;
+    notificationsContainer.innerHTML = data.length > 0 ? '' : '<p>No notifications found.</p>';
 
-            const courseParts = notification.coursecode.split(' ');
-            const deptCode = courseParts[0];
-            const courseNum = courseParts[1];
-            const courseSec = courseParts[2];
+    data.forEach((notification) => {
+        const uniqueKey = `${notification.studentfirstname}-${notification.studentlastname}-${notification.insertdate}`;
+        const courseParts = notification.coursecode.split(' ');
+        const deptCode = courseParts[0];
+        const courseNum = courseParts[1];
+        const courseSec = courseParts[2];
 
-            const notificationElement = document.createElement('div');
-            notificationElement.className = 'notification';
-            notificationElement.setAttribute('data-unique-key', uniqueKey);
-            notificationElement.innerHTML = `
-                <div class="notification-header">
-                    <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
-                </div>
-                <div class="notification-body">
-                    <p><strong>Course:</strong> ${notification.coursecode}</p>
-                    <p><strong>Note:</strong> ${notification.note}</p>
-                    <p><strong>Date of Submission:</strong> ${notification.insertdate}</p>
-                    <p><strong>Time of Submission:</strong> ${notification.inserttime}</p>
-                </div>
-                <div class="notification-actions">
-                    <button class="approve-button" 
-                            data-course="${notification.coursecode}" 
-                            data-dept="${deptCode}" 
-                            data-course-num="${courseNum}" 
-                            data-course-sec="${courseSec}" 
-                            data-student-firstname="${notification.studentfirstname}" 
-                            data-student-lastname="${notification.studentlastname}" 
-                            data-student-id="${notification.stuid}" 
-                            data-date="${notification.insertdate}" 
-                            data-time="${notification.inserttime}">Approve</button>
-                    <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
-                </div>
-            `;
-            notificationsContainer.appendChild(notificationElement);
-        });
+        const notificationElement = document.createElement('div');
+        notificationElement.className = 'notification';
+        notificationElement.setAttribute('data-unique-key', uniqueKey);
+        notificationElement.innerHTML = `
+            <div class="notification-header">
+                <h3>${notification.studentfirstname} ${notification.studentlastname}'s Attendance Verification Request</h3>
+            </div>
+            <div class="notification-body">
+                <p><strong>Course:</strong> ${notification.coursecode}</p>
+                <p><strong>Note:</strong> ${notification.note}</p>
+                <p><strong>Date of Submission:</strong> ${notification.insertdate}</p>
+                <p><strong>Time of Submission:</strong> ${notification.inserttime}</p>
+            </div>
+            <div class="notification-actions">
+                <button class="approve-button" 
+                        data-course="${notification.coursecode}" 
+                        data-dept="${deptCode}" 
+                        data-course-num="${courseNum}" 
+                        data-course-sec="${courseSec}" 
+                        data-student-firstname="${notification.studentfirstname}" 
+                        data-student-lastname="${notification.studentlastname}" 
+                        data-student-id="${notification.stuid}">Approve</button>
+                <button class="deny-button" data-unique-key="${uniqueKey}">Deny</button>
+            </div>
+        `;
+        notificationsContainer.appendChild(notificationElement);
+    });
 
-        attachButtonListeners(session);
-    } else {
-        notificationsContainer.innerHTML = '<p>No notifications found.</p>';
-    }
+    attachButtonListeners(session);
 }
 
 function attachButtonListeners(session) {
-    const approveButtons = document.querySelectorAll('.approve-button');
-    const denyButtons = document.querySelectorAll('.deny-button');
-
-    approveButtons.forEach((button) => {
+    document.querySelectorAll('.approve-button').forEach((button) => {
         button.addEventListener('click', (event) => handleApprove(event, session));
     });
 
-    denyButtons.forEach((button) => {
+    document.querySelectorAll('.deny-button').forEach((button) => {
         button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
 
 async function handleApprove(event, session) {
-    const uniqueKey = event.target.closest('.notification').getAttribute('data-unique-key');
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
-    const submissionDate = event.target.getAttribute('data-date');
-    const submissionTime = event.target.getAttribute('data-time');
+    const stuid = event.target.getAttribute('data-student-id');
+    const courseFullCode = event.target.getAttribute('data-course');
+    const deptCode = event.target.getAttribute('data-dept');
+    const courseNum = event.target.getAttribute('data-course-num');
+    const courseSec = event.target.getAttribute('data-course-sec');
 
-    console.log('Approving attendance for:', { stufirstname, stulastname, submissionDate, facemail: session.user.email });
+    const attendanceTime = new Date(); // Set to current time for approval
 
-    // Get course ID
     const { data: courseData, error: courseError } = await supabasePublicClient
         .from('courses')
         .select('courseid')
@@ -310,46 +300,45 @@ async function handleApprove(event, session) {
         return;
     }
 
-    // Insert attendance
     const { error: attendanceError } = await supabasePublicClient
         .from('attendance')
-        .insert([{ 
-            courseid: courseData.courseid, 
-            stufirstname, 
-            stulastname, 
-            stuid, 
-            attendancetime: new Date(`${submissionDate}T${submissionTime}`) 
-        }]);
+        .insert([
+            {
+                courseid: courseData.courseid,
+                stufirstname: stufirstname,
+                stulastname: stulastname,
+                stuid: stuid,
+                attendancetime: attendanceTime,
+            }
+        ]);
 
     if (attendanceError) {
         console.error('Error updating attendance table:', attendanceError);
-        return;
-    }
-
-    // Update status in the temptable
-    const { error } = await supabasePublicClient
-        .from('temptable')
-        .update({ status: 'approved' })
-        .eq('facemail', session.user.email)
-        .eq('insertdate', submissionDate)
-        .eq('studentfirstname', stufirstname)
-        .eq('studentlastname', stulastname);
-
-    if (error) {
-        console.error('Error updating notification status:', error);
     } else {
         console.log('Attendance approved successfully!');
-        displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
-        removeNotificationFromUI(uniqueKey); // Remove the notification
-        await fetchNotificationsForCurrentUser(); // Optionally refresh notifications
+        displaySuccessMessage(stufirstname, stulastname);
+
+        // Update status in the temptable
+        const uniqueKey = `${stufirstname}-${stulastname}-${attendanceTime.toISOString().split('T')[0]}`;
+        const { error } = await supabasePublicClient
+            .from('temptable')
+            .update({ status: 'approved' })
+            .eq('facemail', session.user.email)
+            .eq('insertdate', attendanceTime.toISOString().split('T')[0])
+            .eq('studentfirstname', stufirstname)
+            .eq('studentlastname', stulastname);
+
+        if (error) {
+            console.error('Error updating notification status:', error);
+        } else {
+            removeNotificationFromUI(uniqueKey);
+        }
     }
 }
 
 async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
     const [stufirstname, stulastname, submissionDate] = uniqueKey.split('-');
-
-    console.log('Denying attendance for:', { stufirstname, stulastname, submissionDate, facemail: session.user.email });
 
     const { error } = await supabasePublicClient
         .from('temptable')
@@ -363,9 +352,8 @@ async function handleDeny(event, session) {
         console.error('Error updating notification status:', error);
     } else {
         console.log('Notification status updated to denied');
-        removeNotificationFromUI(uniqueKey); // Remove the notification
-        displayDeniedMessage(stufirstname, stulastname, submissionDate);
-        await fetchNotificationsForCurrentUser(); // Optionally refresh notifications
+        removeNotificationFromUI(uniqueKey);
+        displayDeniedMessage(stufirstname, stulastname);
     }
 }
 
@@ -379,15 +367,12 @@ function removeNotificationFromUI(uniqueKey) {
     }
 }
 
-
-
-
-function displaySuccessMessage(firstName, lastName, date, time) {
+function displaySuccessMessage(firstName, lastName) {
     const messageContainer = document.getElementById('message-container');
-    const message = `Added ${firstName} ${lastName}'s attendance for ${date} at ${time}.`;
+    const message = `Added ${firstName} ${lastName}'s attendance successfully.`;
 
     const messageElement = document.createElement('div');
-    document.getElementById('message-container').style.backgroundColor = 'green';
+    messageContainer.style.backgroundColor = 'green';
     messageElement.className = 'success-message';
     messageElement.textContent = message;
 
@@ -398,24 +383,23 @@ function displaySuccessMessage(firstName, lastName, date, time) {
     }, 5000);
 }
 
-function displayDeniedMessage(firstName, lastName, date, time) {
+function displayDeniedMessage(firstName, lastName) {
     const messageContainer = document.getElementById('message-container');
-    const message = `Denied ${firstName} ${lastName}'s attendance request for ${date}.`;
+    const message = `Denied ${firstName} ${lastName}'s attendance request.`;
 
     const messageElement = document.createElement('div');
-    messageContainer.style.backgroundColor = 'red'; // Set background color to red
-    messageElement.className = 'denied-message'; // Class for custom styling if needed
+    messageContainer.style.backgroundColor = 'red'; 
+    messageElement.className = 'denied-message'; 
     messageElement.textContent = message;
 
     messageContainer.appendChild(messageElement);
 
-    // Auto-remove the message after a few seconds
     setTimeout(() => {
         messageElement.remove();
     }, 5000);
 }
 
-
+// Initial call to fetch notifications
 fetchNotificationsForCurrentUser();
 
 
