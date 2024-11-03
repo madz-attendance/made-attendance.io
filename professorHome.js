@@ -287,9 +287,8 @@ function attachButtonListeners(session) {
     });
 }
 
-
 async function handleApprove(event, session) {
-    // Extract data attributes from button
+    const uniqueKey = event.target.closest('.notification').getAttribute('data-unique-key');
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
     const submissionDate = event.target.getAttribute('data-date');
@@ -324,7 +323,7 @@ async function handleApprove(event, session) {
 
     if (attendanceError) {
         console.error('Error updating attendance table:', attendanceError);
-        return; // Exit if there's an error
+        return;
     }
 
     // Update status in the temptable
@@ -341,8 +340,8 @@ async function handleApprove(event, session) {
     } else {
         console.log('Attendance approved successfully!');
         displaySuccessMessage(stufirstname, stulastname, submissionDate, submissionTime);
-        removeNotificationFromUI(uniqueKey);
-        await fetchNotificationsForCurrentUser(); // Refresh notifications
+        removeNotificationFromUI(uniqueKey); // Remove the notification
+        await fetchNotificationsForCurrentUser(); // Optionally refresh notifications
     }
 }
 
@@ -364,13 +363,11 @@ async function handleDeny(event, session) {
         console.error('Error updating notification status:', error);
     } else {
         console.log('Notification status updated to denied');
-        removeNotificationFromUI(uniqueKey);
+        removeNotificationFromUI(uniqueKey); // Remove the notification
         displayDeniedMessage(stufirstname, stulastname, submissionDate);
-        await fetchNotificationsForCurrentUser(); // Refresh notifications
+        await fetchNotificationsForCurrentUser(); // Optionally refresh notifications
     }
 }
-
-
 
 function removeNotificationFromUI(uniqueKey) {
     const notificationElement = document.querySelector(`.notification[data-unique-key="${uniqueKey}"]`);
@@ -381,6 +378,9 @@ function removeNotificationFromUI(uniqueKey) {
         console.log("Notification element not found for key:", uniqueKey);
     }
 }
+
+
+
 
 function displaySuccessMessage(firstName, lastName, date, time) {
     const messageContainer = document.getElementById('message-container');
