@@ -503,7 +503,7 @@ function attachDepartmentDropdownListener(professor_courses)
 // and then only display that dept as an option. In this last case, remove the "Any" option, since the prof/chair only
 // is part of one department. This will make it auto-select their department, which is convenient.
 
-/*
+
 async function fetchDepartments(email)
 {
 	console.log("In fetchDepartments, email: ", email);
@@ -535,23 +535,23 @@ async function fetchDepartments(email)
 					deptOption = document.createElement("option");
 					deptOption.value = deptName;
 					deptOption.text = deptName;
-					department_dropdown.appendChild(deptOption);
+					//department_dropdown.appendChild(deptOption);
 				});
 		}
 		// If the facrank is NOT an admin
 		else
 		{
 			// Add factdept as the only option to the dropdown menu. Remove the "Any" option as well
-			department_dropdown.remove(0);	// Remove the "any" option
+			//department_dropdown.remove(0);	// Remove the "any" option
 			deptOption = document.createElement("option"); // Create the dept option for the dropdown menu
 			deptOption.value = deptcode;
 			deptOption.text = deptcode;
-			department_dropdown.appendChild(deptOption);	// Add it to the dropdown menu
+			//department_dropdown.appendChild(deptOption);	// Add it to the dropdown menu
 		
 		}
 	}
 }
-*/
+
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================
