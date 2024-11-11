@@ -741,3 +741,77 @@ async function loadAccountInfo() {
 
 // Call the function to load account info on page load
 document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
+
+
+
+async function getProfessorCourses() {
+    const email = await fetchProfessorData();
+    const { data, error } = await supabasePublicClient
+        .from('courses')
+        .select('coursecode, coursenum, coursesem, coursesec')
+        .eq('facemail', email);
+    if (error) {console.error('Error fetching professor courses:', error); return [];}
+    return data;
+}
+
+// Populate the semester dropdown with only semesters the professor has courses in
+async function populateSemesterDropdown() {
+    const courses = await getProfessorCourses();
+    const semesterDropdown = document.getElementById('semesterDropdown');
+
+    // Get unique semesters from courses
+    const semesters = [...new Set(courses.map(course => course.coursesem))];
+
+    semesters.sort((a,b) => {
+        return parseInt(b.split(" ")[1]) - parseInt(a.split(" ")[1]);
+    }); //Sort the semesters from most recent -> oldest so the most recent is the default semester
+
+    // Populate semester dropdown
+    semesterDropdown.innerHTML = '';
+    semesters.forEach(coursesem => {
+        const option = document.createElement('option');
+        option.value = coursesem;
+        option.textContent = coursesem;
+        semesterDropdown.appendChild(option);
+    });
+
+    // Enable semester dropdown if semesters are available
+    if (semesters.length > 0) {
+        semesterDropdown.disabled = false;
+    }
+    populateCourseDropdown(semesters[0]);
+}
+
+// When a semester is selected, populate the course dropdown
+document.getElementById('semesterDropdown').addEventListener('change', function() {
+    const selectedSemester = this.value;
+    populateCourseDropdown(selectedSemester);
+});
+
+async function populateCourseDropdown(semester) {
+    const courses = await getProfessorCourses();
+    const courseDropdown = document.getElementById('courseDropdown');
+
+    // Filter courses based on selected semester
+    const semesterCourses = courses.filter(course => course.coursesem === semester);
+
+    // Populate course dropdown
+    courseDropdown.innerHTML = '';  // Clear previous options
+    semesterCourses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
+        option.textContent = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
+        courseDropdown.appendChild(option);
+    });
+
+    // Enable course dropdown and submit button if courses are available
+    if (semesterCourses.length > 0) {
+        courseDropdown.disabled = false;
+        document.getElementById('semesterSubmit').disabled = false;
+    } else {
+        courseDropdown.disabled = true;
+        document.getElementById('semesterSubmit').disabled = true;
+    }
+}
+
