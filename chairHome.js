@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function()
 	// Get the dropdown menus (for semester and courses)
 	const semester_dropdown = document.getElementById('semester_dropdown');
     const courses_dropdown = document.getElementById('courses_dropdown');
-	const department_dropdown = document.getElementById('department_dropdown');
+	//const department_dropdown = document.getElementById('department_dropdown');
 	
 	// Initialize the page (get professor info, get prof courses, fill in dropdown menus, etc)
 	initializePage();
@@ -60,7 +60,7 @@ async function initializePage()
 	// IMPORTANT NOTE: "professor_courses" can actually represent the courses that a professor, chair, or admin sees.
 	// I'm just too deep into this to change the variable name.
 	
-	attachDepartmentDropdownListener(professor_courses);// Now that the professor information is loaded, attach the event listener to its drop down menu. Must wait for prev async funcs to finish.
+	//attachDepartmentDropdownListener(professor_courses);// Now that the professor information is loaded, attach the event listener to its drop down menu. Must wait for prev async funcs to finish.
 	attachSemesterDropdownListener(professor_courses); // Now that the semesters information is loaded, attach the event listener to its dropdown menu. Must wait for the previous async functions to finish.
 	attachCoursesDropdownListener();	// Now that the courses information is loaded, attach the event listener to its dropdown menu. Must wait for previous async functions to finish.
 	
@@ -363,14 +363,15 @@ function attachSemesterDropdownListener(professor_courses)
 // Zaynin 09/26/2024
 // Called by the semester dropdown event listener to change the courses based on the selected
 // semester.
+/*
 function updateCoursesDropdown(professor_courses)
 {
 	// Get the courses dropdown menu, will update its options
 	const courses_dropdown = document.getElementById('courses_dropdown');
 	
 	// GET THE CURRENT SELECTED DEPT
-	const department_dropdown = document.getElementById('department_dropdown');
-	const selectedDept = department_dropdown.value;
+	//const department_dropdown = document.getElementById('department_dropdown');
+	//const selectedDept = department_dropdown.value;
 	console.log("In updateCoursesDropdown, current_selected_dept: ", selectedDept);
 	
 	// GET THE CURRENT SELECTED SEMESTER
@@ -449,7 +450,7 @@ function updateCoursesDropdown(professor_courses)
 		});
 	}
 }
-
+*/
 // Zaynin 09/26/2024
 // Event Listener for the Courses Dropdown Menu - will handle selections
 // Function to attach the event listener
@@ -476,6 +477,8 @@ function attachCoursesDropdownListener()
 // Function to attach the event listener
 // This must be done in a function, called in itializePage(). This will continue
 // to listen to changes in selection in the courses dropdown menu.
+
+/*
 function attachDepartmentDropdownListener(professor_courses) 
 {
 	//console.log("Professor Courses in ATTACH: ", professor_courses)
@@ -492,13 +495,15 @@ function attachDepartmentDropdownListener(professor_courses)
     });
     console.log("Event listener successfully attached to department_dropdown.");
 }
-
+*/
 
 // Zaynin 09/26/2024
 // Queries the supabase "users" table to find what the user's role is. If admin, query the "departments" table and
 // make every department an option. If any other role (prof/chair), query the "users" table, find the faculty's dept,
 // and then only display that dept as an option. In this last case, remove the "Any" option, since the prof/chair only
 // is part of one department. This will make it auto-select their department, which is convenient.
+
+/*
 async function fetchDepartments(email)
 {
 	console.log("In fetchDepartments, email: ", email);
@@ -546,7 +551,7 @@ async function fetchDepartments(email)
 		}
 	}
 }
-
+*/
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================
