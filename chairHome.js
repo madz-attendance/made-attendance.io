@@ -52,7 +52,7 @@ async function initializePage()
 	email = await fetchProfessorData();		// Get professor information and store email
 	//renderCourses(email);					// Query & render professor's courses
 	
-	await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
+	//await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
 	
 	await fetchSemesters(email);			// Populate the semesters drop-down menu with the valid semesters of the professor's courses
 	professor_courses = await fetchCourses(email);	// Populate the courses drop-down menu with the valid professor courses. Store prof courses
@@ -504,6 +504,7 @@ function attachDepartmentDropdownListener(professor_courses)
 // is part of one department. This will make it auto-select their department, which is convenient.
 
 
+/*
 async function fetchDepartments(email)
 {
 	console.log("In fetchDepartments, email: ", email);
@@ -551,7 +552,7 @@ async function fetchDepartments(email)
 		}
 	}
 }
-
+*/
 
 // Zaynin Sept 26 2024 (END)
 // =====================================================
