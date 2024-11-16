@@ -29,6 +29,15 @@
 				<div class="header-button" id="classes_button_PROFESSOR" onclick="openTab('classesTab')">
 					Classes
 				</div>
+				<div class="header-button" id="create_course_button_PROFESSOR" onclick="openTab('create_course')">
+					Create<br>Course
+				</div>
+				<div class="header-button" id="add_student_button_PROFESSOR" onclick="openTab('newStudent')" title="New Student">
+    				Roster<br>Entry
+				</div>
+				<div class="header-button" id="remove_student_button_PROFESSOR" onclick="openTab('removeStudent')" title="Remove Student">
+					Roster<br>Removal
+				</div>
 			</div>
 		</div>
 		<div class="header-col" id="header-col4-right-gap-PROFESSOR">
@@ -163,6 +172,336 @@
 			</div>
 			
 		</section>
+
+<!-- Create Course Tab Content -->
+<!-- Note: The dropdown menu options must not be "none", but instead "", or else the validity check in createCourse() won't work. It will count "none" as a valid value. -->
+<section id="create_course" class="tab-content">
+	<div class="account-container">
+		<h2>Create Course</h2>
+		<h4>All fields are required.</h4>
+		<div class="cc-input-master-container">
+			<form class = "cc-form" id="course_creation_form_PROFESSOR">
+				<!-- Department Dropdown -->
+				<div class="cc-input-container" id="cc_dept_prompt">
+					Department:
+				</div>
+				<div class="cc-input-container" id="cc_dept_dropdown_container">
+					<select id="course_creation_department_dropdown" name="options" required>
+						<option value=""></option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="cc-input-container" id="cc_sem_prompt">
+					Semester:
+				</div>
+				<div class="cc-input-container" id="cc_sem_dropdown_container">
+					<select id="course_creation_semester_dropdown" name="options" required>
+						<option value=""></option>
+					</select>
+				</div>
+				<!-- Course Number -->
+				<div class="cc-input-container" id="cc_coursenum_prompt">
+					Course Number:
+				</div>
+				<div class="cc-input-container" id="cc_coursenum_container">
+					<input type="number" id="cc_coursenum_input" name="cc_coursenum_input" required>
+				</div>
+				<!-- Course Name -->
+				<div class="cc-input-container" id="cc_coursename_prompt">
+					Course Name:
+				</div>
+				<div class="cc-input-container" id="cc_coursename_container">
+					<input type="text" id="cc_coursename_input" name="cc_coursename_input" required>
+				</div>
+				<!-- Section -->
+				<div class="cc-input-container" id="cc_coursesection_prompt">
+					Section:
+				</div>
+				<div class="cc-input-container" id="cc_coursesection_container">
+					<input type="text" id="cc_coursesection_input" name="cc_coursesection_input" required>
+				</div>
+				<!-- Building Dropdown -->
+				<div class="cc-input-container" id="cc_building_prompt">
+					Building:
+				</div>
+				<div class="cc-input-container" id="cc_building_dropdown_container">
+					<select id="course_creation_building_dropdown" name="options" required>
+						<option value=""></option>
+					</select>
+				</div>
+				<!-- Room -->
+				<div class="cc-input-container" id="cc_courseroom_prompt">
+					Room Number:
+				</div>
+				<div class="cc-input-container" id="cc_courseroom_container">
+					<input type="text" id="cc_courseroom_input" name="cc_courseroom_input" required>
+				</div>
+				<!-- Days -->
+				<div class="cc-input-container" id="cc_coursedays_prompt">
+					Days:
+				</div>
+				<div class="cc-input-container" id="cc_coursedays_container">
+					<div class="days-of-week">
+						<div class="day"> <label for="monday">M</label> <input type="checkbox" id="monday" name="days" value="M"> </div>
+						<div class="day"> <label for="tuesday">Tu</label> <input type="checkbox" id="tuesday" name="days" value="Tu"> </div>
+						<div class="day"> <label for="wednesday">W</label> <input type="checkbox" id="wednesday" name="days" value="W"> </div>
+						<div class="day"> <label for="thursday">Th</label> <input type="checkbox" id="thursday" name="days" value="Th"> </div>
+						<div class="day"> <label for="friday">F</label> <input type="checkbox" id="friday" name="days" value="F"> </div>
+						<div class="day"> <label for="saturday">Sa</label> <input type="checkbox" id="saturday" name="days" value="Sa"> </div>
+						<div class="day"> <label for="sunday">Su</label> <input type="checkbox" id="sunday" name="days" value="Su"> </div>
+					</div>
+				</div>
+				<!-- Start Time. NOTE: Takes it as 12-hour time but seems to automatically convert it to military time in javascript -->
+				<div class="cc-input-container" id="cc_start_time_prompt">
+					Start Time:
+				</div>
+				<div class="cc-input-container" id="cc_start_time_container">
+					<input type="time" id="cc_start_time_input" name="cc_start_time_input" required>
+				</div>
+				<!-- End Time. NOTE: Takes it as 12-hour time but seems to automatically convert it to military time in javascript -->
+				<div class="cc-input-container" id="cc_end_time_prompt">
+					End Time:
+				</div>
+				<div class="cc-input-container" id="cc_end_time_container">
+					<input type="time" id="cc_end_time_input" name="cc_end_time_input" required>
+				</div>
+				<!-- Professor -->
+				<div class="cc-input-container" id="cc_prof_prompt">
+					Professor:
+				</div>
+				<div class="cc-input-container" id="cc_prof_dropdown_container">
+					<select id="course_creation_professor_dropdown" name="options" required>
+						<option value=""></option>
+					</select>
+				</div>
+				<!-- Empty space between professor input and buttons -->
+				<div class="cc-input-container" id="cc_empty_space_left">
+					&nbsp;
+				</div>
+				<div class="cc-input-container" id="cc_empty_space_right">
+					&nbsp;
+				</div>
+				<!-- Submit Button and Clear Button -->
+				<div class="cc-input-container" id="cc_submit_button">
+					<input type="submit" value="Submit" onclick="createCourse(event)">
+				</div>
+				<div class="cc-input-container" id="cc_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
+		<div class="manual_submission_feedback_container" id="create_course_manual_submission_feedback_container">
+		
+		</div>
+	</div>
+
+</section>
+
+
+
+<!-- New Student / Roster Entry Tab Content -->
+<section id="newStudent" class="tab-content">
+	<div class="account-container">
+		<h2>Manually Add Student Into Roster</h2>
+		<h4>All fields are required.</h4>
+		<div class="ns-input-master-container">
+			<form class = "ns-form" id="student_creation_form">
+				<!-- Student ID Number -->
+				<div class="ns-input-container" id="ns_stuid_prompt">
+					Student ID:
+				</div>
+				<div class="ns-input-container" id="ns_stuid_container">
+					<input type="text" id="id_num" name="id_num" required>
+				</div>
+				<!-- Student First Name -->
+				<div class="ns-input-container" id="ns_firstname_prompt">
+					First Name:
+				</div>
+				<div class="ns-input-container" id="ns_firstname_container">
+					<input type="text" id="first_name" name="first_name" required>
+				</div>
+				<!-- Student Last Name -->
+				<div class="ns-input-container" id="ns_lastname_prompt">
+					Last Name:
+				</div>
+				<div class="ns-input-container" id="ns_lastname_container">
+					<input type="text" id="last_name" name="last_name" required>
+				</div>
+				<!-- Department Dropdown -->
+				<div class="ns-input-container" id="ns_dept_prompt">
+					Select a Department:
+				</div>
+				<div class="ns-input-container" id="ns_dept_dropdown_container">
+					<select id="new_student_department_dropdown" name="options" required>
+						<option value="none"></option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="ns-input-container" id="ns_sem_prompt">
+					Select a Semester:
+				</div>
+				<div class="ns-input-container" id="ns_sem_dropdown_container">
+					<select id="new_student_semester_dropdown" name="options">
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Course Dropdown -->
+				<div class="ns-input-container" id="ns_course_propt">
+					Select a Course:
+				</div>
+				<div class="ns-input-container" id="ns_course_dropdown_container">
+					<select id="new_student_courses_dropdown" name="options" required>
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Submit Button -->
+				<div class="ns-input-container" id="ns_submit_button">
+					<input type="submit" value="Submit" onclick="addStudentToRoster(event)">
+				</div>
+				<!-- Clear Button -->
+				<div class="ns-input-container" id="ns_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
+		<div class="manual_submission_feedback_container" id="new_student_manual_submission_feedback_container">
+		
+		</div>
+		<h2>Upload Students Into Rosters</h2>
+		<p>
+			Upload a .txt or .csv file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
+		</p>
+		<div class="upload_new_student_csv_container" id="upload_new_student_csv_container1">
+			<div class="new_student_csv_col" id="left_new_student_csv_col">
+				<label class="new_student_csv_choose_file_button" id="new_student_csv_choose_file_button">
+					<input type="file" id="new_student_csv_file_input" accept=".txt, .csv" onchange="handleNewStudentCSVChooseFile()"/>
+						Choose File
+				</label>
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_file_name_col">
+				<span id="new_student_csv_file_name">No file chosen</span>
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_midspace_col">
+			
+			</div>
+			<div class="new_student_csv_col" id="new_student_csv_upload_col">
+				<div class="new_student_csv_upload_button" id="new_student_csv_upload_button" onclick="handleNewStudentCSVUpload()">
+					Upload
+				</div>
+			</div>
+		</div>
+		<div class="upload_new_student_csv_container" id="upload_new_student_csv_container2">
+			<div class="new_student_csv_col" id="new_student_csv_feedback_col">
+					
+				</div>
+		</div>
+	</div>
+</section>
+
+
+
+<!-- Roster Removal Tab -->
+<section id="removeStudent" class="tab-content">
+	<div class="account-container">
+		<h2>Manually Remove Student from Roster</h2>
+		<h4>All fields are required.</h4>
+		<div class="rs-input-master-container">
+			<form class="rs-form" id="student_removal_form">
+				<!-- Student ID Number -->
+				<div class="rs-input-container" id="rs_stuid_prompt">
+					Student ID:
+				</div>
+				<div class="rs-input-container" id="rs_stuid_container">
+					<input type="text" id="removal_id_num" name="removal_id_num" required>
+				</div>
+				<!-- Student First Name -->
+				<div class="rs-input-container" id="rs_firstname_prompt">
+					First Name:
+				</div>
+				<div class="rs-input-container" id="rs_firstname_container">
+					<input type="text" id="removal_first_name" name="removal_first_name" required>
+				</div>
+				<!-- Student Last Name -->
+				<div class="rs-input-container" id="rs_lastname_prompt">
+					Last Name:
+				</div>
+				<div class="rs-input-container" id="rs_lastname_container">
+					<input type="text" id="removal_last_name" name="removal_last_name" required>
+				</div>
+				<!-- Department Dropdown -->
+				<div class="rs-input-container" id="rs_dept_prompt">
+					Select a Department:
+				</div>
+				<div class="rs-input-container" id="rs_dept_dropdown_container">
+					<select id="remove_student_department_dropdown" name="options" required>
+						<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Semester Dropdown -->
+				<div class="rs-input-container" id="rs_sem_prompt">
+					Select a Semester:
+				</div>
+				<div class="rs-input-container" id="rs_sem_dropdown_container">
+					<select id="remove_student_semester_dropdown" name="options">
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Course Dropdown -->
+				<div class="rs-input-container" id="rs_course_propt">
+					Select a Course:
+				</div>
+				<div class="rs-input-container" id="rs_course_dropdown_container">
+					<select id="remove_student_courses_dropdown" name="options" required>
+							<option value="none">Any</option>
+					</select>
+				</div>
+				<!-- Submit Button -->
+				<div class="rs-input-container" id="rs_submit_button">
+					<input type="submit" value="Submit" onclick="removeStudentFromRoster(event)">
+				</div>
+				<!-- Clear Button -->
+				<div class="rs-input-container" id="rs_clear_button">
+					<input type="reset" value="Clear">
+				</div>
+			</form>
+		</div>
+		<div class="manual_submission_feedback_container" id="remove_student_manual_submission_feedback_container">
+			
+		</div>
+		<h2>Upload Student Removals from Rosters</h2>
+		<p>
+			Upload a .txt or .csv file containing student information. More info on the <a href="javascript:void(0);" onclick="openTab('helpTab')"><i>Help</i></a> page.<br>
+		</p>
+		<div class="upload_remove_student_csv_container" id="upload_remove_student_csv_container1">
+			<div class="remove_student_csv_col" id="left_remove_student_csv_col">
+				<label class="remove_student_csv_choose_file_button" id="remove_student_csv_choose_file_button">
+					<input type="file" id="remove_student_csv_file_input" accept=".txt, .csv" onchange="handleRemoveStudentCSVChooseFile()"/>
+						Choose File
+				</label>
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_file_name_col">
+				<span id="remove_student_csv_file_name">No file chosen</span>
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_midspace_col">
+			
+			</div>
+			<div class="remove_student_csv_col" id="remove_student_csv_upload_col">
+				<div class="remove_student_csv_upload_button" id="remove_student_csv_upload_button" onclick="handleRemoveStudentCSVUpload()">
+					Upload
+				</div>
+			</div>
+		</div>
+		<div class="upload_remove_student_csv_container" id="upload_remove_student_csv_container2">
+			<div class="remove_student_csv_col" id="remove_student_csv_feedback_col">
+					
+				</div>
+		</div>
+	</div>
+</section>
+
+
+
+
 
 		<section id="helpTab" class="tab-content">
 			<h2> Help / FAQs: </h2>
