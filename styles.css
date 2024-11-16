@@ -574,15 +574,18 @@ th > * {
 
 /* ================== */
 /* PROFESSOR PAGE */
-#header-col2-left-gap-PROFESSOR { width: 31%; }
-#header-col3-tab-buttons-PROFESSOR {width: 16%;}
+#header-col2-left-gap-PROFESSOR { width: 27%; }
+#header-col3-tab-buttons-PROFESSOR {width: 40%; }
 #header-col4-right-gap-PROFESSOR { width: 26%; }
-#header-col5-extra-buttons-PROFESSOR { width: 15%; }
+#header-col5-extra-buttons-PROFESSOR { width: 15%; padding-top: 0.5%; }
 
 /* Make each tab button take up an equal portion of the header-col-sub */
 /* If we add a button in the future, make the widths equal 100% */
-#welcome_button_PROFESSOR { width: 50%; padding-top: 9%; }
-#classes_button_PROFESSOR { width: 50%; padding-top: 9%; }
+#welcome_button_PROFESSOR { width: 20%; padding-top: 5%; }
+#classes_button_PROFESSOR { width: 20%; padding-top: 5%; }
+#create_course_button_PROFESSOR { width: 20%; padding-top: 2%; }
+#add_student_button_PROFESSOR { width: 20%; padding-top: 2%; }
+#remove_student_button_PROFESSOR { width: 20%; padding-top: 2%; }
 
 #help_button_PROFESSOR { width: 25%; padding-top: 10%; }
 #account_button_PROFESSOR { width: 25%; padding-top: 10%; }
