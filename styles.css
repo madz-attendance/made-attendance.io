@@ -413,6 +413,13 @@ input[type="button"]:hover {
     display: flex;
     justify-content: center;
     align-items: center;
+	flex-direction: row;
+	gap: 2%;
+}
+
+.classes_page_button
+{
+	width: 48%;
 }
 
 #calendarBackButton,
