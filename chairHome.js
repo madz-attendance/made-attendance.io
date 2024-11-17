@@ -661,34 +661,16 @@ fetchNotificationsForCurrentUser();
 
 async function getProfessorCourses() {
     const email = await fetchProfessorData();
-	
-	// Get the chair's department from their email.
-	// For some reason, even though it returns the exact same thing, i MUST query the database for the department
-	// as opposed to using the global variable "chair_department." At this point in time, proven via output statements,
-	// they have the SAME EXACT VALUE, but for some reason using the global variable chair_department just bricks the entire
-	// classes page. makes no sense.
-	/*
-	const { data: deptData, error: deptError } = await supabasePublicClient
-		.from('users')
-		.select('deptcode')
-		.eq('facemail', email)
-		
-	if (deptError)
-	{ console.error("Error searching for chair department: ", deptError); return []; }
 
-	var chairDepartment = deptData[0].deptcode;
-	console.log("ABUJA: ", chairDepartment, chair_department);
-	*/
-	
-	console.log("RECTANGLE: ", chair_department);
-	console.log("In getProfessorCourses: email: ", email);
     const { data: getCoursesData, error: getCoursesError } = await supabasePublicClient
         .from('courses')
         .select('coursecode, coursenum, coursesem, coursesec')
-		//.eq('dept', chairDepartment);
+	.order('coursecode', { ascending: true }) 
+	.order('coursenum', { ascending: true }) 
+	.order('coursesec', { ascending: false }) 
+	.order('coursesem', { ascending: true })
         .eq('dept', "CPSC");
 		
-	console.log("rectangle");
     if (getCoursesError) {console.error('Error fetching professor courses:', getCoursesError); return [];}
     return getCoursesData;
 }
