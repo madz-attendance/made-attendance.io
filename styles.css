@@ -594,16 +594,18 @@ th > * {
 
 /* ================== */
 /* CHAIR PAGE */
-#header-col2-left-gap-CHAIR { width: 22%; }
-#header-col3-tab-buttons-CHAIR {width: 30%;}
-#header-col4-right-gap-CHAIR { width: 21%; }
+#header-col2-left-gap-CHAIR { width: 27%; }
+#header-col3-tab-buttons-CHAIR {width: 40%;}
+#header-col4-right-gap-CHAIR { width: 26%; }
 #header-col5-extra-buttons-CHAIR { width: 15%; }
 
 /* Make each tab button take up an equal portion of the header-col-sub */
 /* If we add a button in the future, make the widths equal 100% */
-#welcome_button_CHAIR { width: 33.33%; padding-top: 5%; }
-#my_classes_button_CHAIR { width: 33.33%; padding-top: 5%; }
-#dept_classes_button_CHAIR { width: 33.33%; padding-top: 5%; }
+#welcome_button_CHAIR { width: 20%; padding-top: 4%; }
+#classes_button_CHAIR { width: 20%; padding-top: 1.5%; }
+#create_course_button_CHAIR { width: 20%; padding-top: 1.5%; }
+#add_student_button_CHAIR { width: 20%; padding-top: 1.5%; }
+#remove_student_button_CHAIR { width: 20%; padding-top: 1.5%; }
 
 #help_button_CHAIR { width: 25%; padding-top: 10%; }
 #account_button_CHAIR { width: 25%; padding-top: 10%; }
