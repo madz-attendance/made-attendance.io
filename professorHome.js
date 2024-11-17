@@ -646,6 +646,10 @@ async function getProfessorCourses() {
     const { data, error } = await supabasePublicClient
         .from('courses')
         .select('coursecode, coursenum, coursesem, coursesec')
+	.order('coursecode', { ascending: true }) 
+	.order('coursenum', { ascending: true }) 
+	.order('coursesec', { ascending: false }) 
+	.order('coursesem', { ascending: true })
         .eq('facemail', email);
     if (error) {console.error('Error fetching professor courses:', error); return [];}
     return data;
