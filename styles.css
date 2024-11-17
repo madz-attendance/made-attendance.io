@@ -390,6 +390,7 @@ input[type="button"]:hover {
     box-sizing: border-box; /* Include padding and border in element's total width */
 }
 
+#departmentDropdown,
 #courseDropdown,
 #semesterDropdown {
   margin-top: 12px;
