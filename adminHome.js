@@ -3,13 +3,16 @@
 // Otherwise, this will not work, just trust me.
 var semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
-
+var email;
+var global_selected_semester, global_selected_department;
 
 // "MAIN()" - DOMContentLoaded - this stuff happens first in the program and is very important.
 // 1. Immediately check the auth, 2. store the dropdown menus, 3. initialize the page
 document.addEventListener('DOMContentLoaded', function() 
 {
   checkAuth();
+  setupFAQFunctionality();
+  loadAccountInfo();
   getDropdownMenus();
   initializePage();
   
@@ -55,22 +58,19 @@ async function checkAuth()
   function getDropdownMenus()
   {
 	  // Get the dropdown menus for each tab. Any future added dropdown menu must be added here
-	  semester_dropdown = document.getElementById('semester_dropdown');
 	  new_student_semester_dropdown = document.getElementById('new_student_semester_dropdown');
 	  remove_student_semester_dropdown = document.getElementById('remove_student_semester_dropdown');
-	  courses_dropdown = document.getElementById('courses_dropdown');
       new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
 	  remove_student_courses_dropdown = document.getElementById('remove_student_courses_dropdown');
-	  department_dropdown = document.getElementById('department_dropdown');
 	  create_account_department_dropdown = document.getElementById('create_department_dropdown');
 	  new_student_department_dropdown = document.getElementById('new_student_department_dropdown');
 	  remove_student_department_dropdown = document.getElementById('remove_student_department_dropdown');
 	  course_creation_department_dropdown = document.getElementById('course_creation_department_dropdown');
 	  
 	  // Create a list containing every dropdown menu for each tab. Any future added dropdown menu must be added to a list
-	  dept_dropdown_menus = [department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown];
-	  courses_dropdown_menus = [courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown];
-	  semesters_dropdown_menus = [semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown];
+	  dept_dropdown_menus = [create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown];
+	  courses_dropdown_menus = [new_student_courses_dropdown, remove_student_courses_dropdown];
+	  semesters_dropdown_menus = [new_student_semester_dropdown, remove_student_semester_dropdown];
   }  
 
 
@@ -82,8 +82,9 @@ async function checkAuth()
 	  email = await fetchProfessorData();
 	  console.log("Email: ", email);
 	  
-	  await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
+	  //await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
 	  await fetchSemesters(email);				// Populate the semesters drop-down menu with the valid semesters of the professor's courses
+	  setupClassesPage();
 	  
 	  professor_courses = await fetchCourses(email);	// Populate the courses drop-down menu with the valid professor courses. Store prof courses
 	  attachDepartmentDropdownListener(professor_courses);// Attach various dropdown menus to their update event listeners.
@@ -222,7 +223,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		  }
 
 		  // Clear existing options
-		  department_dropdown.innerHTML = '<option value="any">Any</option>';
+		  //department_dropdown.innerHTML = '<option value="any">Any</option>';
 		  create_account_department_dropdown.innerHTML = '<option value="any">Any</option>';
 		  new_student_department_dropdown.innerHTML = '<option value="any">Any</option>';
   
@@ -449,16 +450,6 @@ document.getElementById('create_account').addEventListener('keydown', function(e
   // updateCoursesDropdown() to display the courses for the selected semester.
   function attachSemesterDropdownListener(professor_courses) 
   {
-
-	  // If the "Classes" tab's Semester dropdown selection is changed, update the "Classes" tab's Courses dropdown options
-	  semester_dropdown.addEventListener('change', function() 
-	  {
-		  const selectedDept = department_dropdown.value;
-		  const selectedSemester = semester_dropdown.value;
-		  updateCoursesDropdown(professor_courses, courses_dropdown, selectedDept, selectedSemester);
-		  
-	  });
-	  
 	  // If the "New Student" tab's Semester dropdown selection is changed, update the "New Student" tab's Courses dropdown options
 	  new_student_semester_dropdown.addEventListener('change', function()
 	  {
@@ -571,15 +562,6 @@ document.getElementById('create_account').addEventListener('keydown', function(e
   // to listen to changes in selection in the courses dropdown menu.
   function attachCoursesDropdownListener() 
   {
-	  // "Classes" Tab course dropdown
-	  courses_dropdown.addEventListener('change', function() 
-	  {
-		  const selectedCourse = courses_dropdown.value;
-		  console.log("Courses Dropdown Menu Selection Updated. Selected: ", selectedCourse);
-		  // Do whatever you want with this selected course
-		  
-	  });
-	  
 	  // "New Student" Tab course dropdown
 	  new_student_courses_dropdown.addEventListener('change', function ()
 	  {
@@ -604,16 +586,7 @@ document.getElementById('create_account').addEventListener('keydown', function(e
   // This must be done in a function, called in itializePage(). This will continue
   // to listen to changes in selection in the courses dropdown menu.
   function attachDepartmentDropdownListener(professor_courses) 
-  {
-	  department_dropdown.addEventListener('change', function() 
-	  {
-		  // Update the courses table to only show courses in this department
-		  const selectedDept = department_dropdown.value;
-		  const selectedSemester = semester_dropdown.value;
-		  updateCoursesDropdown(professor_courses, courses_dropdown, selectedDept, selectedSemester);
-		  
-	  });
-	  
+  {  
 	  new_student_department_dropdown.addEventListener('change', function()
 	  {
 		  console.log("Selecting new student department");
@@ -659,6 +632,8 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 		  const { data, error } = await supabasePublicClient
 			  .from('departments')
 			  .select("deptcode");
+			  
+			  console.log("RECTANGLE: email: ", email, " Department_Dropdown: ", department_dropdown);
 			  
 			  data.forEach(dept =>
 			  {
@@ -1504,4 +1479,513 @@ async function loadAccountInfo() {
 }
 
 // Call the function to load account info on page load
-document.addEventListener("DOMContentLoaded", loadAccountInfo);
+//document.addEventListener("DOMContentLoaded", loadAccountInfo);
+
+
+// CLASSES PAGE STUFF (IMPORTED FROM PROF. PAGE)
+async function getProfessorCourses() {
+    const email = await fetchProfessorData();
+    const { data, error } = await supabasePublicClient
+        .from('courses')
+        .select('coursecode, coursenum, coursesem, coursesec')
+		.order('coursecode', { ascending: true }) 
+		.order('coursenum', { ascending: true }) 
+		.order('coursesec', { ascending: false }) 
+		.order('coursesem', { ascending: true })
+        //.eq('facemail', email);
+    if (error) {console.error('Error fetching professor courses:', error); return [];}
+    return data;
+}
+
+
+async function populateAdminClassesDeptDropdown() {
+	const { data: deptData, error: deptError } = await supabasePublicClient
+		  .from("departments")
+		  .select('deptcode')
+		  .order('deptcode', { ascending: true }) 
+		  
+	if (deptError)
+	{ console.error("Error receiving departments: ", deptError); }
+	else
+	{
+		console.log("Departments: ", deptData);
+		const departmentDropdown = document.getElementById('departmentDropdown');
+		departmentDropdown.innerHTML = "";
+		
+		deptData.forEach(department => {
+			const option = document.createElement('option');
+			console.log("specific dept: ", department.deptcode);
+			option.value = department.deptcode;
+			option.textContent = department.deptcode;
+			departmentDropdown.appendChild(option);
+		});
+		
+		// Enable the department dropdown if departments are available
+		if (deptData.length > 0)
+		{ departmentDropdown.disabled = false; }
+	
+		global_selected_department = deptData[0].deptcode;
+		console.log("In populateAdminClassesDeptDropdown: global_selected_department: ", global_selected_department);
+	}
+	
+}
+
+
+
+// Populate the semester dropdown with all semesters
+async function populateSemesterDropdown() {
+    const courses = await getProfessorCourses();
+    const semesterDropdown = document.getElementById('semesterDropdown');
+
+    // Get unique semesters from courses
+    const semesters = [...new Set(courses.map(course => course.coursesem))];
+
+    semesters.sort((a,b) => {
+        return parseInt(b.split(" ")[1]) - parseInt(a.split(" ")[1]);
+    }); //Sort the semesters from most recent -> oldest so the most recent is the default semester
+
+    // Populate semester dropdown
+    semesterDropdown.innerHTML = '';
+    semesters.forEach(coursesem => {
+        const option = document.createElement('option');
+        option.value = coursesem;
+        option.textContent = coursesem;
+        semesterDropdown.appendChild(option);
+    });
+
+    // Enable semester dropdown if semesters are available
+    if (semesters.length > 0) {
+        semesterDropdown.disabled = false;
+    }
+    //populateCourseDropdown(semesters[0]);
+	populateCourseDropdown(semesters[0], global_selected_department);
+}
+
+// When a semester is selected, populate the course dropdown
+document.getElementById('semesterDropdown').addEventListener('change', function() {
+    //const selectedSemester = this.value;
+	global_selected_semester = this.value;
+    populateCourseDropdown(global_selected_semester, global_selected_department);
+});
+
+async function populateCourseDropdown(semester, department) {
+    const courses = await getProfessorCourses();
+    const courseDropdown = document.getElementById('courseDropdown');
+
+    // Filter courses based on selected semester
+    const semesterCourses = courses.filter(course => course.coursesem === semester && course.coursecode === department);
+
+    // Populate course dropdown
+    courseDropdown.innerHTML = '';  // Clear previous options
+    semesterCourses.forEach(course => {
+        const option = document.createElement('option');
+        option.value = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
+        option.textContent = `${course.coursecode} ${course.coursenum}-${course.coursesec}`;
+        courseDropdown.appendChild(option);
+    });
+
+    // Enable course dropdown and submit button if courses are available
+    if (semesterCourses.length > 0) {
+        courseDropdown.disabled = false;
+        document.getElementById('semesterSubmit').disabled = false;
+    } else {
+        courseDropdown.disabled = true;
+        document.getElementById('semesterSubmit').disabled = true;
+    }
+}
+
+//added for faq functionality 
+function setupFAQFunctionality()
+{
+        const buttons = document.querySelectorAll('#helpTab .question button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const faq = button.nextElementSibling; // The <p> tag
+                const icon = button.querySelector('.d-arrow'); // The arrow icon
+                faq.classList.toggle('show'); // Toggle visibility
+                icon.classList.toggle('rotate'); // Toggle arrow rotation
+            });
+        });
+}
+
+
+async function setupClassesPage()
+{
+    // Disable elements initially
+    document.getElementById('courseDropdown').disabled = true;
+    document.getElementById('semesterSubmit').disabled = true;
+	document.getElementById('departmentDropdown').disabled = true;
+	
+	await populateAdminClassesDeptDropdown();
+	//global_selected_department = document.getElementById('departmentDropdown').value;
+	//console.log("global dept: ", document.getElementById('departmentDropdown').value);
+	//console.log("URUGUAY: ", global_selected_department);
+
+    // Populate semester dropdown on load
+    populateSemesterDropdown();
+	global_selected_semester = document.getElementById('semesterDropdown').value;
+
+    // Add event listener for Fetch Roster button
+    const fetchRosterButton = document.getElementById('fetchRosterButton');
+    if (fetchRosterButton) {
+        fetchRosterButton.addEventListener('click', async function () {
+            const selectedSemester = document.getElementById('semesterDropdown').value;
+            const selectedCourse = document.getElementById('courseDropdown').value;
+			const selectedDepartment = document.getElementById('departmentDropdown').value;
+
+            // Split the selected course code into course code and section
+            const [courseCode, section] = selectedCourse.split('-');
+
+            // Fetch and display roster data
+            await fetchAndDisplayRoster(selectedSemester, courseCode, section);
+        });
+    }
+
+	// Department selection handling
+	document.getElementById('departmentDropdown').addEventListener('change', function() {
+		//const selectedDepartment = this.value;
+		global_selected_department = this.value;
+		populateCourseDropdown(global_selected_semester, global_selected_department);
+	});
+
+    // Semester selection handling
+    document.getElementById('semesterDropdown').addEventListener('change', function() {
+        //const selectedSemester = this.value;
+		global_selected_semester = this.value;
+        populateCourseDropdown(global_selected_semester, global_selected_department);
+    });
+
+    // Other existing event listeners
+    document.getElementById('semesterSubmit').addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const givenSemester = document.getElementById('semesterDropdown').value;
+        const givenCourse = document.getElementById('courseDropdown').value;
+
+        document.getElementById("form-section").style.display = 'none';
+        document.getElementById("calendar-section").style.display = 'block';
+
+        updateCalendar(givenSemester, givenCourse);
+    });
+
+	// Function to handle going back to the form section
+function goToFormSection() {
+    // Hide all sections
+    const sections = ['calendar-section', 'rosterTableSection', 'form-section'];
+    sections.forEach(sectionId => {
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.style.display = 'none'; // Hide each section
+        }
+    });
+
+    // Show the form section
+    document.getElementById('form-section').style.display = 'block'; // Display the form section
+}
+
+// Add event listeners to both Back buttons
+document.getElementById('calendarBackButton').addEventListener('click', goToFormSection);
+document.getElementById('rosterBackButton').addEventListener('click', goToFormSection);
+
+    document.getElementById('backButton').addEventListener('click', function() {
+        document.getElementById('table-section').style.display = 'none';
+        document.getElementById('calendar-section').style.display = 'block';
+    });
+
+    document.getElementById('semBackButton').addEventListener('click', function() {
+        document.getElementById('table-section').style.display = 'none';
+        document.getElementById('form-section').style.display = 'block';
+    });
+	
+}
+
+async function updateCalendar(semester, course) {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    
+    const day = document.querySelector(".calendar-dates");
+    const currdate = document.querySelector(".calendar-current-date");
+    const prenexIcons = document.querySelectorAll(".calendar-navigation span");
+    const months = [
+        "January","February","March","April","May","June","July",
+        "August","September","October","November","December"
+    ];
+    
+    const manipulate = () => { //Generate the calendar
+        let dayone = new Date(year, month, 1).getDay(); //First date of the month
+        let lastdate = new Date(year, month + 1, 0).getDate(); //Last date of the month
+        let dayend = new Date(year, month, lastdate).getDay(); //Get the day of the last date of the month
+        let monthlastdate = new Date(year, month, 0).getDate(); //Get the last date of the previous month
+        let lit = "";
+    
+        for (let i = dayone; i > 0; i--) { //Add the previous month's days
+            lit +=
+                `<li class="inactive">${monthlastdate - i + 1}</li>`;
+        }
+    
+        for (let i = 1; i <= lastdate; i++) { //Add the current month's days
+            let isToday = i === date.getDate()
+                && month === new Date().getMonth()
+                && year === new Date().getFullYear()
+                ? "active"
+                : "";
+            lit += `<li class="date ${isToday}" data-date="${year}-${month + 1}-${i}">${i}</li>`;
+        }
+
+        for (let i = dayend; i < 6; i++) { //Dates for following month's days
+            lit += `<li class="inactive">${i - dayend + 1}</li>`
+        }
+        currdate.innerText = `${months[month]} ${year}`;
+        day.innerHTML = lit;
+        document.querySelectorAll('.date').forEach(dateElement => {
+            dateElement.addEventListener('click', (e) => {
+                let selectedDate = e.target.getAttribute('data-date');
+                // const { data, error } = await supabasePublicClient
+                // .from('courses')
+                // .select('*')
+                // .eq('coursesem', semester)
+                // .eq('coursecode', course.slice(0,4));
+                document.getElementById("calendar-section").style.display='none';
+                document.getElementById("table-section").style.display='block';
+                updateAttendanceTable(semester, course, selectedDate); // Call the table update with the selected date
+            });
+        });
+    }
+    manipulate();
+    
+    prenexIcons.forEach(icon => { //Click listener for chevrons
+        icon.addEventListener("click", () => { //When an icon is clicked
+            month = icon.id === "calendar-prev" ? month - 1 : month + 1;
+            if (month < 0 || month > 11) { //Check if month is out of range
+                date = new Date(year, month, new Date().getDate());
+                year = date.getFullYear();
+                month = date.getMonth();
+            }
+            else {date = new Date();} //In range, grab the date
+            manipulate();
+        });
+    });
+}
+
+async function updateAttendanceTable(semester, course, selectedDate) {
+    const courseCode = course.slice(0,4);
+    const hyphenIndex = course.indexOf('-');
+    const courseNum = course.slice(4,hyphenIndex);
+    const courseSection = course.slice(hyphenIndex+1);
+
+    //Grab the courseid from courses table
+    const { data:courseData, error:courseError } = await supabasePublicClient
+    .from('courses')
+    .select('courseid')
+    .eq('coursesem', semester)
+    .eq('coursecode', courseCode)
+    .eq('coursenum', courseNum)
+    .eq('coursesec', courseSection);
+    if (courseError) {console.error('Error fetching data:', courseError); return;}
+
+    //Use courseid to grab class roster from roster table
+    const { data:rosterData, error:rosterError } = await supabasePublicClient
+    .from('roster')
+    .select('stufirstname, stulastname, stuid')
+    .eq('courseid', courseData[0].courseid);
+    if (rosterError) {console.error('Error fetching rosterData:', rosterError); return;}
+
+    //Use courseid and roster table to grab valid attendees
+    const { data:attendanceData, error:attendanceError } = await supabasePublicClient
+    .from('attendance')
+    .select('stuid, attendancetime')
+    .eq('courseid', courseData[0].courseid)
+    .in('stuid', rosterData.map(student => student.stuid));
+    if (attendanceError) {console.error('Error fetching attendanceData:', attendanceError); return;}
+    console.log('Roster:', attendanceData);
+
+    //Only grab the YYYY-MM-DD part of attendancetime since we want to see attendance for the whole day
+    const filteredAttendance = attendanceData.filter(record => {
+        const recordDate = record.attendancetime.split('T')[0]; 
+        return recordDate === selectedDate;
+    });
+    console.log('Attendees today:', filteredAttendance);
+
+    //Remove duplicates from the list of attendees and grab the earliest timestamp
+    const sortedAttendance = filteredAttendance.sort((a, b) => new Date(a.attendancetime) - new Date(b.attendancetime));
+    const uniqueIds = new Set();
+    const uniqueAttendance = sortedAttendance.filter(record => {
+        const isDuplicate = uniqueIds.has(record.stuid);
+        uniqueIds.add(record.stuid);
+        return !isDuplicate; // Only keep if it's the first occurrence (earliest time)
+    });
+    console.log('Duplicates removed:', uniqueAttendance);
+    generateAttendanceTable(rosterData, uniqueAttendance)
+};
+
+function generateAttendanceTable(rosterData, uniqueAttendance) {
+    const tableSection = document.getElementById('table-section');
+    const tableBody = document.querySelector('#attendance-table tbody');
+    
+    tableBody.innerHTML = '';
+    tableSection.style.display = 'block';
+
+    rosterData.forEach(student => {
+        const row = document.createElement('tr');
+
+        // Find if the student has an attendance record
+        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid === student.stuid);
+
+        // Last Name
+        const lastNameCell = document.createElement('td');
+        lastNameCell.textContent = student.stulastname;
+        row.appendChild(lastNameCell);
+
+        // First Name
+        const firstNameCell = document.createElement('td');
+        firstNameCell.textContent = student.stufirstname;
+        row.appendChild(firstNameCell);
+
+        // Student ID
+        const idCell = document.createElement('td');
+        idCell.textContent = student.stuid;
+        row.appendChild(idCell);
+
+        // Attendance Status (display "Absent" if no attendance, else show time)
+        const attendanceCell = document.createElement('td');
+        if (studentAttendance) {
+            const timeOnly = studentAttendance.attendancetime.split('T')[1].split('.')[0];
+            attendanceCell.textContent = timeOnly;
+        } 
+        else {attendanceCell.textContent = 'Absent';}
+        row.appendChild(attendanceCell);
+        tableBody.appendChild(row);
+    });
+}
+
+
+
+// References to dropdowns, button, and roster table section
+const fetchRosterButton = document.getElementById('fetchRosterButton');
+const rosterTableSection = document.getElementById('rosterTableSection');
+const rosterTableBody = document.getElementById('roster-table').getElementsByTagName('tbody')[0];
+const calendarSection = document.getElementById('calendar-section');
+
+// Dropdowns for selecting course and semester
+const semesterDropdown = document.getElementById('semesterDropdown');
+const courseDropdown = document.getElementById('courseDropdown'); // This holds code, number, and section
+
+// Function to parse course details from dropdown selection
+function parseCourseDetails(courseString) {
+    // Assuming format: "CPSC 135-010"
+    const [codeNum, section] = courseString.split("-");
+    
+    if (!codeNum || !section) {
+        throw new Error("Invalid course string format");
+    }
+    
+    const [courseCode, courseNum] = codeNum.trim().split(" ");
+    
+    // Check if courseNum is a valid number
+    const parsedCourseNum = parseInt(courseNum);
+    
+    if (isNaN(parsedCourseNum)) {
+        throw new Error(`Invalid course number: ${courseNum}`);
+    }
+
+    return { 
+        courseCode, 
+        courseNum: parsedCourseNum, 
+        courseSec: section.trim() // Ensure to trim any whitespace
+    };
+}
+
+
+// Function to fetch courseId and then roster data
+async function fetchAndDisplayRoster() {
+    try {
+        const selectedSemester = semesterDropdown.value;
+        const selectedCourse = courseDropdown.value;
+        
+        if (!selectedSemester || !selectedCourse) {
+            console.warn('Please select both a semester and a course.');
+            return;
+        }
+
+        const { courseCode, courseNum, courseSec } = parseCourseDetails(selectedCourse);
+
+        // Step 1: Find the matching courseId in the courses table
+        const { data: courseData, error: courseError } = await supabasePublicClient
+            .from('courses')
+            .select('courseid, coursename')
+            .eq('coursesem', selectedSemester)
+            .eq('coursecode', courseCode)
+            .eq('coursenum', courseNum)
+            .eq('coursesec', courseSec)
+            .single();
+
+        if (courseError || !courseData) {
+            console.error('Error finding course:', courseError || 'Course not found');
+            return;
+        }
+
+        const courseId = courseData.courseid;
+        const courseName = courseData.coursename; // Get course name for display
+
+        // Step 2: Fetch roster data by matching courseid in the roster table
+        const { data: rosterData, error: rosterError } = await supabasePublicClient
+            .from('roster')
+            .select('stufirstname, stulastname, stuid')
+            .eq('courseid', courseId);
+
+        if (rosterError) {
+            console.error('Error fetching roster data:', rosterError);
+            return;
+        }
+
+        // Use populateRosterTable to display the fetched roster data
+        populateRosterTable(rosterData, courseName);
+
+    } catch (error) {
+        console.error('Error displaying roster data:', error);
+    }
+}
+
+// Function to populate the roster table with provided data and course name
+function populateRosterTable(rosterData, courseName) {
+    const rosterTableBody = document.querySelector('#roster-table tbody');
+    document.getElementById('form-section').style.display = 'none';
+    rosterTableBody.innerHTML = ''; // Clear previous data
+
+    // Update the header with course name
+    document.getElementById('rosterHeader').textContent = `Class Roster for ${courseName}`;
+
+    // Hide the calendar section
+
+
+    // Create table structure with bold headers and black borders
+    let rosterTable = `
+        <table style="width:100%; border-collapse: collapse; border: 2px solid black;">
+            <thead>
+                <tr>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">First Name</th>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Last Name</th>
+                    <th style="border: 2px solid black; padding: 8px; font-weight: bold;">Student ID</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+    // Add rows to the roster table
+    rosterData.forEach(student => {
+        rosterTable += `
+            <tr>
+                <td style="border: 2px solid black; padding: 8px;">${student.stufirstname}</td>
+                <td style="border: 2px solid black; padding: 8px;">${student.stulastname}</td>
+                <td style="border: 2px solid black; padding: 8px;">${student.stuid}</td>
+            </tr>`;
+    });
+
+    rosterTable += '</tbody></table>'; // Close the tbody and table tags
+
+    // Insert the populated table HTML into the rosterTableBody
+    rosterTableBody.innerHTML = rosterTable;
+
+    // Show the roster table section
+    document.getElementById('rosterTableSection').style.display = 'block';
+}
