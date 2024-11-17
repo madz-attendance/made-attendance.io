@@ -5,12 +5,12 @@
 var new_student_semester_dropdown, remove_student_semester_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
 var email;
+var chair_department;
 
 // "MAIN()" - DOMContentLoaded - this stuff happens first in the program
 window.addEventListener('DOMContentLoaded', function()
 {
 	checkAuth();
-	setupClassesPage();
 	setupFAQFunctionality();
 	loadAccountInfo();
 	getDropdownMenus(); // For "Create Course", "Roster Entry", and "Roster Removal" tabs
@@ -42,7 +42,6 @@ async function checkAuth() {
 // These variables are declared globally.
 function getDropdownMenus()
 {
-	console.log("getDropdownMenus 1");
 	new_student_semester_dropdown = document.getElementById('new_student_semester_dropdown');
 	remove_student_semester_dropdown = document.getElementById('remove_student_semester_dropdown');
 	new_student_courses_dropdown = document.getElementById('new_student_courses_dropdown');
@@ -56,10 +55,6 @@ function getDropdownMenus()
 	dept_dropdown_menus = [new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown];
 	courses_dropdown_menus = [new_student_courses_dropdown, remove_student_courses_dropdown];
 	semesters_dropdown_menus = [new_student_semester_dropdown, remove_student_semester_dropdown];
-	console.log("getDropdownMenus 2");
-	console.log("dept_dropdown_menus: ", dept_dropdown_menus);
-	console.log("courses_dropdown_menus: ", courses_dropdown_menus);
-	console.log("semesters_dropdown_menus: ", semesters_dropdown_menus);
 }
 
 async function initializePage()
@@ -67,6 +62,11 @@ async function initializePage()
 	email = await fetchProfessorData();
 	console.log("Email: ", email);
 	
+	
+	chair_department = await fetchChairDept(email);
+	console.log("Chair Dept: ", chair_department);
+	
+	setupClassesPage();
 	
 	//await fetchDepartments(email); // Populate the "Create Course", "Roster Entry", and "Roster Removal" page dropdown menus
 	await fetchSemesters(email);   // Populate the "Create Course", "Roster Entry", and "Roster Removal" page dropdown menus
@@ -80,6 +80,22 @@ async function initializePage()
 	// For the "Create Course" tab, set the options for "Semester" and "Building". These are different from the other semester dropdowns and does not impact any other dropdown options.
 	setCreateCourseIsolatedDropdownOptions(email);
 	
+}
+
+async function fetchChairDept(email)
+{
+	// Get the chair's department from their email
+	const { data: deptData, error: deptError } = await supabasePublicClient
+		.from('users')
+		.select('deptcode')
+		.eq('facemail', email)
+		
+	if (deptError)
+	{ console.error("Error searching for chair department: ", deptError); return []; }
+
+	var chairDepartment = deptData[0].deptcode;
+	return chairDepartment;
+
 }
 
 
@@ -646,7 +662,12 @@ fetchNotificationsForCurrentUser();
 async function getProfessorCourses() {
     const email = await fetchProfessorData();
 	
-	// Get the chair's department from their email
+	// Get the chair's department from their email.
+	// For some reason, even though it returns the exact same thing, i MUST query the database for the department
+	// as opposed to using the global variable "chair_department." At this point in time, proven via output statements,
+	// they have the SAME EXACT VALUE, but for some reason using the global variable chair_department just bricks the entire
+	// classes page. makes no sense.
+	/*
 	const { data: deptData, error: deptError } = await supabasePublicClient
 		.from('users')
 		.select('deptcode')
@@ -656,13 +677,18 @@ async function getProfessorCourses() {
 	{ console.error("Error searching for chair department: ", deptError); return []; }
 
 	var chairDepartment = deptData[0].deptcode;
+	console.log("ABUJA: ", chairDepartment, chair_department);
+	*/
 	
+	console.log("RECTANGLE: ", chair_department);
 	console.log("In getProfessorCourses: email: ", email);
     const { data: getCoursesData, error: getCoursesError } = await supabasePublicClient
         .from('courses')
         .select('coursecode, coursenum, coursesem, coursesec')
-        .eq('dept', chairDepartment);
+		//.eq('dept', chairDepartment);
+        .eq('dept', "CPSC");
 		
+	console.log("rectangle");
     if (getCoursesError) {console.error('Error fetching professor courses:', getCoursesError); return [];}
     return getCoursesData;
 }
@@ -1430,7 +1456,8 @@ async function setCreateCourseIsolatedDropdownOptions(email)
 	const {data: profResult, error: profError} = await supabasePublicClient
 		.from('users')
 		.select('faclastname')
-		.eq('facemail', email)
+		//.eq('facemail', email)
+		.eq('deptcode', chair_department);
 		
 	if (profError)
 	{ console.log("Error fetching professors from 'users' table: ", profError); }
@@ -1841,20 +1868,6 @@ async function parseNewStudentCSV(file)
 						var stuId = studentData[0]; firstName = studentData[1]; var lastName = studentData[2]; var deptCode = studentData[3];
 						var courseNum = studentData[4]; var section = studentData[5]; var semester = studentData[6]; var profLastName = studentData[7];
 						
-						// ---
-						// Get the chair's department from their email
-						const { data: deptData, error: deptError } = await supabasePublicClient
-							.from('users')
-							.select('deptcode')
-							.eq('facemail', email)
-							
-						if (deptError)
-						{ console.error("Error searching for chair department: ", deptError); return []; }
-
-						var chairDepartment = deptData[0].deptcode;
-						
-						// ---
-						
 						// Query the "courses" table to see if a course exists that meets this information. ilike is case-insensitive comparison
 						const { data: courseInfo, error: courseLookupError } = await supabasePublicClient
 							.from('courses')
@@ -1875,8 +1888,8 @@ async function parseNewStudentCSV(file)
 							counterObj.successStatus = false;
 							counterObj.invalidLines.push(line.trim());
 						}
-						// If course department != chair department, invalid line
-						else if (chairDepartment.toLowerCase() != deptCode.toLowerCase())
+						// If chair department != course department, invalid line
+						else if (chair_department.toLowerCase() != deptCode.toLowerCase())
 						{
 							console.log("In parseNewStudentCSV: Department of course that you are trying to insert student into does not match chair's department.");
 							counterObj.successStatus = false;
@@ -2153,19 +2166,6 @@ async function parseRemoveStudentCSV(file)
 						var stuId = studentData[0]; firstName = studentData[1]; var lastName = studentData[2]; var deptCode = studentData[3];
 						var courseNum = studentData[4]; var section = studentData[5]; var semester = studentData[6]; var profLastName = studentData[7];
 
-						// ---
-						// Get the chair's department from their email
-						const { data: deptData, error: deptError } = await supabasePublicClient
-							.from('users')
-							.select('deptcode')
-							.eq('facemail', email)
-							
-						if (deptError)
-						{ console.error("Error searching for chair department: ", deptError); return []; }
-
-						var chairDepartment = deptData[0].deptcode;
-						
-						// ---
 						// Query the "courses" table to see if a course exists that meets this information. ilike is case-insensitive comparison
 						const { data: courseInfo, error: courseLookupError } = await supabasePublicClient
 							.from('courses')
@@ -2175,7 +2175,7 @@ async function parseRemoveStudentCSV(file)
 							.ilike('coursesec', section)
 							.ilike('coursesem', semester)
 							.ilike('faclastname', profLastName)
-							.eq('facemail', email) // Ensures that can only remove from only this professor's course
+							//.eq('facemail', email) // Ensures that can only remove from only this professor's course
 							.limit(1)
 							.single();
 							
@@ -2183,14 +2183,14 @@ async function parseRemoveStudentCSV(file)
 						// If a valid course was not found, return false
 						if (courseLookupError)
 						{
-							console.log("In parseNewStudentCSV: Unable to find course that a student is attempting to be removed from the roster of.", courseLookupError);
+							console.log("In parseRemoveStudentCSV: Unable to find course that a student is attempting to be removed from the roster of.", courseLookupError);
 							counterObj.successStatus = false;
 							counterObj.invalidLines.push(line.trim());
 						}
-						// If course department != chair department, invalid line
-						else if (chairDepartment.toLowerCase() != deptCode.toLowerCase())
+						// If chair department != course department, invalid line
+						else if (chair_department.toLowerCase() != deptCode.toLowerCase())
 						{
-							console.log("In parseNewStudentCSV: Department of course that you are trying to insert student into does not match chair's department.");
+							console.log("In parseRemoveStudentCSV: Department of course that you are trying to insert student into does not match chair's department.");
 							counterObj.successStatus = false;
 							counterObj.invalidLines.push(line.trim());
 						}
