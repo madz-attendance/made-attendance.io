@@ -87,37 +87,101 @@
             </div>
         </section>
 
-        <!-- Classes Tab Content -->
+
+	<!-- Classes Tab Content -->
         <section id="classesTab" class="tab-content">
-            <div class="account-container">
-                <h2>View All Classes</h2>
-                <p>Here you will see the list of all classes.</p>
-                <!-- You can add a dynamic list of classes here -->
-				
+            <div id="form-section" class="account-containertwo">
+                <h2>Choose a Semester and Course Code</h2>
 				<div>
-					<label for="department_dropdown">Select a Department:</label>
-					<select id="department_dropdown" name="options">
-					<option value="any">Any</option> <!-- The Any option -->
-					</select>
+					<label for="departmentDropdown">Department:<span class="required"></span></label>
+					<select id="departmentDropdown" name="options"></select>
 				</div>
-
 				<div>
-					<label for="semester_dropdown">Select a Semester:</label>
-					<select id="semester_dropdown" name="options">
-					<option value="any">Any</option> <!-- The Any option -->
-					</select>
+					<label for="semesterDropdown">Semester:<span class="required"></span></label>
+					<select id="semesterDropdown" name="options"></select>
 				</div>
-				
 				<div>
-					<label for="courses_dropdown">Select a Course:</label>
-					<select id="courses_dropdown" name="options">
-					<option value="none"></option> <!-- The blank/empty option -->
-					</select>
+					<label for="courseDropdown">Course:<span class="required"></span></label>
+					<select id="courseDropdown" name="options"></select>
 				</div>
+				<div id="semesterButtonContainer">
+					<div class="classes_page_button" id="classes_page_button_1">
+						<button id="semesterSubmit">Get Attendance Data</button>
+					</div>
+					<div class="classes_page_button" id="classes_page_button_1">
+						<button id="fetchRosterButton"> Fetch Roster </button>
+					</div>
+				</div>
+   			</div>
 
+			<!-- Roster Table Section (Initially Hidden) --> 
+			<div id="rosterTableSection" style="display: none;">
+    				<h2 id="rosterHeader">Class Roster</h2>
+    				<table id="roster-table" style="width:100%; border-collapse: collapse; border: 2px solid black;">
+      			  <thead>
+				  
+      			  </thead>
+      		  <tbody>
+            <!-- Rows will be dynamically generated here -->
+      		  </tbody>
+	    	</table>
+				<!-- Stolen button from david's code --> 
+					<button id="rosterBackButton">Go Back</button>
+			</div>
 
-            </div>
-        </section>
+			<!-- Attendance Table Section (Initially Hidden) -->
+			<div id="table-section" style="display: none;">
+				<h2>Attendance Information</h2>
+				<table id="attendance-table">
+					<thead>
+						<tr>
+							<th id="tabLast">LastName</th>
+							<th id="tabFirst">FirstName</th>
+							<th id="tabStuID">Student ID</th>
+							<th id="tabAtt">Attended?</th>
+						</tr>
+					</thead>
+					<tbody>
+						<!-- Rows will be dynamically generated here -->
+					</tbody>
+				</table>
+				<div id="backButtonContainer">
+					<button id="backButton">Back to Calendar</button>
+					<button id="semBackButton">Semester/Course Selection</button>
+				</div>
+			</div>
+			
+			<div id="calendar-section" style="display: none;">
+				<h2>Choose Day to View Attendance</h2>
+				<div class="calendar-container">
+				<header class="calendar-header">
+					<p class="calendar-current-date"></p>
+					<div class="calendar-navigation">
+						<span id="calendar-prev" class="material-symbols-rounded"> < </span>
+						<span id="calendar-next" class="material-symbols-rounded"> > </span>
+					</div>
+				</header>
+		
+				<div class="calendar-body">
+					<ul class="calendar-weekdays">
+						<li>Sun</li>
+						<li>Mon</li>
+						<li>Tue</li>
+						<li>Wed</li>
+						<li>Thu</li>
+						<li>Fri</li>
+						<li>Sat</li>
+					</ul>
+					<ul class="calendar-dates"></ul>
+				</div>
+				</div>
+				<div id="calendarBackContainer">
+					<button id="calendarBackButton">Go Back</button>
+				</div>
+			</div>
+			
+		</section>
+
     
 <!-- Create Account Section -->
 <section id="create_account" class="tab-content">
