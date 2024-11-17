@@ -4,7 +4,8 @@
 var semester_dropdown, new_student_semester_dropdown, remove_student_semester_dropdown, courses_dropdown, new_student_courses_dropdown, remove_student_courses_dropdown, department_dropdown, create_account_department_dropdown, new_student_department_dropdown, remove_student_department_dropdown, course_creation_department_dropdown;
 var dept_dropdown_menus, courses_dropdown_menus, semesters_dropdown_menus;
 var email;
-var global_selected_semester, global_selected_department;
+var global_selected_semester;
+var global_selected_department;
 
 // "MAIN()" - DOMContentLoaded - this stuff happens first in the program and is very important.
 // 1. Immediately check the auth, 2. store the dropdown menus, 3. initialize the page
@@ -78,11 +79,16 @@ async function checkAuth()
   // Initializes the page - fetches user data (and waits for it to finish), and then fetches/renders courses.
   async function initializePage()
   {
+	  // Get default values for the "Classes" tab department and semester global variables. needed for the event listeners
+	  // to have some sort of data otherwise selecting a department right-off-the-bat will not update the courses. coded to
+	  // provide the same default values as the setupClassesPage() puts as the first values in those dropdowns.
+	  await initializeClassesTabGlobalVariables(); 
+	  establishClassesTabEventListeners(); // Set up the event listeners for those dropdowns strictly after the global variables have been initialized
+	  
 	  // Get professor information and store their email
 	  email = await fetchProfessorData();
 	  console.log("Email: ", email);
 	  
-	  //await fetchDepartments(email);			// Populate the departments dropdown menu with the valid departments that the prof/chair/admin is able to see
 	  await fetchSemesters(email);				// Populate the semesters drop-down menu with the valid semesters of the professor's courses
 	  setupClassesPage();
 	  
@@ -96,6 +102,65 @@ async function checkAuth()
 	  setCreateCourseIsolatedDropdownOptions();
   }
 
+
+async function initializeClassesTabGlobalVariables()
+{
+	// Get the first department alphabetically
+	const { data: deptSearchData, error: deptSearchError } = await supabasePublicClient
+		  .from("departments")
+		  .select('deptcode')
+		  .order('deptcode', { ascending: true })
+		  
+	if (deptSearchError)
+	{ console.log("Error initializing global_selected_department: ", deptSearchError); }
+	else
+	{
+		global_selected_department = deptSearchData[0].deptcode;
+	}
+	
+	// Get the most recent semester (do it the same way as in populateSemesterDropdown(), get the most
+	// recent semester that is currently in use (has a course associated with it)
+	const { data: coursesSearchData, error: coursesSearchError } = await supabasePublicClient
+		.from("courses")
+		.select('coursecode, coursenum, coursesem, coursesec')
+		.order('coursecode', { ascending: true }) 
+		.order('coursenum', { ascending: true }) 
+		.order('coursesec', { ascending: false }) 
+		.order('coursesem', { ascending: true })
+		
+	if (coursesSearchError) {console.error('Error fetching professor courses:', coursesSearchError); }
+	else
+	{
+		// Get unique semesters from courses
+		const semesters = [...new Set(coursesSearchData.map(course => course.coursesem))];
+		
+		semesters.sort((a,b) => {
+        return parseInt(b.split(" ")[1]) - parseInt(a.split(" ")[1]);
+		}); //Sort the semesters from most recent -> oldest so the most recent is the default semester
+		
+		console.log("default semester: ", semesters[0]);
+		global_selected_semester = semesters[0];
+	}
+}
+
+
+function establishClassesTabEventListeners()
+{
+	console.log('in establishClassesTabEventListeners(): global sem: ', global_selected_semester, " global dept: ", global_selected_department);
+	
+	// When a department is selected, populate the course dropdown
+	document.getElementById('departmentDropdown').addEventListener('change', function() {
+		global_selected_department = this.value;
+		populateCourseDropdown(global_selected_semester, global_selected_department);
+		
+	});
+
+	// When a semester is selected, populate the course dropdown
+	document.getElementById('semesterDropdown').addEventListener('change', function() {
+	global_selected_semester = this.value;
+    populateCourseDropdown(global_selected_semester, global_selected_department);
+});
+}
 
 
 
@@ -433,7 +498,6 @@ document.getElementById('create_account').addEventListener('keydown', function(e
 					  newOption.value = unique_semester;
 					  newOption.text = unique_semester;
 					  dropdown_menu.appendChild(newOption);
-					  console.log("Added option:", newOption.value);
 				  });
 			  });
 		  }
@@ -1508,13 +1572,11 @@ async function populateAdminClassesDeptDropdown() {
 	{ console.error("Error receiving departments: ", deptError); }
 	else
 	{
-		console.log("Departments: ", deptData);
 		const departmentDropdown = document.getElementById('departmentDropdown');
 		departmentDropdown.innerHTML = "";
 		
 		deptData.forEach(department => {
 			const option = document.createElement('option');
-			console.log("specific dept: ", department.deptcode);
 			option.value = department.deptcode;
 			option.textContent = department.deptcode;
 			departmentDropdown.appendChild(option);
@@ -1525,7 +1587,6 @@ async function populateAdminClassesDeptDropdown() {
 		{ departmentDropdown.disabled = false; }
 	
 		global_selected_department = deptData[0].deptcode;
-		console.log("In populateAdminClassesDeptDropdown: global_selected_department: ", global_selected_department);
 	}
 	
 }
@@ -1560,13 +1621,6 @@ async function populateSemesterDropdown() {
     //populateCourseDropdown(semesters[0]);
 	populateCourseDropdown(semesters[0], global_selected_department);
 }
-
-// When a semester is selected, populate the course dropdown
-document.getElementById('semesterDropdown').addEventListener('change', function() {
-    //const selectedSemester = this.value;
-	global_selected_semester = this.value;
-    populateCourseDropdown(global_selected_semester, global_selected_department);
-});
 
 async function populateCourseDropdown(semester, department) {
     const courses = await getProfessorCourses();
@@ -1617,13 +1671,9 @@ async function setupClassesPage()
 	document.getElementById('departmentDropdown').disabled = true;
 	
 	await populateAdminClassesDeptDropdown();
-	//global_selected_department = document.getElementById('departmentDropdown').value;
-	//console.log("global dept: ", document.getElementById('departmentDropdown').value);
-	//console.log("URUGUAY: ", global_selected_department);
 
     // Populate semester dropdown on load
     populateSemesterDropdown();
-	global_selected_semester = document.getElementById('semesterDropdown').value;
 
     // Add event listener for Fetch Roster button
     const fetchRosterButton = document.getElementById('fetchRosterButton');
