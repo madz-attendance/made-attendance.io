@@ -610,10 +610,10 @@
             </div>
             <div class="question">
                 <button>
-                    <span>How do I add a student to a course roster?</span>
+                    <span>How do I add/remove a student to/from a course roster?</span>
                     <i class="fas fa-chevron-down d-arrow"></i>
                 </button>
-                <p class="answer">Go to the New Student tab and input the required information for the student and use the dropdown boxes to select the class, semester, and department the class is in.</p>
+                <p class="answer">Go to the Roster Entry or Roster Removal tabs and input the required information for the student and use the dropdown boxes to select the class, semester, and department the class is in.</p>
             </div>
 			<div class="question">
 				<button>
@@ -626,10 +626,20 @@
 					Example:<br><b>
 					123456789,John,Smith,CPSC,135,010,Fall 2024,Lastname<br>
 					234567890,Mary,Smith,ARTH,24,020,Spring 2025,Lastname<br><br></b></small>
-					Then, click the Upload button. This will attempt to read through your file and insert the students into their respective rosters as designated in the file.
-					If a student is already registered in that course, they will be skipped. If any students fail to be inserted into a roster, a list of failed attempts will
-					be provided so you can investigate.
 				</p>
+			</div>
+			<div class="question">
+				<button>
+					<span>What happens if my upload file has problems?</span>
+					<i class="fas fa-chevron-down d-arrow"></i>
+				</button>
+					<p class="answer">
+						If a student is already registered in a course that you are trying to add them to, they will be skipped. If a student is not in
+						a course that you are trying to remove them from, they will be skipped. If there are any problematic lines in the file that are not
+						able to be processed correctly, we will do our best to provide immediate output as to which lines were troublesome. If any students fail
+						to be inserted or removed from a roster, a list of failed attempts will be provided so you can investigate. If the course you entered was not
+						found, or if you do not have permission to insert/remove students from the provided course roster, then an error will occur.
+					</p>
 			</div>
         </div>
     </div>
