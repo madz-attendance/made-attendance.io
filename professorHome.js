@@ -1222,7 +1222,7 @@ function populateRosterTable(rosterData, courseName) {
     document.getElementById('rosterTableSection').style.display = 'block';
 }
 
-document.getElementById('downloadRosterCsvButton').addEventListener('click', async () => {
+document.getElementById('downloadRoster').addEventListener('click', async () => {
     try {
         const selectedSemester = semesterDropdown.value;
         const selectedCourse = courseDropdown.value;
