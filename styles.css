@@ -429,6 +429,7 @@ input[type="button"]:hover {
 #backButton,
 #semesterSubmit,
 #fetchRosterButton,
+#downloadRoster,
 #resetPasswordButton {
     font-size: 20px;
     color: white;
@@ -447,6 +448,7 @@ input[type="button"]:hover {
 #backButton:hover,
 #semesterSubmit:hover,
 #fetchRosterButton:hover,
+#downloadRoster:hover,
 #resetPasswordButton:hover {
     background-color: #0056b3;
 }
