@@ -2025,3 +2025,62 @@ function populateRosterTable(rosterData, courseName) {
     // Show the roster table section
     document.getElementById('rosterTableSection').style.display = 'block';
 }
+
+
+
+document.getElementById('downloadRoster').addEventListener('click', async () => {
+    try {
+        const selectedSemester = semesterDropdown.value;
+        const selectedCourse = courseDropdown.value;
+
+        if (!selectedSemester || !selectedCourse) {
+            console.warn('Please select both a semester and a course.');
+            return;
+        }
+
+        const { courseCode, courseNum, courseSec } = parseCourseDetails(selectedCourse);
+
+        // Step 1: Find the matching courseId in the courses table
+        const { data: courseData, error: courseError } = await supabasePublicClient
+            .from('courses')
+            .select('courseid')
+            .eq('coursesem', selectedSemester)
+            .eq('coursecode', courseCode)
+            .eq('coursenum', courseNum)
+            .eq('coursesec', courseSec)
+            .single();
+
+        if (courseError || !courseData) {
+            console.error('Error finding course:', courseError || 'Course not found');
+            return;
+        }
+
+        const courseId = courseData.courseid;
+
+        // Step 2: Fetch roster data in CSV format by matching courseid in the roster table
+        const { data: csvData, error: csvError } = await supabasePublicClient
+            .from('roster')
+            .select('stufirstname, stulastname, stuid')
+            .eq('courseid', courseId)
+            .csv();
+
+        if (csvError) {
+            console.error('Error fetching roster CSV:', csvError);
+            return;
+        }
+
+        // Create a downloadable link for the CSV data
+        const blob = new Blob([csvData], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = url;
+        downloadLink.download = `roster_${selectedCourse.replace(/\s+/g, '_')}_${selectedSemester}.csv`;
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+    } catch (error) {
+        console.error('Error downloading roster CSV:', error);
+    }
+});
+
+
