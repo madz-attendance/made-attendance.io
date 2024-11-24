@@ -1987,6 +1987,23 @@ async function fetchAndDisplayRoster() {
             return;
         }
 
+	// Censor the student IDs - only show the last 4 characters
+	rosterData.forEach(student => {
+		var student_id = student.stuid;
+		var student_id_length = student_id.length;
+		if (student_id_length <= 4)
+		{
+			student.stuid = '*'.repeat(student_id_length);
+		}
+		else
+		{
+			var lastFourChars = student.stuid.slice(-4);
+			var num_asterisks = student_id_length - 4;
+			var censored_student_id = ('*'.repeat(num_asterisks)) + lastFourChars;
+			student.stuid = censored_student_id;
+		}
+	});
+
         // Use populateRosterTable to display the fetched roster data
         populateRosterTable(rosterData, courseName);
 
