@@ -2305,3 +2305,51 @@ async function parseRemoveStudentCSV(file)
 		return [false, 0, 0, [""]];
 	}
 }
+
+
+
+// Download Attendance Data
+function generateAttendanceCSV(rosterData, uniqueAttendance) {
+    const rows = [['Last Name', 'First Name', 'Student ID', 'Attendance Status']]; // Header row
+
+    rosterData.forEach(student => {
+        // Find if the student has an attendance record
+        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid === student.stuid);
+
+        // Censor Student ID
+        const studentId = student.stuid;
+        const censoredId = studentId.length <= 4 
+            ? '*'.repeat(studentId.length) 
+            : '*'.repeat(studentId.length - 4) + studentId.slice(-4);
+
+        // Determine attendance status
+        const attendanceStatus = studentAttendance 
+            ? studentAttendance.attendancetime.split('T')[1].split('.')[0] 
+            : 'Absent';
+
+        // Add a row for each student
+        rows.push([student.stulastname, student.stufirstname, censoredId, attendanceStatus]);
+    });
+
+    // Convert to CSV format
+    const csvContent = rows.map(row => row.join(',')).join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'attendance.csv';
+    link.style.display = 'none';
+
+    // Append the link to the body, trigger click, and remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Attach download functionality to a button
+document.getElementById('downloadAttendance').addEventListener('click', () => {
+    generateAttendanceCSV(rosterData, uniqueAttendance);
+});
+
