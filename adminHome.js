@@ -1804,56 +1804,98 @@ async function updateCalendar(semester, course) {
     });
 }
 
+function generateAttendanceCSV(rosterData, uniqueAttendance, courseCode, courseNum, courseSection, selectedDate) {
+    const rows = [['Last Name', 'First Name', 'Student ID', 'Attendance Status']]; // Header row
+
+    rosterData.forEach(student => {
+        // Find if the student has an attendance record
+        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid === student.stuid);
+
+        // Censor Student ID
+        const studentId = student.stuid;
+        const censoredId = studentId.length <= 4 
+            ? '*'.repeat(studentId.length) 
+            : '*'.repeat(studentId.length - 4) + studentId.slice(-4);
+
+        // Determine attendance status
+        const attendanceStatus = studentAttendance 
+            ? studentAttendance.attendancetime.split('T')[1].split('.')[0] 
+            : 'Absent';
+
+        // Add a row for each student
+        rows.push([student.stulastname, student.stufirstname, censoredId, attendanceStatus]);
+    });
+
+    // Convert to CSV format
+    const csvContent = rows.map(row => row.join(',')).join('\n');
+
+    // Create a Blob and trigger download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+
+    // Dynamically set the file name
+    const fileName = `${courseCode}-${courseNum}-${courseSection}_${selectedDate}_attendance.csv`;
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.style.display = 'none';
+
+    // Append the link to the body, trigger click, and remove it
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Update the main function to store data for CSV generation
 async function updateAttendanceTable(semester, course, selectedDate) {
-    const courseCode = course.slice(0,4);
+    const courseCode = course.slice(0, 4);
     const hyphenIndex = course.indexOf('-');
-    const courseNum = course.slice(4,hyphenIndex);
-    const courseSection = course.slice(hyphenIndex+1);
+    const courseNum = course.slice(4, hyphenIndex);
+    const courseSection = course.slice(hyphenIndex + 1);
 
-    //Grab the courseid from courses table
-    const { data:courseData, error:courseError } = await supabasePublicClient
-    .from('courses')
-    .select('courseid')
-    .eq('coursesem', semester)
-    .eq('coursecode', courseCode)
-    .eq('coursenum', courseNum)
-    .eq('coursesec', courseSection);
-    if (courseError) {console.error('Error fetching data:', courseError); return;}
+    const { data: courseData, error: courseError } = await supabasePublicClient
+        .from('courses')
+        .select('courseid')
+        .eq('coursesem', semester)
+        .eq('coursecode', courseCode)
+        .eq('coursenum', courseNum)
+        .eq('coursesec', courseSection);
+    if (courseError) { console.error('Error fetching data:', courseError); return; }
 
-    //Use courseid to grab class roster from roster table
-    const { data:rosterData, error:rosterError } = await supabasePublicClient
-    .from('roster')
-    .select('stufirstname, stulastname, stuid')
-    .eq('courseid', courseData[0].courseid);
-    if (rosterError) {console.error('Error fetching rosterData:', rosterError); return;}
+    const { data: rosterData, error: rosterError } = await supabasePublicClient
+        .from('roster')
+        .select('stufirstname, stulastname, stuid')
+        .eq('courseid', courseData[0].courseid);
+    if (rosterError) { console.error('Error fetching rosterData:', rosterError); return; }
 
-    //Use courseid and roster table to grab valid attendees
-    const { data:attendanceData, error:attendanceError } = await supabasePublicClient
-    .from('attendance')
-    .select('stuid, attendancetime')
-    .eq('courseid', courseData[0].courseid)
-    .in('stuid', rosterData.map(student => student.stuid));
-    if (attendanceError) {console.error('Error fetching attendanceData:', attendanceError); return;}
-    console.log('Roster:', attendanceData);
+    const { data: attendanceData, error: attendanceError } = await supabasePublicClient
+        .from('attendance')
+        .select('stuid, attendancetime')
+        .eq('courseid', courseData[0].courseid)
+        .in('stuid', rosterData.map(student => student.stuid));
+    if (attendanceError) { console.error('Error fetching attendanceData:', attendanceError); return; }
 
-    //Only grab the YYYY-MM-DD part of attendancetime since we want to see attendance for the whole day
     const filteredAttendance = attendanceData.filter(record => {
-        const recordDate = record.attendancetime.split('T')[0]; 
+        const recordDate = record.attendancetime.split('T')[0];
         return recordDate === selectedDate;
     });
-    console.log('Attendees today:', filteredAttendance);
 
-    //Remove duplicates from the list of attendees and grab the earliest timestamp
     const sortedAttendance = filteredAttendance.sort((a, b) => new Date(a.attendancetime) - new Date(b.attendancetime));
     const uniqueIds = new Set();
     const uniqueAttendance = sortedAttendance.filter(record => {
         const isDuplicate = uniqueIds.has(record.stuid);
         uniqueIds.add(record.stuid);
-        return !isDuplicate; // Only keep if it's the first occurrence (earliest time)
+        return !isDuplicate;
     });
-    console.log('Duplicates removed:', uniqueAttendance);
-    generateAttendanceTable(rosterData, uniqueAttendance)
-};
+
+    generateAttendanceTable(rosterData, uniqueAttendance);
+
+    // Attach the data to the download button
+    const downloadButton = document.getElementById('downloadAttendance');
+    downloadButton.onclick = () => generateAttendanceCSV(rosterData, uniqueAttendance, courseCode, courseNum, courseSection, selectedDate);
+}
+
 
 function generateAttendanceTable(rosterData, uniqueAttendance) {
     const tableSection = document.getElementById('table-section');
