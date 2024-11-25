@@ -927,7 +927,7 @@ async function updateAttendanceTable(semester, course, selectedDate) {
     generateAttendanceTable(rosterData, uniqueAttendance)
 };
 */
-function generateAttendanceCSV(rosterData, uniqueAttendance) {
+function generateAttendanceCSV(rosterData, uniqueAttendance, courseCode, courseNum, courseSection, selectedDate) {
     const rows = [['Last Name', 'First Name', 'Student ID', 'Attendance Status']]; // Header row
 
     rosterData.forEach(student => {
@@ -955,9 +955,13 @@ function generateAttendanceCSV(rosterData, uniqueAttendance) {
     // Create a Blob and trigger download
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
+
+    // Dynamically set the file name
+    const fileName = `${courseCode}-${courseNum}-${courseSection}_${selectedDate}_attendance.csv`;
+
     const link = document.createElement('a');
     link.href = url;
-    link.download = 'attendance.csv';
+    link.download = fileName;
     link.style.display = 'none';
 
     // Append the link to the body, trigger click, and remove it
@@ -968,35 +972,35 @@ function generateAttendanceCSV(rosterData, uniqueAttendance) {
 
 // Update the main function to store data for CSV generation
 async function updateAttendanceTable(semester, course, selectedDate) {
-    const courseCode = course.slice(0,4);
+    const courseCode = course.slice(0, 4);
     const hyphenIndex = course.indexOf('-');
-    const courseNum = course.slice(4,hyphenIndex);
-    const courseSection = course.slice(hyphenIndex+1);
+    const courseNum = course.slice(4, hyphenIndex);
+    const courseSection = course.slice(hyphenIndex + 1);
 
-    const { data:courseData, error:courseError } = await supabasePublicClient
-    .from('courses')
-    .select('courseid')
-    .eq('coursesem', semester)
-    .eq('coursecode', courseCode)
-    .eq('coursenum', courseNum)
-    .eq('coursesec', courseSection);
+    const { data: courseData, error: courseError } = await supabasePublicClient
+        .from('courses')
+        .select('courseid')
+        .eq('coursesem', semester)
+        .eq('coursecode', courseCode)
+        .eq('coursenum', courseNum)
+        .eq('coursesec', courseSection);
     if (courseError) { console.error('Error fetching data:', courseError); return; }
 
-    const { data:rosterData, error:rosterError } = await supabasePublicClient
-    .from('roster')
-    .select('stufirstname, stulastname, stuid')
-    .eq('courseid', courseData[0].courseid);
+    const { data: rosterData, error: rosterError } = await supabasePublicClient
+        .from('roster')
+        .select('stufirstname, stulastname, stuid')
+        .eq('courseid', courseData[0].courseid);
     if (rosterError) { console.error('Error fetching rosterData:', rosterError); return; }
 
-    const { data:attendanceData, error:attendanceError } = await supabasePublicClient
-    .from('attendance')
-    .select('stuid, attendancetime')
-    .eq('courseid', courseData[0].courseid)
-    .in('stuid', rosterData.map(student => student.stuid));
+    const { data: attendanceData, error: attendanceError } = await supabasePublicClient
+        .from('attendance')
+        .select('stuid, attendancetime')
+        .eq('courseid', courseData[0].courseid)
+        .in('stuid', rosterData.map(student => student.stuid));
     if (attendanceError) { console.error('Error fetching attendanceData:', attendanceError); return; }
 
     const filteredAttendance = attendanceData.filter(record => {
-        const recordDate = record.attendancetime.split('T')[0]; 
+        const recordDate = record.attendancetime.split('T')[0];
         return recordDate === selectedDate;
     });
 
@@ -1012,9 +1016,8 @@ async function updateAttendanceTable(semester, course, selectedDate) {
 
     // Attach the data to the download button
     const downloadButton = document.getElementById('downloadAttendance');
-    downloadButton.onclick = () => generateAttendanceCSV(rosterData, uniqueAttendance);
+    downloadButton.onclick = () => generateAttendanceCSV(rosterData, uniqueAttendance, courseCode, courseNum, courseSection, selectedDate);
 }
-
 
 
 
