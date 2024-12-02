@@ -847,6 +847,10 @@ async function updateCalendar(semester, course) {
         document.querySelectorAll('.date').forEach(dateElement => {
             dateElement.addEventListener('click', (e) => {
                 let selectedDate = e.target.getAttribute('data-date');
+				let [year, month, day] = selectedDate.split('-');		// Extract the year, month, and day
+				month = month.padStart(2, '0');							// Add a 0 to the front of the month IF the month is only 1 digit
+				day = day.padStart(2, '0');								// Add a 0 to the front of the day IF the day is only 1 digit
+				selectedDate = `${year}-${month}-${day}`;				// Recombine the selectedDate
                 // const { data, error } = await supabasePublicClient
                 // .from('courses')
                 // .select('*')
@@ -998,19 +1002,33 @@ async function updateAttendanceTable(semester, course, selectedDate) {
         .eq('courseid', courseData[0].courseid)
         .in('stuid', rosterData.map(student => student.stuid));
     if (attendanceError) { console.error('Error fetching attendanceData:', attendanceError); return; }
+	
+	console.log("[A] AttendanceData: ", attendanceData);
+
 
     const filteredAttendance = attendanceData.filter(record => {
         const recordDate = record.attendancetime.split('T')[0];
+		console.log("   - recordDate: ", recordDate);
+		console.log("   - selectedDate: ", selectedDate);
+		console.log("   - equal?: ", recordDate === selectedDate);
         return recordDate === selectedDate;
     });
+	
+	console.log("[A] FilteredAttendance: ", filteredAttendance);
 
     const sortedAttendance = filteredAttendance.sort((a, b) => new Date(a.attendancetime) - new Date(b.attendancetime));
+	
+	console.log("[A] SortedAttendance: ", sortedAttendance);
+	
     const uniqueIds = new Set();
     const uniqueAttendance = sortedAttendance.filter(record => {
         const isDuplicate = uniqueIds.has(record.stuid);
         uniqueIds.add(record.stuid);
         return !isDuplicate;
     });
+	
+	console.log("[!] RosterData: ", rosterData);
+	console.log("[!] UniqueAttendance: ", uniqueAttendance);
 
     generateAttendanceTable(rosterData, uniqueAttendance);
 
