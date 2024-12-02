@@ -876,6 +876,10 @@ async function updateCalendar(semester, course) {
         document.querySelectorAll('.date').forEach(dateElement => {
             dateElement.addEventListener('click', (e) => {
                 let selectedDate = e.target.getAttribute('data-date');
+				let [year, month, day] = selectedDate.split('-');		// Extract the year, month, and day
+				month = month.padStart(2, '0');							// Add a 0 to the front of the month IF the month is only 1 digit
+				day = day.padStart(2, '0');								// Add a 0 to the front of the day IF the day is only 1 digit
+				selectedDate = `${year}-${month}-${day}`;				// Recombine the selectedDate
                 // const { data, error } = await supabasePublicClient
                 // .from('courses')
                 // .select('*')
