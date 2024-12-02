@@ -1813,7 +1813,8 @@ function generateAttendanceCSV(rosterData, uniqueAttendance, courseCode, courseN
 
     rosterData.forEach(student => {
         // Find if the student has an attendance record
-        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid === student.stuid);
+	// Student ID is already censored by this point. Check just the last 4 digits
+        const studentAttendance = uniqueAttendance.find(attendance => attendance.stuid.slice(-4) === student.stuid.slice(-4));
 
         // Censor Student ID
         const studentId = student.stuid;
