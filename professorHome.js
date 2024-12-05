@@ -336,6 +336,7 @@ function attachButtonListeners(session) {
 
     approveButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleApprove(event, session));
+	await matchAndInsertAttendance();
     });
 
     denyButtons.forEach((button) => {
@@ -1863,6 +1864,61 @@ async function createCourse(event)
 	}
 }
 
+async function matchAndInsertAttendance() {
+    try {
+        // Fetch all attendance records
+        const { data: attendanceRecords, error: attendanceError } = await supabasePublicClient
+            .from('attendance')
+            .select('*');
+
+        if (attendanceError) {
+            console.error('Error fetching attendance records:', attendanceError);
+            return;
+        }
+
+        // Fetch all roster records
+        const { data: rosterRecords, error: rosterError } = await supabasePublicClient
+            .from('roster')
+            .select('*');
+
+        if (rosterError) {
+            console.error('Error fetching roster records:', rosterError);
+            return;
+        }
+
+        // Iterate through attendance records and match with the roster
+        for (const attendance of attendanceRecords) {
+            const match = rosterRecords.find(roster =>
+                roster.courseid === attendance.courseid &&
+                roster.stufirstname.toUpperCase() === attendance.stufirstname.toUpperCase() &&
+                roster.stulastname.toUpperCase() === attendance.stulastname.toUpperCase()
+            );
+
+            // If a match is found, insert a new attendance record with the matched stuid
+            if (match) {
+                const { error: insertError } = await supabasePublicClient
+                    .from('attendance')
+                    .insert([
+                        {
+                            courseid: attendance.courseid,
+                            stufirstname: match.stufirstname,
+                            stulastname: match.stulastname,
+                            stuid: match.stuid,
+                            attendancetime: new Date().toISOString().replace('T', ' ').split('.')[0], // Format as "YYYY-MM-DD HH:mm:ss"
+                        }
+                    ]);
+
+                if (insertError) {
+                    console.error('Error inserting new attendance record:', insertError);
+                } else {
+                    console.log(`Inserted new attendance record for student ID ${match.stuid}`);
+                }
+            }
+        }
+    } catch (error) {
+        console.error('Error in matchAndInsertAttendance function:', error);
+    }
+}
 
 // Gets the values from all of the input fields & dropdown menus on the "New Student" tab.
 // Finds the courseid of the course that matches this selected course. Then, inserts the student
