@@ -337,7 +337,8 @@ function attachButtonListeners(session) {
     approveButtons.forEach((button) => {
         button.addEventListener('click', async (event) => { // Mark this callback as async
             await handleApprove(event, session);
-            await matchAndInsertAttendance(); // Await works now
+	    const courseid = courseData.courseid; // Use the fetched course ID from handleApprove
+	    await matchAndInsertAttendance(courseid, stufirstname, stulastname); // Pass specific row data
         });
     });
 
@@ -1867,71 +1868,54 @@ async function createCourse(event)
 	}
 }
 
-async function matchAndInsertAttendance() {
+async function matchAndInsertAttendance(courseid, stufirstname, stulastname) {
     try {
-        // Fetch all attendance records
-        const { data: attendanceRecords, error: attendanceError } = await supabasePublicClient
-            .from('attendance')
-            .select('*');
-
-        if (attendanceError) {
-            console.error('Error fetching attendance records:', attendanceError);
-            return;
-        }
-
-        // Fetch all roster records
-        const { data: rosterRecords, error: rosterError } = await supabasePublicClient
+        // Fetch the matching roster record based on course ID and student names
+        const { data: rosterMatch, error: rosterError } = await supabasePublicClient
             .from('roster')
-            .select('*');
+            .select('*')
+            .eq('courseid', courseid)
+            .eq('stufirstname', stufirstname.toUpperCase()) // Ensure case-insensitive match
+            .eq('stulastname', stulastname.toUpperCase()) // Ensure case-insensitive match
+            .single();
 
-        if (rosterError) {
-            console.error('Error fetching roster records:', rosterError);
+        if (rosterError || !rosterMatch) {
+            console.error('Error fetching matching roster record:', rosterError || 'No match found');
             return;
         }
 
+        // Format attendance time in EST as "YYYY-MM-DD HH:mm:ss"
+        const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+        const formattedAttendanceTime = new Date(estDate)
+            .toISOString()
+            .replace('T', ' ')
+            .split('.')[0];
 
-
-	
-        // Iterate through attendance records and match with the roster
-        for (const attendance of attendanceRecords) {
-            const match = rosterRecords.find(roster =>
-                roster.courseid === attendance.courseid &&
-                roster.stufirstname.toUpperCase() === attendance.stufirstname.toUpperCase() &&
-                roster.stulastname.toUpperCase() === attendance.stulastname.toUpperCase()
-            );
-
-
-
-	  const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-	  const formattedAttendanceTime = new Date(estDate)
-   		 .toISOString()
-  		 .replace('T', ' ')
- 		 .split('.')[0];
-            // If a match is found, insert a new attendance record with the matched stuid
-            if (match) {
-                const { error: insertError } = await supabasePublicClient
-                    .from('attendance')
-                    .insert([
-                        {
-                            courseid: attendance.courseid,
-                            stufirstname: match.stufirstname,
-                            stulastname: match.stulastname,
-                            stuid: match.stuid,
-                            attendancetime: formattedAttendanceTime, // Format as "YYYY-MM-DD HH:mm:ss"
-                        }
-                    ]);
-
-                if (insertError) {
-                    console.error('Error inserting new attendance record:', insertError);
-                } else {
-                    console.log(`Inserted new attendance record for student ID ${match.stuid}`);
+        // Insert the attendance record
+        const { error: insertError } = await supabasePublicClient
+            .from('attendance')
+            .insert([
+                {
+                    courseid: courseid,
+                    stufirstname: rosterMatch.stufirstname,
+                    stulastname: rosterMatch.stulastname,
+                    stuid: rosterMatch.stuid, // Use the matched student ID
+                    attendancetime: formattedAttendanceTime,
                 }
-            }
+            ]);
+
+        if (insertError) {
+            console.error('Error inserting new attendance record:', insertError);
+        } else {
+            console.log(`Inserted new attendance record for student ID ${rosterMatch.stuid}`);
         }
     } catch (error) {
         console.error('Error in matchAndInsertAttendance function:', error);
     }
 }
+
+
+
 
 // Gets the values from all of the input fields & dropdown menus on the "New Student" tab.
 // Finds the courseid of the course that matches this selected course. Then, inserts the student
