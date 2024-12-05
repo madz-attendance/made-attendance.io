@@ -1889,6 +1889,9 @@ async function matchAndInsertAttendance() {
             return;
         }
 
+
+
+	
         // Iterate through attendance records and match with the roster
         for (const attendance of attendanceRecords) {
             const match = rosterRecords.find(roster =>
@@ -1897,6 +1900,13 @@ async function matchAndInsertAttendance() {
                 roster.stulastname.toUpperCase() === attendance.stulastname.toUpperCase()
             );
 
+
+
+	  const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+	  const formattedAttendanceTime = new Date(estDate)
+   		 .toISOString()
+  		 .replace('T', ' ')
+ 		 .split('.')[0];
             // If a match is found, insert a new attendance record with the matched stuid
             if (match) {
                 const { error: insertError } = await supabasePublicClient
@@ -1907,7 +1917,7 @@ async function matchAndInsertAttendance() {
                             stufirstname: match.stufirstname,
                             stulastname: match.stulastname,
                             stuid: match.stuid,
-                            attendancetime: new Date().toISOString().replace('T', ' ').split('.')[0], // Format as "YYYY-MM-DD HH:mm:ss"
+                            attendancetime: formattedAttendanceTime, // Format as "YYYY-MM-DD HH:mm:ss"
                         }
                     ]);
 
