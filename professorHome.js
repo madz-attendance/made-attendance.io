@@ -335,14 +335,17 @@ function attachButtonListeners(session) {
     const denyButtons = document.querySelectorAll('.deny-button');
 
     approveButtons.forEach((button) => {
-        button.addEventListener('click', (event) => handleApprove(event, session));
-	await matchAndInsertAttendance();
+        button.addEventListener('click', async (event) => { // Mark this callback as async
+            await handleApprove(event, session);
+            await matchAndInsertAttendance(); // Await works now
+        });
     });
 
     denyButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
+
 
 async function handleApprove(event, session) {
     const stufirstname = event.target.getAttribute('data-student-firstname');
