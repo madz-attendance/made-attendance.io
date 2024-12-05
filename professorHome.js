@@ -356,12 +356,12 @@ async function handleApprove(event, session) {
     const courseNum = event.target.getAttribute('data-course-num');
     const courseSec = event.target.getAttribute('data-course-sec');
 
-    const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-	  const formattedAttendanceTime = new Date(estDate)
-   		 .toISOString()
-  		 .replace('T', ' ')
- 		 .split('.')[0];
-            // If a match is found, insert a new attendance record with the matched stuid
+   const attendanceTime = new Date(); // Current date and time
+
+// Format attendanceTime as "YYYY-MM-DD HH:mm:ss"
+const formattedAttendanceTime = attendanceTime.toISOString().split('T')[0] + ' ' +
+    attendanceTime.toTimeString().split(' ')[0]; // Removes milliseconds and time zone info
+
 // Fetch the course ID
 const { data: courseData, error: courseError } = await supabasePublicClient
     .from('courses')
@@ -2501,7 +2501,6 @@ async function parseRemoveStudentCSV(file)
 		return [false, 0, 0, [""]];
 	}
 }
-
 
 
 
