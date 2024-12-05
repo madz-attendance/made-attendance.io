@@ -352,35 +352,46 @@ async function handleApprove(event, session) {
     const courseNum = event.target.getAttribute('data-course-num');
     const courseSec = event.target.getAttribute('data-course-sec');
 
-    const attendanceTime = new Date(); // Set to current time for approval
+   const attendanceTime = new Date(); // Current date and time
 
-    // Fetch the course ID
-    const { data: courseData, error: courseError } = await supabasePublicClient
-        .from('courses')
-        .select('courseid')
-        .eq('coursecode', deptCode)
-        .eq('coursenum', courseNum)
-        .eq('coursesec', courseSec)
-        .single();
+// Format attendanceTime as "YYYY-MM-DD HH:mm:ss"
+const formattedAttendanceTime = attendanceTime.toISOString().split('T')[0] + ' ' +
+    attendanceTime.toTimeString().split(' ')[0]; // Removes milliseconds and time zone info
 
-    if (courseError || !courseData) {
-        console.error('Error fetching course ID:', courseError || 'Course not found');
-        displayErrorMessage('Could not find the course. Please try again.');
-        return;
-    }
+// Fetch the course ID
+const { data: courseData, error: courseError } = await supabasePublicClient
+    .from('courses')
+    .select('courseid')
+    .eq('coursecode', deptCode)
+    .eq('coursenum', courseNum)
+    .eq('coursesec', courseSec)
+    .single();
 
-    // Insert attendance record
-    const { error: attendanceError } = await supabasePublicClient
-        .from('attendance')
-        .insert([
-            {
-                courseid: courseData.courseid,
-                stufirstname: stufirstname,
-                stulastname: stulastname,
-                stuid: stuid,
-                attendancetime: attendanceTime,
-            }
-        ]);
+if (courseError || !courseData) {
+    console.error('Error fetching course ID:', courseError || 'Course not found');
+    displayErrorMessage('Could not find the course. Please try again.');
+    return;
+}
+
+// Insert attendance record
+const { error: attendanceError } = await supabasePublicClient
+    .from('attendance')
+    .insert([
+        {
+            courseid: courseData.courseid,
+            stufirstname: stufirstname,
+            stulastname: stulastname,
+            stuid: stuid,
+            attendancetime: formattedAttendanceTime, // Use the formatted string
+        }
+    ]);
+
+if (attendanceError) {
+    console.error('Error inserting attendance:', attendanceError);
+    displayErrorMessage('Failed to record attendance. Please try again.');
+} else {
+    console.log('Attendance successfully recorded');
+}
 
     if (attendanceError) {
         console.error('Error inserting attendance:', attendanceError);
