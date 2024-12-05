@@ -215,8 +215,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Collect form data
         const formData = {
-            studentfirstname: document.getElementById('student_firstname').value,
-            studentlastname: document.getElementById('student_lastname').value,
+            studentfirstname: document.getElementById('student_firstname').value.toUpperCase(),
+            studentlastname: document.getElementById('student_lastname').value.toUpperCase(),
             deptcode: document.getElementById('dept_code').value,
             coursecode: document.getElementById('class_section').value,
             facemail: document.getElementById('professor_email').value,
