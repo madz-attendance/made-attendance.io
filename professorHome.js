@@ -336,49 +336,62 @@ function attachButtonListeners(session) {
 
     approveButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleApprove(event, session));
-	
     });
 
     denyButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
+
 async function handleApprove(event, session) {
     const stufirstname = event.target.getAttribute('data-student-firstname');
     const stulastname = event.target.getAttribute('data-student-lastname');
+    const stuid = event.target.getAttribute('data-student-id');
     const courseFullCode = event.target.getAttribute('data-course');
     const deptCode = event.target.getAttribute('data-dept');
     const courseNum = event.target.getAttribute('data-course-num');
     const courseSec = event.target.getAttribute('data-course-sec');
 
-    const attendanceTime = new Date(); // Set to current time for approval
+   const attendanceTime = new Date(); // Current date and time
 
-    // Fetch the course ID
-    const { data: courseData, error: courseError } = await supabasePublicClient
-        .from('courses')
-        .select('courseid')
-        .eq('coursecode', deptCode)
-        .eq('coursenum', courseNum)
-        .eq('coursesec', courseSec)
-        .single();
+// Format attendanceTime as "YYYY-MM-DD HH:mm:ss"
+const formattedAttendanceTime = attendanceTime.toISOString().split('T')[0] + ' ' +
+    attendanceTime.toTimeString().split(' ')[0]; // Removes milliseconds and time zone info
 
-    if (courseError || !courseData) {
-        console.error('Error fetching course ID:', courseError || 'Course not found');
-        displayErrorMessage('Could not find the course. Please try again.');
-        return;
-    }
+// Fetch the course ID
+const { data: courseData, error: courseError } = await supabasePublicClient
+    .from('courses')
+    .select('courseid')
+    .eq('coursecode', deptCode)
+    .eq('coursenum', courseNum)
+    .eq('coursesec', courseSec)
+    .single();
 
-    // Insert attendance record (with course id and time)
-    const { error: attendanceError } = await supabasePublicClient
-        .from('attendance')
-        .insert([
-            {
-                courseid: courseData.courseid,
-                stufirstname: stufirstname,
-                stulastname: stulastname,
-                attendancetime: attendanceTime,
-            }
-        ]);
+if (courseError || !courseData) {
+    console.error('Error fetching course ID:', courseError || 'Course not found');
+    displayErrorMessage('Could not find the course. Please try again.');
+    return;
+}
+
+// Insert attendance record
+const { error: attendanceError } = await supabasePublicClient
+    .from('attendance')
+    .insert([
+        {
+            courseid: courseData.courseid,
+            stufirstname: stufirstname,
+            stulastname: stulastname,
+            stuid: stuid,
+            attendancetime: formattedAttendanceTime, // Use the formatted string
+        }
+    ]);
+
+if (attendanceError) {
+    console.error('Error inserting attendance:', attendanceError);
+    displayErrorMessage('Failed to record attendance. Please try again.');
+} else {
+    console.log('Attendance successfully recorded');
+}
 
     if (attendanceError) {
         console.error('Error inserting attendance:', attendanceError);
@@ -389,52 +402,42 @@ async function handleApprove(event, session) {
     console.log('Attendance approved successfully!');
     displaySuccessMessage(stufirstname, stulastname);
 
-    // Call matchAndInsertAttendance after inserting attendance
-    await matchAndInsertAttendance(courseData.courseid, stufirstname, stulastname);
-}
+    // Fetch the insertdate for the selected student
+    const { data: notificationData, error: notificationError } = await supabasePublicClient
+        .from('temptable')
+        .select('insertdate')
+        .eq('facemail', session.user.email)
+        .eq('studentfirstname', stufirstname)
+        .eq('studentlastname', stulastname)
+        .eq('status', 'Pending')
+        .single();
 
+    if (notificationError || !notificationData) {
+        console.error('Error fetching notification data:', notificationError || 'Notification not found');
+        displayErrorMessage('Could not find notification data. Please try again.');
+        return;
+    }
 
-async function matchAndInsertAttendance(courseid, stufirstname, stulastname) {
-    try {
-        // Fetch the matching roster record based on course ID and student names
-        const { data: rosterMatch, error: rosterError } = await supabasePublicClient
-            .from('roster')
-            .select('*')
-            .eq('courseid', courseid)
-            .eq('stufirstname', stufirstname.toUpperCase()) // Ensure case-insensitive match
-            .eq('stulastname', stulastname.toUpperCase()) // Ensure case-insensitive match
-            .single(); // Assuming one match per student per course
+    const insertdate = notificationData.insertdate; // Get the insertdate from the fetched notification
+    const uniqueKey = `${stufirstname}-${stulastname}-${insertdate}`; // Construct the unique key using insertdate
 
-        if (rosterError || !rosterMatch) {
-            console.error('Error fetching matching roster record:', rosterError || 'No match found');
-            return;
-        }
+    // Update status in the temptable
+    const { error: updateError } = await supabasePublicClient
+        .from('temptable')
+        .update({ status: 'approved' })
+        .eq('facemail', session.user.email)
+        .eq('insertdate', insertdate)
+        .eq('studentfirstname', stufirstname)
+        .eq('studentlastname', stulastname);
 
-        // Now, insert the attendance record using the matching student's information
-        const attendancetime = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-
-        const { error: insertError } = await supabasePublicClient
-            .from('attendance')
-            .insert([
-                {
-                    courseid: courseid,
-                    stufirstname: rosterMatch.stufirstname,
-                    stulastname: rosterMatch.stulastname,
-                    stuid: rosterMatch.stuid, // Use the stuid from the roster
-                    attendancetime: attendancetime, // Use current time in EST
-                }
-            ]);
-
-        if (insertError) {
-            console.error('Error inserting new attendance record:', insertError);
-        } else {
-            console.log(`Inserted new attendance record for student ${stufirstname} ${stulastname}`);
-        }
-    } catch (error) {
-        console.error('Error in matchAndInsertAttendance function:', error);
+    if (updateError) {
+        console.error('Error updating notification status:', updateError);
+        displayErrorMessage('Could not update notification status. Please try again.');
+    } else {
+        // Remove notification from UI using the unique key
+        removeNotificationFromUI(uniqueKey);
     }
 }
-
 
 
 async function handleDeny(event, session) {
