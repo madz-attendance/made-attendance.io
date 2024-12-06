@@ -428,6 +428,58 @@ async function handleApprove(event, session) {
     }
 }
 
+async function matchAndInsertAttendance(courseid, stufirstname, stulastname) {
+    try {
+        // Fetch the matching roster record based on course ID and student names
+        const { data: rosterMatch, error: rosterError } = await supabasePublicClient
+            .from('roster')
+            .select('*')
+            .eq('courseid', courseid)
+            .eq('stufirstname', stufirstname.toUpperCase()) // Ensure case-insensitive match
+            .eq('stulastname', stulastname.toUpperCase()) // Ensure case-insensitive match
+            .single(); // Assuming one match per student per course
+
+        if (rosterError || !rosterMatch) {
+            console.error('Error fetching matching roster record:', rosterError || 'No match found');
+            return;
+        }
+
+        // Now, retrieve the student ID from the roster record
+        const stuid = rosterMatch.stuid;
+
+        // Get the current EST date and time
+        const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+
+        // Insert the attendance record using the stuid from the roster
+        const { error: insertError } = await supabasePublicClient
+            .from('attendance')
+            .insert([
+                {
+                    courseid: courseid,
+                    stufirstname: rosterMatch.stufirstname,
+                    stulastname: rosterMatch.stulastname,
+                    stuid: stuid, // Use the stuid from the roster
+                    attendancetime: estDate, // Use current time in EST
+                }
+            ]);
+
+        if (insertError) {
+            console.error('Error inserting new attendance record:', insertError);
+        } else {
+            console.log(`Inserted new attendance record for student ID ${stuid}`);
+        }
+    } catch (error) {
+        console.error('Error in matchAndInsertAttendance function:', error);
+    }
+}
+
+
+
+
+
+
+
+
 
 async function handleDeny(event, session) {
     const uniqueKey = event.target.getAttribute('data-unique-key');
