@@ -335,18 +335,13 @@ function attachButtonListeners(session) {
     const denyButtons = document.querySelectorAll('.deny-button');
 
     approveButtons.forEach((button) => {
-        button.addEventListener('click', async (event) => { // Mark this callback as async
-            await handleApprove(event, session);
-	    const courseid = courseData.courseid; // Use the fetched course ID from handleApprove
-	    await matchAndInsertAttendance(courseid, stufirstname, stulastname); // Pass specific row data
-        });
+        button.addEventListener('click', (event) => handleApprove(event, session));
     });
 
     denyButtons.forEach((button) => {
         button.addEventListener('click', (event) => handleDeny(event, session));
     });
 }
-
 
 async function handleApprove(event, session) {
     const stufirstname = event.target.getAttribute('data-student-firstname');
@@ -357,46 +352,35 @@ async function handleApprove(event, session) {
     const courseNum = event.target.getAttribute('data-course-num');
     const courseSec = event.target.getAttribute('data-course-sec');
 
-   const attendanceTime = new Date(); // Current date and time
+    const attendanceTime = new Date(); // Set to current time for approval
 
-// Format attendanceTime as "YYYY-MM-DD HH:mm:ss"
-const formattedAttendanceTime = attendanceTime.toISOString().split('T')[0] + ' ' +
-    attendanceTime.toTimeString().split(' ')[0]; // Removes milliseconds and time zone info
+    // Fetch the course ID
+    const { data: courseData, error: courseError } = await supabasePublicClient
+        .from('courses')
+        .select('courseid')
+        .eq('coursecode', deptCode)
+        .eq('coursenum', courseNum)
+        .eq('coursesec', courseSec)
+        .single();
 
-// Fetch the course ID
-const { data: courseData, error: courseError } = await supabasePublicClient
-    .from('courses')
-    .select('courseid')
-    .eq('coursecode', deptCode)
-    .eq('coursenum', courseNum)
-    .eq('coursesec', courseSec)
-    .single();
+    if (courseError || !courseData) {
+        console.error('Error fetching course ID:', courseError || 'Course not found');
+        displayErrorMessage('Could not find the course. Please try again.');
+        return;
+    }
 
-if (courseError || !courseData) {
-    console.error('Error fetching course ID:', courseError || 'Course not found');
-    displayErrorMessage('Could not find the course. Please try again.');
-    return;
-}
-
-// Insert attendance record
-const { error: attendanceError } = await supabasePublicClient
-    .from('attendance')
-    .insert([
-        {
-            courseid: courseData.courseid,
-            stufirstname: stufirstname,
-            stulastname: stulastname,
-            stuid: stuid,
-            attendancetime: formattedAttendanceTime, // Use the formatted string
-        }
-    ]);
-
-if (attendanceError) {
-    console.error('Error inserting attendance:', attendanceError);
-    displayErrorMessage('Failed to record attendance. Please try again.');
-} else {
-    console.log('Attendance successfully recorded');
-}
+    // Insert attendance record
+    const { error: attendanceError } = await supabasePublicClient
+        .from('attendance')
+        .insert([
+            {
+                courseid: courseData.courseid,
+                stufirstname: stufirstname,
+                stulastname: stulastname,
+                stuid: stuid,
+                attendancetime: attendanceTime,
+            }
+        ]);
 
     if (attendanceError) {
         console.error('Error inserting attendance:', attendanceError);
@@ -1867,54 +1851,6 @@ async function createCourse(event)
 		}
 	}
 }
-
-async function matchAndInsertAttendance(courseid, stufirstname, stulastname) {
-    try {
-        // Fetch the matching roster record based on course ID and student names
-        const { data: rosterMatch, error: rosterError } = await supabasePublicClient
-            .from('roster')
-            .select('*')
-            .eq('courseid', courseid)
-            .eq('stufirstname', stufirstname.toUpperCase()) // Ensure case-insensitive match
-            .eq('stulastname', stulastname.toUpperCase()) // Ensure case-insensitive match
-            .single();
-
-        if (rosterError || !rosterMatch) {
-            console.error('Error fetching matching roster record:', rosterError || 'No match found');
-            return;
-        }
-
-        // Format attendance time in EST as "YYYY-MM-DD HH:mm:ss"
-        const estDate = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-        const formattedAttendanceTime = new Date(estDate)
-            .toISOString()
-            .replace('T', ' ')
-            .split('.')[0];
-
-        // Insert the attendance record
-        const { error: insertError } = await supabasePublicClient
-            .from('attendance')
-            .insert([
-                {
-                    courseid: courseid,
-                    stufirstname: rosterMatch.stufirstname,
-                    stulastname: rosterMatch.stulastname,
-                    stuid: rosterMatch.stuid, // Use the matched student ID
-                    attendancetime: formattedAttendanceTime,
-                }
-            ]);
-
-        if (insertError) {
-            console.error('Error inserting new attendance record:', insertError);
-        } else {
-            console.log(`Inserted new attendance record for student ID ${rosterMatch.stuid}`);
-        }
-    } catch (error) {
-        console.error('Error in matchAndInsertAttendance function:', error);
-    }
-}
-
-
 
 
 // Gets the values from all of the input fields & dropdown menus on the "New Student" tab.
